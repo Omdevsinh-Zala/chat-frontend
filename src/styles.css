@@ -1,3 +1,88 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+@layer components {
+  .label {
+    @apply transition-all duration-200 absolute left-3 text-base top-1/2 -translate-y-1/2 bg-white peer-focus:top-0 peer-focus:text-xs peer-focus:px-1 peer-focus:left-2 opacity-60 peer-focus:opacity-100 pointer-events-none dark:!bg-slate-800 dark:!text-white;
+  }
+
+  .float-label {
+    @apply text-xs !top-0 !px-1 !left-2 !opacity-100 ;
+  }
+
+  .form-error-msg {
+    @apply transition-all duration-200 absolute text-sm text-pink-600 left-2 -bottom-5 peer-focus:hidden;
+    animation: show ease-in 0.3s;
+  }
+}
+
+@keyframes show {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Or if you prefer direct styling */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  scrollbar-width: thin;
+  scrollbar-track-color: #f1f5f9;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-slate-100 rounded-lg;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-lg hover:bg-slate-400;
+}
+
+html:has(.class) {
+  overflow: hidden;
+}
+
+.error-panel {
+  --mat-snack-bar-container-color: #ffffff;
+  --mat-snack-bar-supporting-text-size: 15px;
+  --mat-snack-bar-supporting-text-line-height: 1.1;
+  --mat-snack-bar-supporting-text-color: #000;
+  --mat-snack-bar-container-shape: 8px;
+  --mat-snack-bar-button-color: #db2777;
+}
+
+.success-panel {
+  --mat-snack-bar-container-color: #ffffff;
+  --mat-snack-bar-supporting-text-size: 15px;
+  --mat-snack-bar-supporting-text-line-height: 1.1;
+  --mat-snack-bar-supporting-text-color: #000;
+  --mat-snack-bar-container-shape: 8px;
+  --mat-snack-bar-button-color: #059669;
+}
+
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spinner {
+  --moz-appearance: textfield;
+}
