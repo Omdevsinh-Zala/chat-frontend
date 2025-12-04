@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
 export class SocketConnection {
   private socket = signal(io());
   connectSocket() {
-    this.socket.update(() => io(environment.SocketUrl, { autoConnect: false }));
+    this.socket.update(() => io(environment.socketUrl, { withCredentials: true }));
   }
   getSocket() {
     return this.socket();

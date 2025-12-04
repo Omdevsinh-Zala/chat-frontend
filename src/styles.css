@@ -2,33 +2,18 @@
 
 @import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-html,
-body {
-  height: 100%;
-}
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+
+.label {
+  @apply transition-all duration-200 absolute left-3 text-base top-1/2 -translate-y-1/2 bg-white peer-focus:top-0 peer-focus:text-xs peer-focus:px-1 peer-focus:left-2 opacity-60 peer-focus:opacity-100 pointer-events-none;
 }
 
-@layer components {
-  .label {
-    @apply transition-all duration-200 absolute left-3 text-base top-1/2 -translate-y-1/2 bg-white peer-focus:top-0 peer-focus:text-xs peer-focus:px-1 peer-focus:left-2 opacity-60 peer-focus:opacity-100 pointer-events-none dark:!bg-slate-800 dark:!text-white;
-  }
+.float-label {
+  @apply text-xs !top-0 !px-1 !left-2 !opacity-100 ;
+}
 
-  .float-label {
-    @apply text-xs !top-0 !px-1 !left-2 !opacity-100 ;
-  }
-
-  .form-error-msg {
-    @apply transition-all duration-200 absolute text-sm text-pink-600 left-2 -bottom-5 peer-focus:hidden;
-    animation: show ease-in 0.3s;
-  }
+.form-error-msg {
+  @apply transition-all duration-200 absolute text-sm text-pink-600 left-2 -bottom-5 peer-focus:hidden;
+  animation: show ease-in 0.3s;
 }
 
 @keyframes show {
@@ -86,3 +71,6 @@ html:has(.class) {
 .no-spinner {
   --moz-appearance: textfield;
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

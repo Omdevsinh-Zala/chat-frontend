@@ -1,1 +1,141 @@
-<p>register works!</p>
+<div class="container !mx-auto px-2 sm:px-0 w-full h-dvh flex flex-col gap-4 items-center justify-center">
+  <form class="p-3 w-96 flex gap-4 flex-col" (submit)="register($event)">
+    <h1 class="mx-auto text-3xl">Register</h1>
+    <div class="flex flex-col gap-7 w-full">
+      <div class="relative">
+        <input
+          class="transition-all duration-200 peer outline-none border focus:border-slate-400 w-full rounded-md p-3 focus:ring-2 focus:ring-slate-200"
+          type="text"
+          [field]="registerForm.firstName"
+          #firstName
+        />
+        <label class="label"
+          [class.float-label]="registerForm.firstName().value().trim() !== ''"
+          [class.text-pink-600]="registerForm.firstName().touched() && registerForm.firstName().invalid()"
+          [class.peer-focus\:text-inherit]="registerForm.firstName().touched() && registerForm.firstName().invalid()"
+        >
+          First Name<span class="ps-0.5">*</span>
+        </label>
+        @if (registerForm.firstName().touched() && registerForm.firstName().invalid()) {
+          <ul class="error-list">
+            @for (error of registerForm.firstName().errors(); track $index) {
+              <li class="form-error-msg" >{{ error.message }}</li>
+            }
+          </ul>
+        }
+      </div>
+      <div class="relative">
+        <input
+          class="transition-all duration-200 peer outline-none border focus:border-slate-400 w-full rounded-md p-3 focus:ring-2 focus:ring-slate-200"
+          type="text"
+          autocomplete="new-password"
+          [field]="registerForm.lastName"
+          #lastName
+        />
+        <label class="label"
+          [class.float-label]="registerForm.lastName().value().trim() !== ''"
+          [class.text-pink-600]="registerForm.lastName().touched() && registerForm.lastName().invalid()"
+          [class.peer-focus\:text-inherit]="registerForm.lastName().touched() && registerForm.lastName().invalid()"
+        >
+          Last Name<span class="ps-0.5">*</span>
+        </label>
+        @if (registerForm.lastName().touched() && registerForm.lastName().invalid()) {
+          <ul class="error-list">
+            @for (error of registerForm.lastName().errors(); track $index) {
+              <li class="form-error-msg" >{{ error.message }}</li>
+            }
+          </ul>
+        }
+      </div>
+      <div class="relative">
+        <input
+          class="transition-all duration-200 peer outline-none border focus:border-slate-400 w-full rounded-md p-3 focus:ring-2 focus:ring-slate-200"
+          type="email"
+          autocomplete="new-password"
+          [field]="registerForm.email"
+          #email
+        />
+        <label class="label"
+          [class.float-label]="registerForm.email().value().trim() !== ''"
+          [class.text-pink-600]="registerForm.email().touched() && registerForm.email().invalid()"
+          [class.peer-focus\:text-inherit]="registerForm.email().touched() && registerForm.email().invalid()"
+        >
+          Email<span class="ps-0.5">*</span>
+        </label>
+        @if (registerForm.email().touched() && registerForm.email().invalid()) {
+          <ul class="error-list">
+            @for (error of registerForm.email().errors(); track $index) {
+              <li class="form-error-msg" >{{ error.message }}</li>
+            }
+          </ul>
+        }
+      </div>
+      <div class="relative">
+        @if (!showPass()) {
+          <input
+            class="transition-all duration-200 peer outline-none border focus:border-slate-400 w-full rounded-md p-3 focus:ring-2 focus:ring-slate-200"
+            type="password"
+            autocomplete="new-password"
+            [field]="registerForm.password"
+            #password
+          />
+        }
+        @else {
+          <input
+            class="transition-all duration-200 peer outline-none border focus:border-slate-400 w-full rounded-md p-3 focus:ring-2 focus:ring-slate-200"
+            type="text"
+            autocomplete="new-password"
+            [field]="registerForm.password"
+            #password
+          />
+        }
+        <label
+          class="label"
+          [class.float-label]="registerForm.password().value().trim() !== ''"
+          [class.text-pink-600]="registerForm.password().touched() && registerForm.password().invalid()"
+          [class.peer-focus\:text-inherit]="registerForm.password().touched() && registerForm.password().invalid()"
+        >
+          Password<span class="ps-0.5">*</span>
+        </label>
+        <button
+          class="transition-all duration-200 absolute right-2 top-1/2 -translate-y-3"
+          role="button"
+          type="button"
+          (click)="showPass.set(!showPass())"
+        >
+          <mat-icon>{{ showPass() ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+        @if (registerForm.password().touched() && registerForm.password().invalid()) {
+          <ul class="error-list">
+            @for (error of registerForm.password().errors(); track $index) {
+              <li class="form-error-msg" >{{ error.message }}</li>
+            }
+          </ul>
+        }
+      </div>
+      <!-- <a
+        class="transition-colors duration-200 hover:text-sky-700 text-sky-500 underline underline-offset-2"
+        routerLink="/forgot_password"
+        >Forget Password?</a
+      > -->
+      <button
+        class="transition-all duration-200 border h-[42px] rounded-md py-2 text-black border-slate-400 bg-slate-200 hover:bg-slate-300 hover:disabled:cursor-not-allowed hover:cursor-pointer"
+        type="submit"
+        role="button"
+        [disabled]="registerForm().invalid() || registerProcess()"
+        [matTooltip]="registerForm().invalid() ? 'Fill the above fields first' : ''"
+      >
+        @if(registerProcess()) {
+        <mat-spinner class="mx-auto !h-6 !w-6"></mat-spinner>
+        } @else { Submit }
+      </button>
+    </div>
+    <p class="text-center">
+      Already have an account ?&nbsp;<a
+        class="transition-colors duration-200 hover:text-sky-700 text-sky-500 underline underline-offset-2"
+        routerLink="/login"
+        >Login here.</a
+      >
+    </p>
+  </form>
+</div>

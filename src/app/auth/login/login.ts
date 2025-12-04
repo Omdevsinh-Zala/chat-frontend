@@ -8,10 +8,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageSnackBar } from '../../helpers/message-snack-bar/message-snack-bar';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports: [MatProgressSpinnerModule, Field, MatIcon, MatTooltipModule],
+  imports: [MatProgressSpinnerModule, Field, MatIcon, MatTooltipModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -20,7 +21,7 @@ export class Login {
   showPass = signal(false);
   authService = inject(AuthService);
   destroyRef = inject(DestroyRef);
-  private _snackBar = inject(MatSnackBar)
+  private router = inject(Router);
 
   loginModel = signal<LoginModel>({
     email: '',
@@ -28,40 +29,32 @@ export class Login {
   })
 
   loginForm = form(this.loginModel, (schemaPath) => {
-    required(schemaPath.email);
-    required(schemaPath.password);
+    required(schemaPath.email, { message: 'Email is required.' });
+    required(schemaPath.password, { message: 'Password is required.' });
 
-    email(schemaPath.email);
+    email(schemaPath.email, { message: 'Please enter valid email.' });
 
-    minLength(schemaPath.password, 8);
-    maxLength(schemaPath.password, 16);
+    minLength(schemaPath.password, 8, { message: 'Password must be at least 8 characters long.' });
+    maxLength(schemaPath.password, 16, { message: 'Password must not exceed 16 characters.' });
   })
 
-  login() {
+  login(event: Event) {
+    event.preventDefault();
     this.loginProcess.update(() => true);
     this.authService.loginUser(this.loginModel()).pipe(
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
-      next: (res) => {
+      next: async (resPromise) => {
+        const res = await resPromise;
         if(res.success) {
-          this.openSnackBar(res.message);
-          return this.loginProcess.update(() => false);
+          this.loginProcess.update(() => false);
+          return this.router.navigate(['/home']);
         }
-        this.openSnackBar(res.message, 'error');
         return this.loginProcess.update(() => false);
       },
-      error: (err) => {
-        this.openSnackBar(err.message, 'error');
+      error: () => {
         this.loginProcess.update(() => false);
       }
     })
-  }
-
-  private openSnackBar(message: string, type: 'error' | 'success' = 'success') {
-    this._snackBar.openFromComponent(MessageSnackBar, {
-      panelClass: `${type}-panel`,
-      data: message,
-      duration: 3000,
-    });
   }
 }
