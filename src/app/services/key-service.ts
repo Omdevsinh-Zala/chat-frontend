@@ -41,6 +41,7 @@ export class KeyService {
   getPrivateKey(): string | null {
     return this.privateKey();
   }
+
   private deviceSecretKey: WritableSignal<CryptoKey | null> = signal(null);
 
   async getDeviceSecret(): Promise<CryptoKey> {
@@ -100,10 +101,10 @@ export class KeyService {
     });
   }
 
-  async loadDecryptedPrivateKeyFromIndexedDB(): Promise<string | null> {
+  async loadDecryptedPrivateKeyFromIndexedDB(): Promise<null> {
     const key = this.deviceSecretKey() || await this.getDeviceSecret();
     const db = await this.openDB();
-    return new Promise<string | null>((resolve, reject) => {
+    return new Promise<null>((resolve, reject) => {
       const tx = db.transaction('keys', 'readonly');
       const store = tx.objectStore('keys');
       const request = store.get('decryptedPrivateKey');
@@ -121,7 +122,8 @@ export class KeyService {
             encryptedBytes
           );
           const privateKey = new TextDecoder().decode(decrypted);
-          resolve(privateKey);
+          this.privateKey.set(privateKey);
+          resolve(null);
         } catch (e) {
           resolve(null);
         }

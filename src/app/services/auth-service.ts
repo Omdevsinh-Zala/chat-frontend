@@ -1,10 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { GlobalResponse, LoginModel, PrivateKeyResponse } from '../models/auth.model';
+import { GlobalResponse, LoginModel, PrivateKeyResponse, RegisterModel } from '../models/auth.model';
 import { map } from 'rxjs';
 import { UserService } from './user-service';
 import { KeyService } from './key-service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -15,13 +16,17 @@ export class AuthService {
   private userService = inject(UserService);
   private encryptKey = environment.encryptKey;
   private keyService = inject(KeyService);
+  private router = inject(Router);
 
   loginUser(data: LoginModel) {
     return this.http.post<GlobalResponse<PrivateKeyResponse>>(`${this.apiUrl}/auth/login`, data).pipe(
       map(async (res) => {
         if (res.success) {
           // Use encrypted private key, salt, and iv from login response
+          localStorage.setItem('loggedIn', 'true');
+          this.userService.getUserData();
           const keyRes = res.data;
+          await this.keyService.clearKeyStorage();
           if (keyRes?.privateKey) {
             const encoder = new TextEncoder();
             const salt = Uint8Array.from(atob(this.encryptKey.salt), c => c.charCodeAt(0));
@@ -60,17 +65,18 @@ export class AuthService {
     );
   }
 
-  registerUser(data: LoginModel) {
-    return this.http.post<GlobalResponse<PrivateKeyResponse>>(`${this.apiUrl}/auth/register`, data);
+  registerUser(data: RegisterModel) {
+    return this.http.post<GlobalResponse<PrivateKeyResponse | RegisterModel>>(`${this.apiUrl}/auth/register`, data);
   }
 
   logoutUser() {
     return this.http.post<GlobalResponse<null>>(`${this.apiUrl}/auth/logout`, {}).pipe(
       map(async (res) => {
         if (res.success) {
+          localStorage.removeItem('loggedIn');
           this.userService.setUser(null);
-          this.keyService.setPrivateKey(null);
           await this.keyService.clearKeyStorage();
+          this.router.navigate(['/login']);
         }
         return res;
       })

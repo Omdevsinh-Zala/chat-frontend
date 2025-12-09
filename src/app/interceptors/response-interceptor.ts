@@ -13,11 +13,12 @@ function openSnackBar(snackBar: MatSnackBar, message: string, type: 'success' | 
 
 export const responseInterceptor: HttpInterceptorFn = (req, next) => {
   const snackBar = inject(MatSnackBar);
+  const ignoreUrls = ['/auth/verify/username'];
   return next(req).pipe(
     tap((event) => {
       if (event instanceof HttpResponse) {
         const body = event.body as any;
-        if (body?.success && body?.message) {
+        if (body?.success && body?.message && !ignoreUrls.some(url => req.url.includes(url))) {
           openSnackBar(snackBar, body.message, 'success');
         }
       }

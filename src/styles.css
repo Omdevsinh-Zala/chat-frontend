@@ -12,9 +12,18 @@
 }
 
 .form-error-msg {
-  @apply transition-all duration-200 absolute text-sm text-pink-600 left-2 -bottom-5 peer-focus:hidden;
+  @apply transition-all duration-200 text-xs absolute text-pink-600 left-2 -bottom-5 peer-focus:hidden;
   animation: show ease-in 0.3s;
 }
+
+.away {
+  @apply border-slate-300 bg-red-500;
+}
+
+.active {
+  @apply border-white bg-green-500;
+}
+
 
 @keyframes show {
   from {

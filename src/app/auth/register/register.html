@@ -16,10 +16,16 @@
         >
           First Name<span class="ps-0.5">*</span>
         </label>
-        @if (registerForm.firstName().touched() && registerForm.firstName().invalid()) {
+        @if (registerForm.firstName().touched() && registerForm.firstName().invalid() || backendValidationErrors()?.firstName) {
           <ul class="error-list">
-            @for (error of registerForm.firstName().errors(); track $index) {
-              <li class="form-error-msg" >{{ error.message }}</li>
+            @if (registerForm.firstName().touched() && registerForm.firstName().invalid()) {
+              @for (error of registerForm.firstName().errors(); track $index) {
+                @if($first) {
+                  <li class="form-error-msg">{{ error.message }}</li>
+                }
+              }
+            } @else if (backendValidationErrors()?.firstName) {
+              <li class="form-error-msg">{{ backendValidationErrors()?.firstName }}</li>
             }
           </ul>
         }
@@ -39,10 +45,52 @@
         >
           Last Name<span class="ps-0.5">*</span>
         </label>
-        @if (registerForm.lastName().touched() && registerForm.lastName().invalid()) {
+        @if (registerForm.lastName().touched() && registerForm.lastName().invalid() || backendValidationErrors()?.lastName) {
           <ul class="error-list">
-            @for (error of registerForm.lastName().errors(); track $index) {
-              <li class="form-error-msg" >{{ error.message }}</li>
+            @if (registerForm.lastName().touched() && registerForm.lastName().invalid()) {
+              @for (error of registerForm.lastName().errors(); track $index) {
+                @if($first) {
+                  <li class="form-error-msg">{{ error.message }}</li>
+                }
+              }
+            } @else if (backendValidationErrors()?.lastName) {
+              <li class="form-error-msg">{{ backendValidationErrors()?.lastName }}</li>
+            }
+          </ul>
+        }
+      </div>
+      <div class="relative">
+        <input
+          class="transition-all duration-200 peer outline-none border focus:border-slate-400 w-full rounded-md p-3 focus:ring-2 focus:ring-slate-200"
+          type="text"
+          autocomplete="new-password"
+          [field]="registerForm.username"
+          #username
+        />
+        @if(registerForm.username().pending()) {
+          <div
+            class="transition-all duration-200 absolute right-1 top-1/2 -translate-1/2"
+          >
+            <mat-progress-spinner mode="indeterminate" diameter="20" ></mat-progress-spinner>
+          </div>
+        }
+        <label class="label"
+          [class.float-label]="registerForm.username().value().trim() !== ''"
+          [class.text-pink-600]="registerForm.username().touched() && registerForm.username().invalid()"
+          [class.peer-focus\:text-inherit]="registerForm.username().touched() && registerForm.username().invalid()"
+        >
+          Username<span class="ps-0.5">*</span>
+        </label>
+        @if (registerForm.username().touched() && registerForm.username().invalid() || backendValidationErrors()?.username) {
+          <ul class="error-list">
+            @if (registerForm.username().touched() && registerForm.username().invalid()) {
+              @for (error of registerForm.username().errors(); track $index) {
+                @if($first) {
+                  <li class="form-error-msg">{{ error.message }}</li>
+                }
+              }
+            } @else if (backendValidationErrors()?.username) {
+              <li class="form-error-msg">{{ backendValidationErrors()?.username }}</li>
             }
           </ul>
         }
@@ -62,10 +110,16 @@
         >
           Email<span class="ps-0.5">*</span>
         </label>
-        @if (registerForm.email().touched() && registerForm.email().invalid()) {
+        @if (registerForm.email().touched() && registerForm.email().invalid() || backendValidationErrors()?.email) {
           <ul class="error-list">
-            @for (error of registerForm.email().errors(); track $index) {
-              <li class="form-error-msg" >{{ error.message }}</li>
+            @if (registerForm.email().touched() && registerForm.email().invalid()) {
+              @for (error of registerForm.email().errors(); track $index) {
+                @if($first) {
+                  <li class="form-error-msg">{{ error.message }}</li>
+                }
+              }
+            } @else if (backendValidationErrors()?.email) {
+              <li class="form-error-msg">{{ backendValidationErrors()?.email }}</li>
             }
           </ul>
         }
@@ -105,10 +159,16 @@
         >
           <mat-icon>{{ showPass() ? 'visibility' : 'visibility_off' }}</mat-icon>
         </button>
-        @if (registerForm.password().touched() && registerForm.password().invalid()) {
+        @if (registerForm.password().touched() && registerForm.password().invalid() || backendValidationErrors()?.password) {
           <ul class="error-list">
-            @for (error of registerForm.password().errors(); track $index) {
-              <li class="form-error-msg" >{{ error.message }}</li>
+            @if (registerForm.password().touched() && registerForm.password().invalid()) {
+              @for (error of registerForm.password().errors(); track $index) {
+                @if($first) {
+                  <li class="form-error-msg">{{ error.message }}</li>
+                }
+              }
+            } @else if (backendValidationErrors()?.password) {
+              <li class="form-error-msg">{{ backendValidationErrors()?.password }}</li>
             }
           </ul>
         }
@@ -122,7 +182,7 @@
         class="transition-all duration-200 border h-[42px] rounded-md py-2 text-black border-slate-400 bg-slate-200 hover:bg-slate-300 hover:disabled:cursor-not-allowed hover:cursor-pointer"
         type="submit"
         role="button"
-        [disabled]="registerForm().invalid() || registerProcess()"
+        [disabled]="registerForm().invalid() || registerProcess() || registerForm().pending()"
         [matTooltip]="registerForm().invalid() ? 'Fill the above fields first' : ''"
       >
         @if(registerProcess()) {

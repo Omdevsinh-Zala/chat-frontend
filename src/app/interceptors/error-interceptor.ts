@@ -25,16 +25,14 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         if (error.status === 401) {
           if (isRefreshRequest) {
             // If refresh itself fails, logout and redirect
-            authService.logoutUser();
-            router.navigate(['/login']);
+            authService.logoutUser().subscribe();
             openSnackBar(snackBar, 'Session expired. Please log in again.', 'error');
             return throwError(() => error);
           } else {
             return authService.refreshToken().pipe(
               switchMap(() => next(req)),
               catchError(() => {
-                authService.logoutUser();
-                router.navigate(['/login']);
+                authService.logoutUser().subscribe();
                 openSnackBar(snackBar, 'Session expired. Please log in again.', 'error');
                 return throwError(() => error);
               })
