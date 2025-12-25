@@ -7,4 +7,5 @@ export interface User {
   full_name: string;
   avatar_url: string;
   is_active: boolean;
+  active_chat_id: string;
 }

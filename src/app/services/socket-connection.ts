@@ -1,17 +1,17 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { io } from 'socket.io-client';
 import { environment } from '../../environments/environment';
-import { AuthService } from './auth-service';
 import { UserService } from './user-service';
+import { AuthService } from './auth-service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SocketConnection {
   socket = io(environment.socketUrl, { withCredentials: true, autoConnect: false });
   isConnected = signal(false);
-  private authService = inject(AuthService);
   private userService = inject(UserService);
+  private authService = inject(AuthService);
 
   connectSocket() {
     this.socket.connect();
@@ -19,19 +19,35 @@ export class SocketConnection {
     this.socket.on('connect', () => {
       this.isConnected.set(true);
       this.userService.getUserData();
-      console.log('Socket connected:', this.socket.id);
+    });
+
+    this.socket.on('channels', ({ channels }) => {
+      console.log('here');
+      this.userService.userChannels.set(channels);
+    });
+
+    this.socket.on('recentlyMessagesUsers', ({ users }) => {
+      console.log(users);
+      this.userService.recentlyMessagesUsers.set(users);
+    });
+
+    this.socket.on('personalChat', ({ chat }) => {
+      console.log(chat);
+      this.userService.recentlyMessagesUsers.update((users) => {
+        return [...users, chat];
+      });
+      this.userService.personalChat.set(chat);
     });
 
     this.socket.on('disconnect', (reason) => {
       this.isConnected.set(false);
-      console.log('Socket disconnected:', reason);
     });
 
     this.socket.on('connect_error', (error) => {
       this.isConnected.set(false);
       // @ts-ignore
-      const statusCode = error.data?.statusCode ;
-      if(statusCode === 401) {
+      const statusCode = error.data?.statusCode;
+      if (statusCode === 401) {
         this.authService.logoutUser().subscribe();
       }
     });

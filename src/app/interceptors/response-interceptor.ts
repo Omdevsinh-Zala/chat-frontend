@@ -7,6 +7,7 @@ import { MessageSnackBar } from '../helpers/message-snack-bar/message-snack-bar'
 function openSnackBar(snackBar: MatSnackBar, message: string, type: 'success' | 'error' = 'success') {
   snackBar.openFromComponent(MessageSnackBar, {
     panelClass: `${type}-panel`,
+    duration: 3000,
     data: message,
   });
 }

@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 function openSnackBar(snackBar: MatSnackBar, message: string, type: 'error' | 'success' = 'error') {
   snackBar.openFromComponent(MessageSnackBar, {
     panelClass: `${type}-panel`,
+    duration: 3000,
     data: message,
   });
 }

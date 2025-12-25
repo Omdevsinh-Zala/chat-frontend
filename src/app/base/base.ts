@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -8,6 +8,9 @@ import { RouterOutlet, RouterLinkWithHref, Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth-service';
 import { UserService } from '../services/user-service';
+import { map } from 'rxjs';
+import { SocketConnection } from '../services/socket-connection';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-base',
@@ -17,12 +20,24 @@ import { UserService } from '../services/user-service';
 })
 export class Base {
   private userService = inject(UserService);
-  user = computed(() => this.userService.user());
+  user = computed(() => {
+    return this.userService.user()
+  });
   imagePath = environment.imageUrl;
   private authService = inject(AuthService);
   private router = inject(Router);
+  private socketConnection = inject(SocketConnection)
+  private destroyRef = inject(DestroyRef);
 
   logout() {
-    this.authService.logoutUser().subscribe();
+    this.authService.logoutUser().pipe(
+      map(async (promiseRes) => {
+        const res = await promiseRes;
+        if(res.success) {
+          this.socketConnection.disconnectSocket();
+        }
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe();
   }
 }

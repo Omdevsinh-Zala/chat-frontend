@@ -27,9 +27,6 @@ export class App implements OnInit {
     const isLoggedIn = localStorage.getItem('loggedIn') === "true";
     if (isLoggedIn) {
       this.socketService.connectSocket();
-
-      // You can now check connection status
-      console.log('Socket connection status:', this.socketService.isConnected());
     }
   }
 }

@@ -4,6 +4,16 @@ import { authUserGuard } from './guards/auth-user-guard';
 
 export const routes: Routes = [
   {
+    path: 'login',
+    loadComponent: () => import('./auth/login/login').then(m => m.Login),
+    canActivate: [noAuthUserGuard],
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./auth/register/register').then(m => m.Register),
+    canActivate: [noAuthUserGuard],
+  },
+  {
     path: '',
     loadComponent: () => import('./base/base').then(m => m.Base),
     canActivate: [authUserGuard],
@@ -11,6 +21,12 @@ export const routes: Routes = [
       {
         path: 'home',
         loadComponent: () => import('./base/home/home').then(m => m.Home),
+        children: [
+          {
+            path: ':id',
+            loadComponent: () => import('./base/home/chat/chat').then(m => m.Chat),
+          }
+        ]
       },
       {
         path: 'profile',
@@ -34,17 +50,16 @@ export const routes: Routes = [
           }
         ]
       },
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: "home"
+      },
+      {
+        path: '**',
+        redirectTo: "home"
+      }
     ]
-  },
-  {
-    path: 'login',
-    loadComponent: () => import('./auth/login/login').then(m => m.Login),
-    canActivate: [noAuthUserGuard],
-  },
-  {
-    path: 'register',
-    loadComponent: () => import('./auth/register/register').then(m => m.Register),
-    canActivate: [noAuthUserGuard],
   },
   {
     path: '',
