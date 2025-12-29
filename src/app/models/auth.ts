@@ -19,5 +19,5 @@ export interface GlobalResponse<T = any> {
 }
 
 export interface PrivateKeyResponse {
-  privateKey: string;
+  active_chat_id: string;
 }

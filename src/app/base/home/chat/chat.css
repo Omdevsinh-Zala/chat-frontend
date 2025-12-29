@@ -1,0 +1,12 @@
+.custom-input {
+    --mat-form-field-outlined-container-shape: 50px;
+    --mat-form-field-container-vertical-padding: 8px;
+    --mat-form-field-container-height: 41px;
+    ::ng-deep .mat-mdc-text-field-wrapper {
+        padding-right: unset !important;
+    }
+    ::ng-deep .mdc-text-field--outlined {
+        padding-right: 8px !important;
+        padding-left: 20px !important;
+    }
+}

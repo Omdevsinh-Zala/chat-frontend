@@ -19,7 +19,6 @@ export class UserService {
 
   userChannels: WritableSignal<any> = signal([]);
   recentlyMessagesUsers: WritableSignal<RecentlyMessagedUsers[]> = signal([]);
-  personalChat: WritableSignal<RecentlyMessagedUsers | null> = signal(null);
 
   setUser(userData: any) {
     this.user.update(() => userData);
@@ -33,7 +32,6 @@ export class UserService {
         next: async (res) => {
           if (res.success) {
             this.setUser(res.data);
-            this.router.navigate(['/home', res.data?.active_chat_id]);
           }
         },
       });

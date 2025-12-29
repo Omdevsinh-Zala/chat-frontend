@@ -1,8 +1,40 @@
-<div class="h-dvh w-full relative">
-    <div class="h-full ">
-        
-    </div>
-    <div class="absolute bottom-0 left-0 right-0 flex items-center">
-        
-    </div>
+<div class="h-dvh w-full relative p-8 bg-black/5 overflow-y-auto">
+  <div class="h-[calc(100dvh-100px)]">
+    <ul class="flex flex-col-reverse h-full items-end-safe gap-4 pb-8">
+      @for (mes of currentChatMessages(); track $index) {
+      <li
+        #messageItem
+        class="px-6 py-4 bg-white rounded-xl"
+        [style.align-self]="mes.sender_id === userData.user()?.id ? 'end' : 'start'"
+        [attr.data-id]="mes.id"
+      >
+        <div class="text-xl relative">
+          <p>{{ mes.content }}</p>
+          <div class="absolute right-0 flex items-center gap-2">
+            @if(mes.sender_id === userData.user()?.id || mes.status === 'read') {
+              <mat-icon>done_all</mat-icon>
+            } @else {
+              <mat-icon>done</mat-icon>
+            }
+            <p class="text-xs text-gray-500">{{ mes.created_at | date: 'shortTime' }}</p>
+          </div>
+        </div>
+      </li>
+      }
+    </ul>
+  </div>
+  <div class="absolute bottom-0 left-8 right-8 flex items-center">
+    <mat-form-field class="w-full custom-input" appearance="outline">
+      <input matInput [(ngModel)]="message" />
+      <button
+        matSuffix
+        matIconButton
+        color="primary"
+        (click)="clickEvent($event)"
+        [attr.aria-label]="'Send message'"
+      >
+        <mat-icon>send</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
 </div>

@@ -50,7 +50,7 @@ export class Login {
           if (res.success) {
             this.loginProcess.update(() => false);
             this.socketService.connectSocket();
-            return this.router.navigate(['/home', res.data]);
+            return this.router.navigate(['/home', res?.data?.active_chat_id]);
           }
           return this.loginProcess.update(() => false);
         },
