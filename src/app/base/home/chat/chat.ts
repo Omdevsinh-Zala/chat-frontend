@@ -46,49 +46,45 @@ export class Chat implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.router.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params: any) => {
-      // 1. Clean up previous listeners if any
       const previousChatId = this.chatId();
       if (previousChatId) {
         this.socketService.socket.off(`chatMessagesReceive-${previousChatId}`);
         this.socketService.socket.off('chatMessages');
       }
 
-      // 2. Set new chat ID
       this.chatId.set(params['id']);
       this.currentChatMessages.set([]);
 
-      // 3. Emit chat change event
       this.socketService.socket.emit('chatChange', { receiverId: this.chatId() });
 
-      // 4. Listen for initial chat history
       this.socketService.socket.on('chatMessages', (data: { chat: ChatMessage[] }) => {
-        console.log(data.chat)
         this.currentChatMessages.set(data.chat.reverse());
       });
 
-      // 5. Listen for new messages
       this.socketService.socket.on('receiveChatMessage', (data: { chat: ChatMessage }) => {
-        // Case 1: Message I sent (echo back)
-        if (
-          data.chat.receiver_id === this.chatId() &&
-          data.chat.sender_id === this.userData.user()?.id
-        ) {
-          this.currentChatMessages.update((chat) => {
+        // Only process messages that belong to this chat:
+        // 1. Messages I sent to this person (sender: me, receiver: chatId)
+        // 2. Messages this person sent to me (sender: chatId, receiver: me)
+        const isMyMessage = data.chat.sender_id === this.userData.user()?.id && data.chat.receiver_id === this.chatId();
+        const isTheirMessage = data.chat.sender_id === this.chatId() && data.chat.receiver_id === this.userData.user()?.id;
+        
+        if (!isMyMessage && !isTheirMessage) return;
+        
+        this.currentChatMessages.update((chat) => {
+          const index = chat.findIndex((e) => e.id === data.chat.id);
+          if (index === -1) {
+            // New message - add it to the top
             const newData = [data.chat, ...chat];
             return structuredClone(newData);
-          });
-        }
-        // Case 2: Message received from the person I'm chatting with
-        else if (data.chat.sender_id === this.chatId()) {
-          this.currentChatMessages.update((chat) => {
-            const newData = [data.chat, ...chat];
-            return structuredClone(newData);
-          });
-        }
+          } else {
+            // Existing message - update it (e.g., status change)
+            chat[index] = data.chat;
+            return structuredClone(chat);
+          }
+        });
       });
     });
 
-    // Cleanup when component is destroyed
     this.destroyRef.onDestroy(() => {
       const currentId = this.chatId();
       if (currentId) {
@@ -114,15 +110,28 @@ export class Chat implements OnInit, AfterViewInit {
     this.observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const messageId = entry.target.getAttribute('data-id');
-            if (messageId) {
-              this.socketService.socket.emit('readMessage', {
-                messageId,
-                chatId: this.chatId(),
-              });
-              this.observer?.unobserve(entry.target);
-            }
+            if (entry.isIntersecting) { 
+              const messageId = entry.target.getAttribute('data-id');
+              if (messageId) {
+                // Find the message in our array to check who sent it
+                const message = this.currentChatMessages().find(m => m.id === messageId);
+                
+                // Only mark as read if:
+                // 1. Message was sent by the OTHER user (sender is chatId)
+                // 2. Message was received by ME (receiver is current user)
+                // 3. Message is not already marked as 'read'
+                if (message && 
+                    message.sender_id === this.chatId() && 
+                    message.receiver_id === this.userData.user()?.id &&
+                    message.status !== 'read') {
+                  this.socketService.socket.emit('readMessage', {
+                    messageId,
+                    receiverId: this.userData.user()?.id,
+                  });
+                }
+                // Always unobserve after processing to avoid duplicate handling
+                this.observer?.unobserve(entry.target);
+              }
           }
         });
       },

@@ -2,24 +2,42 @@
   <div class="h-[calc(100dvh-100px)]">
     <ul class="flex flex-col-reverse h-full items-end-safe gap-4 pb-8">
       @for (mes of currentChatMessages(); track $index) {
-      <li
-        #messageItem
-        class="px-6 py-4 bg-white rounded-xl"
-        [style.align-self]="mes.sender_id === userData.user()?.id ? 'end' : 'start'"
-        [attr.data-id]="mes.id"
-      >
-        <div class="text-xl relative">
-          <p>{{ mes.content }}</p>
-          <div class="absolute right-0 flex items-center gap-2">
-            @if(mes.sender_id === userData.user()?.id || mes.status === 'read') {
-              <mat-icon>done_all</mat-icon>
-            } @else {
-              <mat-icon>done</mat-icon>
-            }
-            <p class="text-xs text-gray-500">{{ mes.created_at | date: 'shortTime' }}</p>
-          </div>
-        </div>
-      </li>
+        @if(mes.sender_id === userData.user()?.id) {
+          <!-- My sent messages - show status icons -->
+          <li
+            #messageItem
+            class="px-6 py-4 bg-white rounded-xl"
+            [style.align-self]="'end'"
+            [attr.data-id]="mes.id"
+          >
+            <div class="text-xl relative pb-6">
+              <p>{{ mes.content }}</p>
+              <div class="absolute right-0 flex items-center gap-2 bottom-0">
+                @if(mes.status === 'read') {
+                  <mat-icon class="shrink-0 text-base!">done_all</mat-icon>
+                } @else {
+                  <mat-icon class="shrink-0 text-base!">done</mat-icon>
+                }
+                <p class="text-xs text-gray-500">{{ mes.created_at | date: 'shortTime' }}</p>
+              </div>
+            </div>
+          </li>
+        } @else {
+          <!-- Received messages - no status icons -->
+          <li
+            #messageItem
+            class="px-6 py-4 bg-white rounded-xl"
+            [style.align-self]="'start'"
+            [attr.data-id]="mes.id"
+          >
+            <div class="text-xl relative pb-6">
+              <p>{{ mes.content }}</p>
+              <div class="absolute right-0 flex items-center gap-2 bottom-0">
+                <p class="text-xs text-gray-500">{{ mes.created_at | date: 'shortTime' }}</p>
+              </div>
+            </div>
+          </li>
+        }
       }
     </ul>
   </div>

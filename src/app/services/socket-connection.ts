@@ -26,7 +26,6 @@ export class SocketConnection {
     });
 
     this.socket.on('recentlyMessagesUsers', ({ users }) => {
-      console.log(users)
       this.userService.recentlyMessagesUsers.set(users);
     });
 

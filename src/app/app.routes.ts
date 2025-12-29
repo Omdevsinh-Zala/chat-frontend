@@ -51,6 +51,10 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'contacts',
+        loadComponent: () => import('./base/contacts/contacts').then(m => m.Contacts),
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: "home"
