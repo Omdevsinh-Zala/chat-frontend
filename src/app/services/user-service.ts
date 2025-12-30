@@ -20,6 +20,7 @@ export class UserService {
 
   userChannels: WritableSignal<any> = signal([]);
   recentlyMessagesUsers: WritableSignal<RecentlyMessagedUsers[]> = signal([]);
+  personalChat: WritableSignal<RecentlyMessagedUsers | null> = signal(null)
 
   setUser(userData: any) {
     this.user.update(() => userData);

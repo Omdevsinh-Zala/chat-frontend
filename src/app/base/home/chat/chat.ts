@@ -23,10 +23,21 @@ import { FormsModule } from '@angular/forms';
 import { Chat as ChatMessage } from '../../../models/chat';
 import { UserService } from '../../../services/user-service';
 import { DatePipe } from '@angular/common';
+import { environment } from '../../../../environments/environment';
+import { MatDivider } from '@angular/material/divider';
+import { ReceiverUser } from '../../../models/user';
 
 @Component({
   selector: 'app-chat',
-  imports: [MatFormFieldModule, MatInputModule, MatButtonModule, MatIcon, FormsModule, DatePipe],
+  imports: [
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIcon,
+    FormsModule,
+    DatePipe,
+    MatDivider,
+  ],
   templateUrl: './chat.html',
   styleUrl: './chat.css',
 })
@@ -38,6 +49,10 @@ export class Chat implements OnInit, AfterViewInit {
   userData = inject(UserService);
   private injector = inject(Injector);
 
+  imagePath = environment.imageUrl;
+
+  receiverUser: WritableSignal<ReceiverUser | null> = signal(null);
+
   messageItems = viewChildren<ElementRef>('messageItem');
   private observer: IntersectionObserver | null = null;
 
@@ -48,28 +63,37 @@ export class Chat implements OnInit, AfterViewInit {
     this.router.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params: any) => {
       const previousChatId = this.chatId();
       if (previousChatId) {
-        this.socketService.socket.off(`chatMessagesReceive-${previousChatId}`);
+        this.socketService.socket.off('receiveChatMessage');
         this.socketService.socket.off('chatMessages');
       }
 
       this.chatId.set(params['id']);
       this.currentChatMessages.set([]);
+      this.receiverUser.set(null);
 
       this.socketService.socket.emit('chatChange', { receiverId: this.chatId() });
 
-      this.socketService.socket.on('chatMessages', (data: { chat: ChatMessage[] }) => {
-        this.currentChatMessages.set(data.chat.reverse());
-      });
+      this.socketService.socket.on(
+        'chatMessages',
+        (data: { chat: ChatMessage[]; receiverData: ReceiverUser }) => {
+          this.currentChatMessages.set(data.chat.reverse());
+          this.receiverUser.set(data.receiverData);
+        }
+      );
 
       this.socketService.socket.on('receiveChatMessage', (data: { chat: ChatMessage }) => {
         // Only process messages that belong to this chat:
         // 1. Messages I sent to this person (sender: me, receiver: chatId)
         // 2. Messages this person sent to me (sender: chatId, receiver: me)
-        const isMyMessage = data.chat.sender_id === this.userData.user()?.id && data.chat.receiver_id === this.chatId();
-        const isTheirMessage = data.chat.sender_id === this.chatId() && data.chat.receiver_id === this.userData.user()?.id;
-        
+        const isMyMessage =
+          data.chat.sender_id === this.userData.user()?.id &&
+          data.chat.receiver_id === this.chatId();
+        const isTheirMessage =
+          data.chat.sender_id === this.chatId() &&
+          data.chat.receiver_id === this.userData.user()?.id;
+
         if (!isMyMessage && !isTheirMessage) return;
-        
+
         this.currentChatMessages.update((chat) => {
           const index = chat.findIndex((e) => e.id === data.chat.id);
           if (index === -1) {
@@ -98,40 +122,45 @@ export class Chat implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    effect(() => {
-      const items = this.messageItems();
-      items.forEach((item) => {
-        this.observer?.observe(item.nativeElement);
-      });
-    }, { injector: this.injector });
+    effect(
+      () => {
+        const items = this.messageItems();
+        items.forEach((item) => {
+          this.observer?.observe(item.nativeElement);
+        });
+      },
+      { injector: this.injector }
+    );
   }
 
   private setupObserver() {
     this.observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-            if (entry.isIntersecting) { 
-              const messageId = entry.target.getAttribute('data-id');
-              if (messageId) {
-                // Find the message in our array to check who sent it
-                const message = this.currentChatMessages().find(m => m.id === messageId);
-                
-                // Only mark as read if:
-                // 1. Message was sent by the OTHER user (sender is chatId)
-                // 2. Message was received by ME (receiver is current user)
-                // 3. Message is not already marked as 'read'
-                if (message && 
-                    message.sender_id === this.chatId() && 
-                    message.receiver_id === this.userData.user()?.id &&
-                    message.status !== 'read') {
-                  this.socketService.socket.emit('readMessage', {
-                    messageId,
-                    receiverId: this.userData.user()?.id,
-                  });
-                }
-                // Always unobserve after processing to avoid duplicate handling
-                this.observer?.unobserve(entry.target);
+          if (entry.isIntersecting) {
+            const messageId = entry.target.getAttribute('data-id');
+            if (messageId) {
+              // Find the message in our array to check who sent it
+              const message = this.currentChatMessages().find((m) => m.id === messageId);
+
+              // Only mark as read if:
+              // 1. Message was sent by the OTHER user (sender is chatId)
+              // 2. Message was received by ME (receiver is current user)
+              // 3. Message is not already marked as 'read'
+              if (
+                message &&
+                message.sender_id === this.chatId() &&
+                message.receiver_id === this.userData.user()?.id &&
+                message.status !== 'read'
+              ) {
+                this.socketService.socket.emit('readMessage', {
+                  messageId,
+                  receiverId: this.userData.user()?.id,
+                });
               }
+              // Always unobserve after processing to avoid duplicate handling
+              this.observer?.unobserve(entry.target);
+            }
           }
         });
       },

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, computed, inject, signal, WritableSignal } from '@angular/core';
+import { Component, computed, inject, WritableSignal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -23,17 +23,15 @@ import { RecentlyMessagedUsers } from '../../models/recently-messaged-users';
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home implements AfterViewInit {
+export class Home {
   private userService = inject(UserService);
   user = computed(() => {
     return this.userService.user();
   });
   imagePath = environment.imageUrl;
-  userChannels: WritableSignal<any[]> = signal([]);
-  recentlyMessagesUsers: WritableSignal<RecentlyMessagedUsers[]> = signal([]);
-
-  ngAfterViewInit(): void {
-    this.userChannels.update(() => this.userService.userChannels());
-    this.recentlyMessagesUsers.update(() => this.userService.recentlyMessagesUsers());
-  }
+  userChannels: WritableSignal<any[]> = this.userService.userChannels;
+  recentlyMessagesUsers: WritableSignal<RecentlyMessagedUsers[]> =
+    this.userService.recentlyMessagesUsers;
+  personalChat: WritableSignal<RecentlyMessagedUsers | null> = this.userService.personalChat;
+  combinedChats = computed(() => [...this.recentlyMessagesUsers(), this.personalChat()!]);
 }

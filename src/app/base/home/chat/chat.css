@@ -1,3 +1,16 @@
+.custom-scroll-bar {
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 5px;
+    }
+}
+
 .custom-input {
     --mat-form-field-outlined-container-shape: 50px;
     --mat-form-field-container-vertical-padding: 8px;

@@ -1,43 +1,53 @@
-<div class="h-dvh w-full relative p-8 bg-black/5 overflow-y-auto">
+<div class="h-dvh w-full relative py-8 pl-8 pr-4 bg-black/5">
   <div class="h-[calc(100dvh-100px)]">
-    <ul class="flex flex-col-reverse h-full items-end-safe gap-4 pb-8">
+    <ul class="flex flex-col-reverse h-full items-end-safe gap-4 pb-8 pr-4 overflow-y-auto custom-scroll-bar">
       @for (mes of currentChatMessages(); track $index) {
         @if(mes.sender_id === userData.user()?.id) {
           <!-- My sent messages - show status icons -->
           <li
             #messageItem
-            class="px-6 py-4 bg-white rounded-xl"
+            class=""
             [style.align-self]="'end'"
             [attr.data-id]="mes.id"
           >
-            <div class="text-xl relative pb-6">
-              <p>{{ mes.content }}</p>
-              <div class="absolute right-0 flex items-center gap-2 bottom-0">
+          <div class="flex items-center gap-4 flex-row-reverse">
+            <div class="w-12 h-12">
+              <img [src]="imagePath + userData.user()?.avatar_url" alt="User avatar">
+            </div>
+            <div class="flex flex-col-reverse" >
+              <div class="flex items-center justify-end-safe" >
                 @if(mes.status === 'read') {
-                  <mat-icon class="shrink-0 text-base!">done_all</mat-icon>
+                  <mat-icon class="shrink-0 text-xs! flex! items-center! justify-center!">done_all</mat-icon>
                 } @else {
-                  <mat-icon class="shrink-0 text-base!">done</mat-icon>
+                  <mat-icon class="shrink-0 text-xs! flex! items-center! justify-center!">done</mat-icon>
                 }
                 <p class="text-xs text-gray-500">{{ mes.created_at | date: 'shortTime' }}</p>
               </div>
+              <p class="text-lg text-end " >{{ mes.content }}</p>
             </div>
+          </div>
           </li>
         } @else {
           <!-- Received messages - no status icons -->
           <li
             #messageItem
-            class="px-6 py-4 bg-white rounded-xl"
             [style.align-self]="'start'"
             [attr.data-id]="mes.id"
           >
-            <div class="text-xl relative pb-6">
-              <p>{{ mes.content }}</p>
-              <div class="absolute right-0 flex items-center gap-2 bottom-0">
+            <div class="flex items-center gap-4 flex-row">
+            <div class="w-12 h-12">
+              <img [src]="imagePath + receiverUser()?.avatar_url" alt="User avatar">
+            </div>
+            <div class="flex flex-col-reverse" >
+              <div class="flex items-center justify-start-safe" >
                 <p class="text-xs text-gray-500">{{ mes.created_at | date: 'shortTime' }}</p>
               </div>
+              <p class="text-lg text-start " >{{ mes.content }}</p>
             </div>
+          </div>
           </li>
         }
+          <mat-divider class="w-full"></mat-divider>
       }
     </ul>
   </div>

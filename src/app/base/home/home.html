@@ -1,6 +1,6 @@
 @if (user()) {
 <mat-drawer-container class="w-auto h-dvh">
-  <mat-drawer mode="side" opened class="!w-auto">
+  <mat-drawer mode="side" opened class="w-auto!">
     <div class="flex items-start flex-col h-full">
       <mat-nav-list>
         <h2 matSubheader>Channels</h2>
@@ -18,7 +18,7 @@
       <mat-divider></mat-divider>
       <mat-nav-list>
         <h2 matSubheader>Direct messages</h2>
-        @for (chat of recentlyMessagesUsers(); track $index) {
+        @for (chat of combinedChats(); track $index) {
             <div class="relative">
               @if(chat.unreadCount > 0) {
                 <div class="absolute top-0 right-0 w-5 h-5 bg-red-700 rounded-full z-10 text-xs flex justify-center items-center text-white">{{ chat.unreadCount }}</div>

@@ -30,7 +30,7 @@ export class SocketConnection {
     });
 
     this.socket.on('personalChat', ({ chat }) => {
-      this.userService.recentlyMessagesUsers.update((users) => structuredClone([...users, chat]));
+      this.userService.personalChat.set(chat);
     });
 
     this.socket.on('disconnect', (reason) => {
