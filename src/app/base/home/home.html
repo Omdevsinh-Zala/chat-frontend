@@ -1,15 +1,15 @@
 @if (user()) {
-<mat-drawer-container class="w-auto h-dvh">
-  <mat-drawer mode="side" opened class="w-auto!">
-    <div class="flex items-start flex-col h-full">
+<mat-drawer-container class="w-auto h-dvh bg-(--mat-sys-inverse-surface)!">
+  <mat-drawer mode="side" opened class="w-auto! bg-(--mat-sys-inverse-surface)! text-(--mat-sys-inverse-on-surface)!">
+    <div class="flex items-start flex-col h-full channel-wrap">
       <mat-nav-list>
         <h2 matSubheader>Channels</h2>
-        <button mat-list-item>
-          <mat-icon matListItemIcon>add</mat-icon>
-          <span matListItemTitle>Add Channel</span>
+        <button mat-list-item class="user-links">
+          <mat-icon  matListItemIcon>add</mat-icon>
+          <span  matListItemTitle>Add Channel</span>
         </button>
         @for (channel of userChannels(); track $index) {
-        <button mat-list-item>
+        <button mat-list-item class="user-links">
           <mat-icon matListItemIcon>{{ channel.type === 'private' ? 'lock' : 'groups' }}</mat-icon>
           <span matListItemTitle>{{ channel.name }}</span>
         </button>
@@ -22,12 +22,12 @@
         <div class="relative">
           @if(chat.unreadCount > 0) {
           <div
-            class="absolute top-0 right-0 w-5 h-5 bg-red-700 rounded-full z-10 text-xs flex justify-center items-center text-white"
+            class="absolute top-0 right-0 w-5 h-5 bg-(--mat-sys-error) text-(--mat-sys-on-error) rounded-full z-10 text-xs flex justify-center items-center"
           >
             {{ chat.unreadCount }}
           </div>
           }
-          <a class="relative" mat-list-item [routerLink]="chat.id" routerLinkActive="chat-active">
+          <a class="relative user-links" mat-list-item [routerLink]="chat.id" routerLinkActive="chat-active">
             <span
               class="absolute w-2 h-2 rounded-full z-10 bottom-2.5 left-8"
               [class.active]="chat?.is_active"

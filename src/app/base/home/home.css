@@ -1,5 +1,30 @@
 .chat-active {
-    background-color: #e8e8e8;
+    background-color: var(--mat-sys-secondary);
+}
+
+.channel-wrap {
+    color: var(--mat-sys-inverse-on-surface);
+    span {
+        color: var(--mat-sys-inverse-on-surface);
+    }
+    mat-icon {
+        color: var(--mat-sys-inverse-on-surface);
+    }
+}
+
+.user-links {
+    span {
+        color: var(--mat-sys-inverse-on-surface);
+    }
+    &:hover {
+        background-color: var(--mat-sys-surface-container-highest);
+        span {
+            color: var(--mat-sys-on-surface-variant);
+        }
+        mat-icon {
+            color: var(--mat-sys-on-surface-variant);
+        }
+    }
 }
 
 .active {

@@ -1,9 +1,9 @@
-<div class="h-dvh w-full relative py-8 pl-8 pr-4 bg-black/5">
+<div class="h-dvh w-full relative pt-8 pl-8 pr-4 bg-(--mat-sys-surface-container-highest) flex flex-col">
   @if (unreadCount() > 2) {
   <div class="absolute top-8 left-1/2 -translate-x-1/2 z-10">
     <button
       mat-raised-button
-      class="flex! items-center! gap-2! bg-emerald-700! text-white! rounded-full! px-6! py-6!"
+      class="flex! items-center! gap-2! bg-((--mat-sys-primary)) text-(--mat-sys-on-primary) rounded-full! px-6! py-6!"
       (click)="scrollToFirstUnread()"
     >
       <mat-icon>arrow_upward</mat-icon>
@@ -11,9 +11,9 @@
     </button>
   </div>
   }
-  <div class="h-[calc(100dvh-100px)]">
+  <div class="flex-1 overflow-hidden h-auto pb-4">
     <ul
-      class="flex flex-col-reverse h-full items-end-safe gap-4 pb-8 pr-4 overflow-y-auto custom-scroll-bar"
+      class="flex flex-col-reverse h-full items-end-safe gap-4 pr-4 overflow-y-auto custom-scroll-bar"
     >
       @for (mes of currentChatMessages(); track $index) { 
         @if(mes.sender_id === userData.user()?.id) {
@@ -26,7 +26,7 @@
             <div class="flex flex-col-reverse">
               <div class="flex items-center justify-end-safe">
                 @if(mes.status === 'read') {
-                <mat-icon class="shrink-0 text-xs! flex! items-center! justify-center! text-blue-600!"
+                <mat-icon class="shrink-0 text-xs! flex! items-center! justify-center! text-(--mat-sys-primary)!"
                   >done_all</mat-icon
                 >
                 } @else {
@@ -34,7 +34,7 @@
                   >done</mat-icon
                 >
                 }
-                <p class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</p>
+                <span class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</span>
               </div>
               <p class="text-lg text-end" [innerHTML]="mes.content | modify"></p>
             </div>
@@ -75,18 +75,19 @@
       }
     </ul>
   </div>
-  <div class="absolute bottom-0 left-8 right-8 flex items-center">
-    <mat-form-field class="w-full custom-input" appearance="outline">
-      <input matInput [(ngModel)]="message" (keydown.enter)="sendMessage()" />
-      <button
-        matSuffix
-        matIconButton
-        color="primary"
-        (click)="clickEvent($event)"
-        [attr.aria-label]="'Send message'"
-      >
-        <mat-icon>send</mat-icon>
-      </button>
-    </mat-form-field>
+  <div class="w-full flex-none py-4 flex gap-2 items-baseline">
+    <div class="w-full">
+      <mat-form-field class="w-full custom-input" appearance="outline">
+        <textarea #messageInput matInput [(ngModel)]="message" (keydown.enter)="sendMessage()" (input)="adjustTextareaHeight(messageInput)" rows="1"></textarea>
+      </mat-form-field>
+    </div>
+    <button
+      matMiniFab
+      class="mb-1.5"
+      (click)="sendMessage()"
+      [attr.aria-label]="'Send message'"
+    >
+      <mat-icon>send</mat-icon>
+    </button>
   </div>
 </div>

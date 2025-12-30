@@ -10,6 +10,7 @@ import {
   OnInit,
   signal,
   viewChildren,
+  viewChild,
   WritableSignal,
   computed,
   ChangeDetectionStrategy,
@@ -208,6 +209,13 @@ export class Chat implements OnInit, AfterViewInit {
     );
   }
 
+  messageInput = viewChild<ElementRef<HTMLTextAreaElement>>('messageInput');
+
+  adjustTextareaHeight(textarea: HTMLTextAreaElement) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+
   clickEvent(event: MouseEvent) {
     this.sendMessage();
     event.stopPropagation();
@@ -220,6 +228,12 @@ export class Chat implements OnInit, AfterViewInit {
       receiverId: this.chatId(),
     });
     this.message.set('');
+    
+    // Reset textarea height
+    const textarea = this.messageInput()?.nativeElement;
+    if (textarea) {
+      textarea.style.height = 'auto';
+    }
   }
 
   scrollToFirstUnread() {
