@@ -1,0 +1,10 @@
+.chat-active {
+    background-color: #e8e8e8;
+}
+
+.active {
+    background-color: green;
+}
+.away {
+    background-color: red;
+}

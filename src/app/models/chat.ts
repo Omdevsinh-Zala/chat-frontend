@@ -7,12 +7,12 @@ export interface Chat {
   deleted_at: string | null;
   edited_at: null;
   id: string;
-  message_type: 'text' | 'image' | 'video' | 'file';
+  message_type: 'text' | 'image' | 'video' | 'file' | 'audio' | 'system';
   reactions: null;
   receiver_id: string;
   reply_to: string | null;
   sender_id: string;
-  status: 'sent' | 'failed' | 'delivered' | 'read';
+  status: 'sending' | 'sent' | 'failed' | 'delivered' | 'read';
   updatedAt: string;
   version: number;
 }

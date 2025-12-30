@@ -1,18 +1,20 @@
-import { AfterViewInit, Component, DestroyRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, inject, OnInit, signal, viewChild, WritableSignal } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { debounce, form, required, validateHttp } from '@angular/forms/signals';
+import { debounce, form, required, validateHttp, Field } from '@angular/forms/signals';
 import { MatRippleModule } from '@angular/material/core';
 import { RouterLink } from '@angular/router';
 import { UserService } from '../../services/user-service';
 import { PaginatedResponse, SearchUserResponse } from '../../models/search';
 import { GlobalResponse } from '../../models/auth';
 import { environment } from '../../../environments/environment';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
 
 @Component({
   selector: 'app-contacts',
-  imports: [MatTableModule, MatPaginatorModule, MatRippleModule, RouterLink],
+  imports: [MatTableModule, MatPaginatorModule, MatRippleModule, RouterLink, MatFormFieldModule, MatInput, Field],
   templateUrl: './contacts.html',
   styleUrl: './contacts.css',
 })
@@ -28,9 +30,9 @@ export class Contacts implements OnInit, AfterViewInit {
 
   resultsLength = signal(0);
 
-  usersData = signal<SearchUserResponse[]>([]);
+  usersData: WritableSignal<SearchUserResponse[]> = signal<SearchUserResponse[]>([]);
 
-  searchModel = signal({
+  searchModel = signal<{search: string}>({
     search: '',
   })
 
@@ -53,8 +55,10 @@ export class Contacts implements OnInit, AfterViewInit {
       },
       onSuccess: (res: GlobalResponse<PaginatedResponse<SearchUserResponse>>) => {
         if (res.success) {
-          this.usersData.set(res.data?.data || []);
-          this.resultsLength.set(res.data?.total || 0);
+          setTimeout(() => {
+            this.usersData.set(res.data?.data || []);
+            this.resultsLength.set(res.data?.total || 0);
+          }, 100);
         }
         return null;
       },

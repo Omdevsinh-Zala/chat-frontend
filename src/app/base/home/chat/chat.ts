@@ -11,6 +11,7 @@ import {
   signal,
   viewChildren,
   WritableSignal,
+  computed,
 } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -26,6 +27,7 @@ import { DatePipe } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { MatDivider } from '@angular/material/divider';
 import { ReceiverUser } from '../../../models/user';
+import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
 
 @Component({
   selector: 'app-chat',
@@ -37,6 +39,7 @@ import { ReceiverUser } from '../../../models/user';
     FormsModule,
     DatePipe,
     MatDivider,
+    ModifyPipe,
   ],
   templateUrl: './chat.html',
   styleUrl: './chat.css',
@@ -51,12 +54,24 @@ export class Chat implements OnInit, AfterViewInit {
 
   imagePath = environment.imageUrl;
 
+  messageItems = viewChildren<ElementRef>('messageItem');
+  messageItem = viewChildren<ElementRef>('messageItem');
+
   receiverUser: WritableSignal<ReceiverUser | null> = signal(null);
 
-  messageItems = viewChildren<ElementRef>('messageItem');
   private observer: IntersectionObserver | null = null;
 
   currentChatMessages: WritableSignal<ChatMessage[]> = signal<ChatMessage[]>([]);
+
+  unreadCount = computed(() => {
+    return this.currentChatMessages().filter(
+      (m) =>
+        m.status !== 'read' &&
+        m.sender_id === this.chatId() &&
+        m.receiver_id === this.userData.user()?.id
+    ).length;
+  });
+
   message = model('');
 
   ngOnInit(): void {
@@ -166,7 +181,7 @@ export class Chat implements OnInit, AfterViewInit {
       },
       {
         root: null, // viewport
-        threshold: 0.5, // 50% visibility
+        threshold: 1, // 100% visibility
       }
     );
   }
@@ -183,5 +198,25 @@ export class Chat implements OnInit, AfterViewInit {
       receiverId: this.chatId(),
     });
     this.message.set('');
+  }
+
+  scrollToFirstUnread() {
+    const unreadMsgs = this.currentChatMessages().filter(
+      (m) =>
+        m.status !== 'read' &&
+        m.sender_id === this.chatId() &&
+        m.receiver_id === this.userData.user()?.id
+    );
+
+    if (unreadMsgs.length === 0) return;
+
+    // Use the oldest unread message (last in the array if sorted newest-first)
+    const targetId = unreadMsgs[unreadMsgs.length - 1].id;
+
+    const element = this.messageItems().find(
+      (item) => item.nativeElement.getAttribute('data-id') === targetId
+    );
+
+    element?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }

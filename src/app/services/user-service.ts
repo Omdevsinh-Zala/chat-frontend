@@ -20,7 +20,7 @@ export class UserService {
 
   userChannels: WritableSignal<any> = signal([]);
   recentlyMessagesUsers: WritableSignal<RecentlyMessagedUsers[]> = signal([]);
-  personalChat: WritableSignal<RecentlyMessagedUsers | null> = signal(null)
+  personalChat: WritableSignal<RecentlyMessagedUsers | null> = signal(null);
 
   setUser(userData: any) {
     this.user.update(() => userData);
@@ -44,10 +44,10 @@ export class UserService {
     if (query) params.append('search', query);
     if (limit !== undefined) params.append('limit', limit.toString());
     if (page !== undefined) params.append('page', page.toString());
-    
+
     const queryString = params.toString();
     const url = queryString ? `${this.apiUrl}/users?${queryString}` : `${this.apiUrl}/users`;
-    
+
     return this.http.get<GlobalResponse<PaginatedResponse<SearchUserResponse>>>(url);
   }
 }

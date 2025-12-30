@@ -1,59 +1,79 @@
 <div class="h-dvh w-full relative py-8 pl-8 pr-4 bg-black/5">
+  @if (unreadCount() > 0) {
+  <div class="absolute top-8 left-1/2 -translate-x-1/2 z-10">
+    <button
+      mat-raised-button
+      class="flex! items-center! gap-2! bg-emerald-700! text-white! rounded-full! px-6! py-6!"
+      (click)="scrollToFirstUnread()"
+    >
+      <mat-icon>arrow_upward</mat-icon>
+      <span class="text-md">{{ unreadCount() }} Unread messages</span>
+    </button>
+  </div>
+  }
   <div class="h-[calc(100dvh-100px)]">
-    <ul class="flex flex-col-reverse h-full items-end-safe gap-4 pb-8 pr-4 overflow-y-auto custom-scroll-bar">
-      @for (mes of currentChatMessages(); track $index) {
-        @if(mes.sender_id === userData.user()?.id) {
-          <!-- My sent messages - show status icons -->
-          <li
-            #messageItem
-            class=""
-            [style.align-self]="'end'"
-            [attr.data-id]="mes.id"
-          >
-          <div class="flex items-center gap-4 flex-row-reverse">
-            <div class="w-12 h-12">
-              <img [src]="imagePath + userData.user()?.avatar_url" alt="User avatar">
-            </div>
-            <div class="flex flex-col-reverse" >
-              <div class="flex items-center justify-end-safe" >
-                @if(mes.status === 'read') {
-                  <mat-icon class="shrink-0 text-xs! flex! items-center! justify-center!">done_all</mat-icon>
-                } @else {
-                  <mat-icon class="shrink-0 text-xs! flex! items-center! justify-center!">done</mat-icon>
-                }
-                <p class="text-xs text-gray-500">{{ mes.created_at | date: 'shortTime' }}</p>
-              </div>
-              <p class="text-lg text-end " >{{ mes.content }}</p>
-            </div>
+    <ul
+      class="flex flex-col-reverse h-full items-end-safe gap-4 pb-8 pr-4 overflow-y-auto custom-scroll-bar"
+    >
+      @for (mes of currentChatMessages(); track $index) { @if(mes.sender_id === userData.user()?.id)
+      {
+      <!-- My sent messages - show status icons -->
+      <li #messageItem class="" [style.align-self]="'end'" [attr.data-id]="mes.id">
+        <div class="flex items-center gap-4 flex-row-reverse">
+          <div class="w-12 h-12">
+            <img [src]="imagePath + userData.user()?.avatar_url" alt="User avatar" />
           </div>
-          </li>
-        } @else {
-          <!-- Received messages - no status icons -->
-          <li
-            #messageItem
-            [style.align-self]="'start'"
-            [attr.data-id]="mes.id"
-          >
-            <div class="flex items-center gap-4 flex-row">
-            <div class="w-12 h-12">
-              <img [src]="imagePath + receiverUser()?.avatar_url" alt="User avatar">
+          <div class="flex flex-col-reverse">
+            <div class="flex items-center justify-end-safe">
+              @if(mes.status === 'read') {
+              <mat-icon class="shrink-0 text-xs! flex! items-center! justify-center! text-blue-600!"
+                >done_all</mat-icon
+              >
+              } @else {
+              <mat-icon class="shrink-0 text-xs! flex! items-center! justify-center!"
+                >done</mat-icon
+              >
+              }
+              <p class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</p>
             </div>
-            <div class="flex flex-col-reverse" >
-              <div class="flex items-center justify-start-safe" >
-                <p class="text-xs text-gray-500">{{ mes.created_at | date: 'shortTime' }}</p>
-              </div>
-              <p class="text-lg text-start " >{{ mes.content }}</p>
-            </div>
+            <p class="text-lg text-end" [innerHTML]="mes.content | modify"></p>
           </div>
-          </li>
-        }
-          <mat-divider class="w-full"></mat-divider>
+        </div>
+      </li>
+      } @else {
+      <!-- Received messages - no status icons -->
+      <li
+        #messageItem
+        [style.align-self]="'start'"
+        [attr.data-id]="mes.id"
+        [attr.data-status]="mes.status"
+      >
+        <div class="flex items-center gap-4 flex-row">
+          <div class="w-12 h-12">
+            <img [src]="imagePath + receiverUser()?.avatar_url" alt="User avatar" />
+          </div>
+          <div class="flex flex-col-reverse">
+            <div class="flex items-center justify-start-safe">
+              <p class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</p>
+            </div>
+            <p class="text-lg text-start" [innerHTML]="mes.content | modify"></p>
+          </div>
+        </div>
+      </li>
+      }
+      <mat-divider class="w-full"></mat-divider>
+      } @empty {
+      <li class="flex items-center justify-center h-full w-full">
+        <div>
+          <p class="text-xl">Start a conversation now</p>
+        </div>
+      </li>
       }
     </ul>
   </div>
   <div class="absolute bottom-0 left-8 right-8 flex items-center">
     <mat-form-field class="w-full custom-input" appearance="outline">
-      <input matInput [(ngModel)]="message" />
+      <input matInput [(ngModel)]="message" (keydown.enter)="sendMessage()" />
       <button
         matSuffix
         matIconButton
