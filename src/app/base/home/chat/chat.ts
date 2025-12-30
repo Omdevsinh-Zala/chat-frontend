@@ -12,6 +12,7 @@ import {
   viewChildren,
   WritableSignal,
   computed,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -28,6 +29,7 @@ import { environment } from '../../../../environments/environment';
 import { MatDivider } from '@angular/material/divider';
 import { ReceiverUser } from '../../../models/user';
 import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-chat',
@@ -40,9 +42,11 @@ import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
     DatePipe,
     MatDivider,
     ModifyPipe,
+    MatProgressSpinner,
   ],
   templateUrl: './chat.html',
   styleUrl: './chat.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Chat implements OnInit, AfterViewInit {
   private socketService = inject(SocketConnection);
@@ -55,14 +59,10 @@ export class Chat implements OnInit, AfterViewInit {
   imagePath = environment.imageUrl;
 
   messageItems = viewChildren<ElementRef>('messageItem');
-  messageItem = viewChildren<ElementRef>('messageItem');
-
-  receiverUser: WritableSignal<ReceiverUser | null> = signal(null);
 
   private observer: IntersectionObserver | null = null;
-
+  receiverUser: WritableSignal<ReceiverUser | null> = signal(null);
   currentChatMessages: WritableSignal<ChatMessage[]> = signal<ChatMessage[]>([]);
-
   unreadCount = computed(() => {
     return this.currentChatMessages().filter(
       (m) =>
@@ -71,6 +71,7 @@ export class Chat implements OnInit, AfterViewInit {
         m.receiver_id === this.userData.user()?.id
     ).length;
   });
+  canAppendMessages = signal(true);
 
   message = model('');
 
@@ -91,10 +92,18 @@ export class Chat implements OnInit, AfterViewInit {
       this.socketService.socket.on(
         'chatMessages',
         (data: { chat: ChatMessage[]; receiverData: ReceiverUser }) => {
-          this.currentChatMessages.set(data.chat.reverse());
+          this.currentChatMessages.set(data.chat);
           this.receiverUser.set(data.receiverData);
         }
       );
+
+      this.socketService.socket.on('appendedMessages', (data: { chat: ChatMessage[] }) => {
+        this.currentChatMessages.update((chat) => {
+          const newData = [...chat, ...data.chat];
+          return structuredClone(newData);
+        });
+        this.canAppendMessages.set(true);
+      });
 
       this.socketService.socket.on('receiveChatMessage', (data: { chat: ChatMessage }) => {
         // Only process messages that belong to this chat:
@@ -153,6 +162,19 @@ export class Chat implements OnInit, AfterViewInit {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            if (
+              entry.target.getAttribute('data-id') ===
+                this.currentChatMessages()[this.currentChatMessages().length - 1].id &&
+              this.canAppendMessages()
+            ) {
+              this.canAppendMessages.set(false);
+              setTimeout(() => {
+                this.socketService.socket.emit('appendMessages', {
+                  receiverId: this.chatId(),
+                  offset: this.currentChatMessages().length,
+                });
+              }, 300);
+            }
             const messageId = entry.target.getAttribute('data-id');
             if (messageId) {
               // Find the message in our array to check who sent it
