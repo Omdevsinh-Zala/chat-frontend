@@ -1,10 +1,35 @@
 .chat-active {
-    background-color: #e8e8e8;
+  background-color: var(--mat-sys-primary);
+  span {
+    color: var(--mat-sys-on-primary) !important;
+  }
+}
+
+.channel-wrap {
+  color: var(--mat-sys-on-primary-container);
+  span {
+    color: var(--mat-sys-primary);
+  }
+  mat-icon {
+    color: var(--mat-sys-on-primary-container);
+  }
+}
+
+.user-links {
+  &:hover {
+    background-color: var(--mat-sys-primary-container);
+    span {
+      color: var(--mat-sys-primary) !important;
+    }
+    mat-icon {
+      color: var(--mat-sys-primary) !important;
+    }
+  }
 }
 
 .active {
-    background-color: green;
+  background-color: green;
 }
 .away {
-    background-color: red;
+  background-color: red;
 }

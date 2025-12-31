@@ -1,0 +1,5 @@
+.base-main-link-wrap {
+    mat-icon {
+        color: var(--mat-sys-on-primary-container);
+    }
+}

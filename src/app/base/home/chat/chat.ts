@@ -10,6 +10,7 @@ import {
   OnInit,
   signal,
   viewChildren,
+  viewChild,
   WritableSignal,
   computed,
   ChangeDetectionStrategy,
@@ -66,7 +67,7 @@ export class Chat implements OnInit, AfterViewInit {
   unreadCount = computed(() => {
     return this.currentChatMessages().filter(
       (m) =>
-        m.status !== 'read' &&
+      m.status !== 'read' &&
         m.sender_id === this.chatId() &&
         m.receiver_id === this.userData.user()?.id
     ).length;
@@ -208,18 +209,34 @@ export class Chat implements OnInit, AfterViewInit {
     );
   }
 
+  messageInput = viewChild<ElementRef<HTMLTextAreaElement>>('messageInput');
+
+  adjustTextareaHeight(textarea: HTMLTextAreaElement) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+
   clickEvent(event: MouseEvent) {
-    this.sendMessage();
+    this.sendMessage(event);
     event.stopPropagation();
   }
 
-  sendMessage() {
+  sendMessage(event: any) {
+    if (event) {
+      event.preventDefault();
+    }
     if (!this.message()) return;
     this.socketService.socket.emit('chatMessagesSend', {
       message: this.message(),
       receiverId: this.chatId(),
     });
     this.message.set('');
+    
+    // Reset textarea height
+    const textarea = this.messageInput()?.nativeElement;
+    if (textarea) {
+      textarea.style.height = 'auto';
+    }
   }
 
   scrollToFirstUnread() {

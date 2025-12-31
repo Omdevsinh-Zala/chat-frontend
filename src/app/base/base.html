@@ -1,6 +1,6 @@
-<mat-drawer-container class="h-dvh w-auto bg-slate-200">
-  <mat-drawer mode="side" opened class="w-22! p-4" >
-    <div class="flex items-center flex-col h-full">
+<mat-drawer-container class="h-dvh w-auto">
+  <mat-drawer mode="side" opened class="w-22! p-4 bg-(--mat-sys-primary-container)! rounded-none!" >
+    <div class="flex items-center flex-col h-full base-main-link-wrap">
       <ul class="flex flex-col items-center" >
         <li class="mb-6">
           <a mat-icon-button matTooltip="Home" aria-label="Chats page link" [routerLink]="['/home', user()?.active_chat_id]" matTooltipPosition="right">
@@ -56,7 +56,7 @@
 </mat-drawer-container>
 
 <mat-menu #profile="matMenu">
-  <button mat-menu-item>
+  <!-- <button mat-menu-item>
     <mat-icon>lock</mat-icon>
     <span>Security</span>
   </button>
@@ -67,7 +67,7 @@
   <a mat-menu-item routerLink="/profile/me" aria-label="Profile page link" >
     <mat-icon>person</mat-icon>
     <span>Profile</span>
-  </a>
+  </a> -->
   <button mat-menu-item (click)="logout()" aria-label="Logout button" >
     <mat-icon>logout</mat-icon>
     <span>Logout</span>
