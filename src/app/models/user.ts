@@ -17,4 +17,5 @@ export interface ReceiverUser {
   last_name: string;
   full_name: string;
   avatar_url: string;
+  is_typing?: boolean;
 }

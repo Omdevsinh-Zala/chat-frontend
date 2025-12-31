@@ -4,6 +4,7 @@ export interface RecentlyMessagedUsers {
   id: string;
   isSelf: boolean;
   is_active: boolean;
+  is_typing: boolean;
   lastMessageAt: string;
   lastMessagePreview: string;
   last_name: string;

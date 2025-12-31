@@ -56,12 +56,21 @@ export class Chat implements OnInit, AfterViewInit {
   private chatId = signal('');
   userData = inject(UserService);
   private injector = inject(Injector);
+  isTyping = computed(() => {
+    return (
+      (this.receiverUser()?.is_typing ||
+        this.userData.recentlyMessagesUsers()?.find((user) => user.id === this.chatId())
+          ?.is_typing) &&
+      this.chatId() !== this.userData.user()?.id
+    );
+  });
 
   imagePath = environment.imageUrl;
 
   messageItems = viewChildren<ElementRef>('messageItem');
 
   private observer: IntersectionObserver | null = null;
+  private isTypingStatusSend = signal(false);
   private pendingReadMessageIds = new Set<string>();
   receiverUser: WritableSignal<ReceiverUser | null> = signal(null);
   currentChatMessages: WritableSignal<ChatMessage[]> = signal<ChatMessage[]>([]);
@@ -84,6 +93,8 @@ export class Chat implements OnInit, AfterViewInit {
         this.socketService.socket.off('receiveChatMessage');
         this.socketService.socket.off('chatMessages');
         this.socketService.socket.off('appendedMessages');
+        this.socketService.socket.off('typing');
+        this.socketService.socket.off('userTyping');
       }
 
       this.chatId.set(params['id']);
@@ -91,6 +102,17 @@ export class Chat implements OnInit, AfterViewInit {
       this.receiverUser.set(null);
 
       this.socketService.socket.emit('chatChange', { receiverId: this.chatId() });
+
+      this.socketService.socket.on('userTyping', (data: { isTyping: boolean }) => {
+        this.receiverUser.update((user) => {
+          if (user) {
+            const updatedUser = { ...user };
+            updatedUser.is_typing = data.isTyping!;
+            return updatedUser;
+          }
+          return user;
+        });
+      });
 
       this.socketService.socket.on(
         'chatMessages',
@@ -145,6 +167,8 @@ export class Chat implements OnInit, AfterViewInit {
         this.socketService.socket.off('receiveChatMessage');
         this.socketService.socket.off('chatMessages');
         this.socketService.socket.off('appendedMessages');
+        this.socketService.socket.off('typing');
+        this.socketService.socket.off('userTyping');
       }
       this.observer?.disconnect();
     });
@@ -229,6 +253,20 @@ export class Chat implements OnInit, AfterViewInit {
   messageInput = viewChild<ElementRef<HTMLTextAreaElement>>('messageInput');
 
   adjustTextareaHeight(textarea: HTMLTextAreaElement) {
+    if (textarea.value && !this.isTypingStatusSend()) {
+      this.socketService.socket.emit('typing', {
+        receiverId: this.chatId(),
+        isTyping: true,
+      });
+      this.isTypingStatusSend.set(true);
+    }
+    if (!textarea.value && this.isTypingStatusSend()) {
+      this.socketService.socket.emit('typing', {
+        receiverId: this.chatId(),
+        isTyping: false,
+      });
+      this.isTypingStatusSend.set(false);
+    }
     textarea.style.height = 'auto';
     textarea.style.height = textarea.scrollHeight + 'px';
   }
@@ -241,6 +279,10 @@ export class Chat implements OnInit, AfterViewInit {
     this.socketService.socket.emit('chatMessagesSend', {
       message: this.message(),
       receiverId: this.chatId(),
+    });
+    this.socketService.socket.emit('typing', {
+      receiverId: this.chatId(),
+      isTyping: false,
     });
     this.message.set('');
 
