@@ -15,7 +15,7 @@
     <ul
       class="flex flex-col-reverse h-full items-end-safe gap-6 pr-4 overflow-y-auto custom-scroll-bar"
     >
-    @if (isTyping()) {
+      @if (isTyping()) {
       <li [style.align-self]="'start'" animate.enter="enter-animation">
         <div class="flex items-center gap-4 flex-row">
           <div class="w-12 h-12">
@@ -32,55 +32,64 @@
           </div>
         </div>
       </li>
-    }
-      @for (mes of currentChatMessages(); track $index) { @if(mes.sender_id ===
-      userData.user()?.id) {
-      <!-- My sent messages - show status icons -->
-      <li #messageItem class="" [style.align-self]="'end'" [attr.data-id]="mes.id">
-        <div class="flex items-center gap-4 flex-row-reverse">
-          <div class="w-12 h-12">
-            <img [src]="imagePath + userData.user()?.avatar_url" alt="User avatar" />
-          </div>
-          <div class="flex flex-col-reverse">
-            <div class="flex items-center justify-end-safe">
-              @if(mes.status === 'read') {
-              <mat-icon
-                class="shrink-0 text-xs! flex! items-center! justify-center! text-(--mat-sys-primary)!"
-                >done_all</mat-icon
-              >
-              } @else {
-              <mat-icon class="shrink-0 text-xs! flex! items-center! justify-center!"
-                >done</mat-icon
-              >
-              }
-              <span class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</span>
+      } 
+      @for (group of currentChatMessages(); track group.monthYear) {
+        @for (mes of group.messages;track mes.id) {
+          @if(mes.sender_id === userData.user()?.id) {
+          <!-- My sent messages - show status icons -->
+          <li #messageItem class="" [style.align-self]="'end'" [attr.data-id]="mes.id">
+            <div class="flex items-center gap-4 flex-row-reverse">
+              <div class="w-12 h-12">
+                <img [src]="imagePath + userData.user()?.avatar_url" alt="User avatar" />
+              </div>
+              <div class="flex flex-col-reverse">
+                <div class="flex items-center justify-end-safe">
+                  @if(mes.status === 'read') {
+                  <mat-icon
+                    class="shrink-0 text-xs! flex! items-center! justify-center! text-(--mat-sys-primary)!"
+                    >done_all</mat-icon
+                  >
+                  } @else {
+                  <mat-icon class="shrink-0 text-xs! flex! items-center! justify-center!"
+                    >done</mat-icon
+                  >
+                  }
+                  <span class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</span>
+                </div>
+                <p class="text-lg text-end" [innerHTML]="mes.content | modify"></p>
+              </div>
             </div>
-            <p class="text-lg text-end" [innerHTML]="mes.content | modify"></p>
-          </div>
-        </div>
-      </li>
-      } @else {
-      <!-- Received messages - no status icons -->
-      <li
-        #messageItem
-        [style.align-self]="'start'"
-        [attr.data-id]="mes.id"
-        [attr.data-status]="mes.status"
-      >
-        <div class="flex items-center gap-4 flex-row">
-          <div class="w-12 h-12">
-            <img [src]="imagePath + receiverUser()?.avatar_url" alt="User avatar" />
-          </div>
-          <div class="flex flex-col-reverse">
-            <div class="flex items-center justify-start-safe">
-              <p class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</p>
+          </li>
+          } @else {
+          <!-- Received messages - no status icons -->
+          <li
+            #messageItem
+            [style.align-self]="'start'"
+            [attr.data-id]="mes.id"
+            [attr.data-status]="mes.status"
+          >
+            <div class="flex items-center gap-4 flex-row">
+              <div class="w-12 h-12">
+                <img [src]="imagePath + receiverUser()?.avatar_url" alt="User avatar" />
+              </div>
+              <div class="flex flex-col-reverse">
+                <div class="flex items-center justify-start-safe">
+                  <p class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</p>
+                </div>
+                <p class="text-lg text-start" [innerHTML]="mes.content | modify"></p>
+              </div>
             </div>
-            <p class="text-lg text-start" [innerHTML]="mes.content | modify"></p>
-          </div>
-        </div>
+          </li>
+          }
+        }
+      <li class="relative w-full flex justify-center my-4 mb-2">
+        <mat-divider class="w-full"></mat-divider>
+        <span
+          class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-(--mat-sys-surface) text-(--mat-sys-primary) rounded-(--mat-sys-corner-full) border border-(--mat-sys-outline) px-2 py-1"
+        >
+          {{ group.monthYear | date: 'EEEE, MMMM d' }}
+        </span>
       </li>
-      }
-      <!-- <mat-divider class="w-full"></mat-divider> -->
       } @empty {
       <li class="flex items-center justify-center h-full w-full">
         <div>

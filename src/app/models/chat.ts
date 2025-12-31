@@ -1,4 +1,9 @@
-export interface Chat {
+export interface GroupedChat {
+  monthYear: string;
+  messages: Message[];
+}
+
+export interface Message {
   attachments: string | null;
   channel_id: string | null;
   content: string;
