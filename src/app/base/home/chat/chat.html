@@ -1,5 +1,5 @@
 <div class="h-dvh w-full relative pt-8 pl-8 pr-4 bg-(--mat-sys-surface) flex flex-col">
-  @if (unreadCount() > 2) {
+  @if (unreadCount() > 2 && canAppendMessages()) {
   <div class="absolute top-8 left-1/2 -translate-x-1/2 z-10">
     <button
       mat-raised-button

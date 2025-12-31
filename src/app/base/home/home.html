@@ -23,8 +23,9 @@
           @if(chat.unreadCount > 0) {
           <div
             class="absolute top-0 right-0 w-5 h-5 bg-(--mat-sys-error) text-(--mat-sys-on-error) rounded-full z-10 text-xs flex justify-center items-center"
+            [class.text-[10px]]="chat.unreadCount > 10"
           >
-            {{ chat.unreadCount }}
+            {{ chat.unreadCount > 10 ? '10+' : chat.unreadCount }}
           </div>
           }
           <a class="relative user-links transition-all duration-200 ease-in-out" mat-list-item [routerLink]="chat.id" routerLinkActive="chat-active">

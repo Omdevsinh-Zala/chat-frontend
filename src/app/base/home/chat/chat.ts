@@ -62,15 +62,16 @@ export class Chat implements OnInit, AfterViewInit {
   messageItems = viewChildren<ElementRef>('messageItem');
 
   private observer: IntersectionObserver | null = null;
+  private pendingReadMessageIds = new Set<string>();
   receiverUser: WritableSignal<ReceiverUser | null> = signal(null);
   currentChatMessages: WritableSignal<ChatMessage[]> = signal<ChatMessage[]>([]);
-  unreadCount = computed(() => {
+  unreadCount = computed(() => this.unreadMessages().length);
+  unreadMessages = computed(() => {
+    const userId = this.userData.user()?.id;
+    const chatId = this.chatId();
     return this.currentChatMessages().filter(
-      (m) =>
-      m.status !== 'read' &&
-        m.sender_id === this.chatId() &&
-        m.receiver_id === this.userData.user()?.id
-    ).length;
+      (m) => m.status !== 'read' && m.sender_id === chatId && m.receiver_id === userId
+    );
   });
   canAppendMessages = signal(true);
 
@@ -82,6 +83,7 @@ export class Chat implements OnInit, AfterViewInit {
       if (previousChatId) {
         this.socketService.socket.off('receiveChatMessage');
         this.socketService.socket.off('chatMessages');
+        this.socketService.socket.off('appendedMessages');
       }
 
       this.chatId.set(params['id']);
@@ -99,10 +101,7 @@ export class Chat implements OnInit, AfterViewInit {
       );
 
       this.socketService.socket.on('appendedMessages', (data: { chat: ChatMessage[] }) => {
-        this.currentChatMessages.update((chat) => {
-          const newData = [...chat, ...data.chat];
-          return structuredClone(newData);
-        });
+        this.currentChatMessages.update((chat) => [...chat, ...data.chat]);
         this.canAppendMessages.set(true);
       });
 
@@ -123,12 +122,18 @@ export class Chat implements OnInit, AfterViewInit {
           const index = chat.findIndex((e) => e.id === data.chat.id);
           if (index === -1) {
             // New message - add it to the top
-            const newData = [data.chat, ...chat];
-            return structuredClone(newData);
+            return [data.chat, ...chat];
           } else {
             // Existing message - update it (e.g., status change)
-            chat[index] = data.chat;
-            return structuredClone(chat);
+            const updatedChat = [...chat];
+            updatedChat[index] = data.chat;
+
+            // Remove from pending if it was there
+            if (data.chat.status === 'read') {
+              this.pendingReadMessageIds.delete(data.chat.id);
+            }
+
+            return updatedChat;
           }
         });
       });
@@ -139,6 +144,7 @@ export class Chat implements OnInit, AfterViewInit {
       if (currentId) {
         this.socketService.socket.off('receiveChatMessage');
         this.socketService.socket.off('chatMessages');
+        this.socketService.socket.off('appendedMessages');
       }
       this.observer?.disconnect();
     });
@@ -150,6 +156,8 @@ export class Chat implements OnInit, AfterViewInit {
     effect(
       () => {
         const items = this.messageItems();
+        // Clear previous observations to avoid duplicate handling
+        this.observer?.disconnect();
         items.forEach((item) => {
           this.observer?.observe(item.nativeElement);
         });
@@ -163,19 +171,6 @@ export class Chat implements OnInit, AfterViewInit {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            if (
-              entry.target.getAttribute('data-id') ===
-                this.currentChatMessages()[this.currentChatMessages().length - 1].id &&
-              this.canAppendMessages()
-            ) {
-              this.canAppendMessages.set(false);
-              setTimeout(() => {
-                this.socketService.socket.emit('appendMessages', {
-                  receiverId: this.chatId(),
-                  offset: this.currentChatMessages().length,
-                });
-              }, 300);
-            }
             const messageId = entry.target.getAttribute('data-id');
             if (messageId) {
               // Find the message in our array to check who sent it
@@ -189,22 +184,44 @@ export class Chat implements OnInit, AfterViewInit {
                 message &&
                 message.sender_id === this.chatId() &&
                 message.receiver_id === this.userData.user()?.id &&
-                message.status !== 'read'
+                message.status !== 'read' &&
+                !this.pendingReadMessageIds.has(messageId)
               ) {
+                this.pendingReadMessageIds.add(messageId);
                 this.socketService.socket.emit('readMessage', {
                   messageId,
                   receiverId: this.userData.user()?.id,
                 });
               }
-              // Always unobserve after processing to avoid duplicate handling
-              this.observer?.unobserve(entry.target);
+              // Only unobserve if NOT the last message, to keep the append trigger active
+              const isLastMessage =
+                entry.target.getAttribute('data-id') ===
+                this.currentChatMessages()[this.currentChatMessages().length - 1]?.id;
+
+              if (!isLastMessage) {
+                this.observer?.unobserve(entry.target);
+              }
+            }
+            if (
+              entry.target.getAttribute('data-id') ===
+                this.currentChatMessages()[this.currentChatMessages().length - 1]?.id &&
+              this.canAppendMessages()
+            ) {
+              this.canAppendMessages.set(false);
+              setTimeout(() => {
+                this.socketService.socket.emit('appendMessages', {
+                  receiverId: this.chatId(),
+                  offset: this.currentChatMessages().length,
+                });
+              }, 300);
             }
           }
         });
       },
       {
         root: null, // viewport
-        threshold: 1, // 100% visibility
+        threshold: 0.1, // Relaxed threshold for tall messages
+        rootMargin: '0px 0px 50px 0px', // Trigger slightly before reaching the bottom
       }
     );
   }
@@ -214,11 +231,6 @@ export class Chat implements OnInit, AfterViewInit {
   adjustTextareaHeight(textarea: HTMLTextAreaElement) {
     textarea.style.height = 'auto';
     textarea.style.height = textarea.scrollHeight + 'px';
-  }
-
-  clickEvent(event: MouseEvent) {
-    this.sendMessage(event);
-    event.stopPropagation();
   }
 
   sendMessage(event: any) {
@@ -231,7 +243,7 @@ export class Chat implements OnInit, AfterViewInit {
       receiverId: this.chatId(),
     });
     this.message.set('');
-    
+
     // Reset textarea height
     const textarea = this.messageInput()?.nativeElement;
     if (textarea) {
@@ -240,17 +252,10 @@ export class Chat implements OnInit, AfterViewInit {
   }
 
   scrollToFirstUnread() {
-    const unreadMsgs = this.currentChatMessages().filter(
-      (m) =>
-        m.status !== 'read' &&
-        m.sender_id === this.chatId() &&
-        m.receiver_id === this.userData.user()?.id
-    );
-
-    if (unreadMsgs.length === 0) return;
+    if (this.unreadCount() === 0) return;
 
     // Use the oldest unread message (last in the array if sorted newest-first)
-    const targetId = unreadMsgs[unreadMsgs.length - 1].id;
+    const targetId = this.unreadMessages()[this.unreadMessages().length - 1].id;
 
     const element = this.messageItems().find(
       (item) => item.nativeElement.getAttribute('data-id') === targetId
