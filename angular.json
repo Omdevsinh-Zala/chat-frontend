@@ -23,7 +23,8 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "src/assets"
             ],
             "styles": ["src/custom-theme.scss", "src/styles.css"]
           },
@@ -44,9 +45,13 @@
               "outputHashing": "all"
             },
             "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true,
+              "optimization": true,
+              "extractLicenses": true,
+              "sourceMap": false,
+              "outputHashing": "all",
+              "security": {
+                "autoCsp": true
+              },
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

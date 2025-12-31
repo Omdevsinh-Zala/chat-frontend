@@ -30,7 +30,9 @@ export class SocketConnection {
     });
 
     this.socket.on('personalChat', ({ chat }) => {
-      this.userService.personalChat.set(chat);
+      if(chat) {
+        this.userService.personalChat.set(chat);
+      }
     });
 
     this.socket.on('disconnect', (reason) => {

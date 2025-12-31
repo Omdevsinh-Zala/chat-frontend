@@ -9,6 +9,8 @@ import { UserService } from '../../services/user-service';
 import { environment } from '../../../environments/environment';
 import { RecentlyMessagedUsers } from '../../models/recently-messaged-users';
 import { SocketConnection } from '../../services/socket-connection';
+import { NotificationService } from '../../services/notification-service';
+import { GroupedChat } from '../../models/chat';
 
 @Component({
   selector: 'app-home',
@@ -28,6 +30,7 @@ import { SocketConnection } from '../../services/socket-connection';
 export class Home implements OnInit {
   private userService = inject(UserService);
   private socketService = inject(SocketConnection);
+  private notificationService = inject(NotificationService);
   user = computed(() => {
     return this.userService.user();
   });
@@ -39,6 +42,32 @@ export class Home implements OnInit {
   combinedChats = computed(() => [...this.recentlyMessagesUsers(), this.personalChat()!]);
 
   ngOnInit(): void {
+    this.notificationService.requestPermission();
+
+    this.socketService.socket.on('receiveChatMessage', (data: { chat: GroupedChat }) => {
+      const message = data.chat.messages[0];
+      const isMyMessage = message.sender_id === this.user()?.id;
+
+      if (!isMyMessage && message.status !== 'read') {
+        // Play sound for all incoming messages
+        this.notificationService.playSound();
+
+        // Show notification only if tab is hidden OR user is not in the specific chat
+        // We can check if the current URL contains the sender's ID
+        const currentUrl = window.location.href;
+        if (document.visibilityState === 'hidden' || !currentUrl.includes(message.sender_id)) {
+          const sender = this.combinedChats().find((u) => u?.id === message.sender_id);
+          const senderName = sender ? `${sender.first_name} ${sender.last_name}` : 'New message';
+
+          this.notificationService.showNotification(
+            senderName,
+            message.content,
+            sender?.avatar_url
+          );
+        }
+      }
+    });
+
     this.socketService.socket.on('typing', (data: { senderId: string; isTyping: boolean }) => {
       this.recentlyMessagesUsers.update((users) => {
         const index = users.findIndex((user) => user.id === data.senderId);
