@@ -3,7 +3,7 @@
 @import 'tailwindcss';
 
 .label {
-  @apply transition-all duration-200 absolute left-3 text-base top-1/2 -translate-y-1/2 bg-white peer-focus:top-0 peer-focus:text-xs peer-focus:px-1 peer-focus:left-2 opacity-60 peer-focus:opacity-100 pointer-events-none;
+  @apply transition-all duration-200 absolute left-3 text-base top-1/2 -translate-y-1/2 bg-(--mat-sys-surface) peer-focus:top-0 peer-focus:text-xs peer-focus:px-1 peer-focus:left-2 opacity-60 peer-focus:opacity-100 pointer-events-none;
 }
 
 .float-label {
@@ -11,7 +11,7 @@
 }
 
 .form-error-msg {
-  @apply transition-all duration-200 text-xs absolute text-pink-600 left-2 -bottom-5 peer-focus:hidden;
+  @apply transition-all duration-200 text-xs absolute text-(--mat-sys-error) left-2 -bottom-5 peer-focus:hidden;
   animation: show ease-in 0.3s;
 }
 
