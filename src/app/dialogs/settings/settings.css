@@ -1,0 +1,11 @@
+.settings-panel-wrap {
+  color: var(--mat-sys-on-surface);
+}
+
+.theme-split-preview {
+  background: linear-gradient(
+    to bottom,
+    var(--mat-sys-primary) 50%,
+    var(--mat-sys-primary-container) 50%
+  );
+}

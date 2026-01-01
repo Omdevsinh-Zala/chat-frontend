@@ -1,14 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "tailwindcss";
-
+@import 'tailwindcss';
 
 .label {
   @apply transition-all duration-200 absolute left-3 text-base top-1/2 -translate-y-1/2 bg-white peer-focus:top-0 peer-focus:text-xs peer-focus:px-1 peer-focus:left-2 opacity-60 peer-focus:opacity-100 pointer-events-none;
 }
 
 .float-label {
-  @apply text-xs !top-0 !px-1 !left-2 !opacity-100 ;
+  @apply text-xs !top-0 !px-1 !left-2 !opacity-100;
 }
 
 .form-error-msg {
@@ -23,7 +22,6 @@
 .active {
   @apply border-white bg-green-500;
 }
-
 
 @keyframes show {
   from {
@@ -54,21 +52,7 @@ html:has(.class) {
 }
 
 .error-panel {
-  --mat-snack-bar-container-color: #ffffff;
-  --mat-snack-bar-supporting-text-size: 15px;
-  --mat-snack-bar-supporting-text-line-height: 1.1;
-  --mat-snack-bar-supporting-text-color: #000;
-  --mat-snack-bar-container-shape: 8px;
   --mat-snack-bar-button-color: #db2777;
-}
-
-.success-panel {
-  --mat-snack-bar-container-color: #ffffff;
-  --mat-snack-bar-supporting-text-size: 15px;
-  --mat-snack-bar-supporting-text-line-height: 1.1;
-  --mat-snack-bar-supporting-text-color: #000;
-  --mat-snack-bar-container-shape: 8px;
-  --mat-snack-bar-button-color: #059669;
 }
 
 .no-spinner::-webkit-outer-spin-button,
@@ -81,5 +65,11 @@ html:has(.class) {
   --moz-appearance: textfield;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}

@@ -60,14 +60,14 @@
     <mat-icon>lock</mat-icon>
     <span>Security</span>
   </button>
-  <button mat-menu-item>
-    <mat-icon>settings</mat-icon>
-    <span>Settings</span>
-  </button>
   <a mat-menu-item routerLink="/profile/me" aria-label="Profile page link" >
     <mat-icon>person</mat-icon>
     <span>Profile</span>
   </a> -->
+  <button mat-menu-item (click)="openSettings()" aria-label="Settings page link" >
+    <mat-icon>settings</mat-icon>
+    <span>Settings</span>
+  </button>
   <button mat-menu-item (click)="logout()" aria-label="Logout button" >
     <mat-icon>logout</mat-icon>
     <span>Logout</span>

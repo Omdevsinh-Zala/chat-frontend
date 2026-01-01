@@ -11,6 +11,8 @@ import { UserService } from '../services/user-service';
 import { map } from 'rxjs';
 import { SocketConnection } from '../services/socket-connection';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatDialog } from '@angular/material/dialog';
+import { Settings } from '../dialogs/settings/settings';
 
 @Component({
   selector: 'app-base',
@@ -28,6 +30,7 @@ export class Base {
   private router = inject(Router);
   private socketConnection = inject(SocketConnection)
   private destroyRef = inject(DestroyRef);
+  private dialog = inject(MatDialog);
 
   logout() {
     this.authService.logoutUser().pipe(
@@ -39,5 +42,14 @@ export class Base {
       }),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();
+  }
+
+  openSettings() {
+    this.dialog.open(Settings, {
+      maxWidth: '100%',
+      maxHeight: '100%',
+      width: '70%',
+      height: '70%',
+    });
   }
 }
