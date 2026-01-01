@@ -50,4 +50,8 @@ export class UserService {
 
     return this.http.get<GlobalResponse<PaginatedResponse<SearchUserResponse>>>(url);
   }
+
+  uploadFile(formData: FormData) {
+    return this.http.post<{ message: string; file: any }>(`${this.apiUrl}/upload`, formData);
+  }
 }

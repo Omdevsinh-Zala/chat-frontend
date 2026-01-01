@@ -33,7 +33,7 @@
           @if(user()?.first_name) {
             <div matIconButton [matMenuTriggerFor]="profile" aria-label="Profile image with menu" class="hover:cursor-pointer relative h-12 w-12" [matTooltip]="user()?.first_name" matTooltipPosition="right">
               <img
-                [src]=" imagePath + user()?.avatar_url"
+                [src]=" imagePath + 'profileImages/' + user()?.avatar_url"
                 alt="User Avatar"
                 class="h-12 w-12 rounded-full"
               />

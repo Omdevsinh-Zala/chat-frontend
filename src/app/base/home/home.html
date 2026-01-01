@@ -39,7 +39,7 @@
               [class.active]="chat?.is_active"
               [class.away]="!chat?.is_active"
             ></span>
-            <img matListItemIcon [src]="imagePath + chat.avatar_url" />
+            <img matListItemIcon [src]="imagePath + 'profileImages/' + chat.avatar_url" />
             <span class="w-auto" matListItemTitle>{{ chat.first_name }}</span>
             @if(chat.is_typing && chat.id !== user()?.id) {
             <div class="flex items-center gap-1">

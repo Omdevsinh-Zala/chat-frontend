@@ -117,6 +117,7 @@ export class Chat implements OnInit, AfterViewInit {
       this.socketService.socket.on(
         'chatMessages',
         (data: { chat: GroupedChat[]; receiverData: ReceiverUser }) => {
+          console.log(data.chat)
           this.currentChatMessages.set(data.chat);
           this.receiverUser.set(data.receiverData);
         }
@@ -315,6 +316,52 @@ export class Chat implements OnInit, AfterViewInit {
     if (textarea) {
       textarea.style.height = 'auto';
     }
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      this.userData.uploadFile(formData).subscribe({
+        next: (res) => {
+          if (res.file) {
+            this.socketService.socket.emit('chatMessagesSend', {
+              message: '', // Optional: Add caption support later
+              receiverId: this.chatId(),
+              messageType: res.file.type, // 'image', 'video', 'pdf'
+              attachments: res.file,
+            });
+            this.socketService.socket.emit('typing', {
+              receiverId: this.chatId(),
+              isTyping: false,
+            });
+          }
+        },
+        error: (err) => {
+          console.error('File upload failed', err);
+        },
+      });
+    }
+    // Reset input
+    event.target.value = '';
+  }
+
+  viewImage(url: string) {
+    window.open(url, '_blank');
+  }
+
+  isPdf(message: ChatMessage): boolean {
+    return (message.message_type as any) === 'pdf';
+  }
+
+  isImage(message: ChatMessage): boolean {
+    return message.message_type === 'image';
+  }
+
+  isVideo(message: ChatMessage): boolean {
+    return message.message_type === 'video';
   }
 
   scrollToFirstUnread() {
