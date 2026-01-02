@@ -19,7 +19,10 @@
       <li [style.align-self]="'start'" animate.enter="enter-animation">
         <div class="flex items-center gap-4 flex-row">
           <div class="w-12 h-12">
-            <img [src]="imagePath + 'profileImages/' + receiverUser()?.avatar_url" alt="User avatar" />
+            <img
+              [src]="imagePath + 'profileImages/' + receiverUser()?.avatar_url"
+              alt="User avatar"
+            />
           </div>
           <div class="flex items-center gap-1">
             <div class="w-1 h-1 rounded-full bg-(--mat-sys-inverse-surface) animate-bounce"></div>
@@ -32,94 +35,133 @@
           </div>
         </div>
       </li>
-      } 
-      @for (group of currentChatMessages(); track group.monthYear) {
-        @for (mes of group.messages;track mes.id) {
-          @if(mes.sender_id === userData.user()?.id) {
-          <!-- My sent messages - show status icons -->
-          <li #messageItem class="" [style.align-self]="'end'" [attr.data-id]="mes.id">
-            <div class="flex items-center gap-4 flex-row-reverse">
-              <div class="w-12 h-12">
-                <img [src]="imagePath + 'profileImages/' + userData.user()?.avatar_url" alt="User avatar" />
-              </div>
-              <div class="flex flex-col-reverse">
-                <div class="flex items-center justify-end-safe">
-                  @if(mes.status === 'read') {
-                  <mat-icon
-                    class="shrink-0 text-xs! flex! items-center! justify-center! text-(--mat-sys-primary)!"
-                    >done_all</mat-icon
-                  >
-                  } @else {
-                  <mat-icon class="shrink-0 text-xs! flex! items-center! justify-center!"
-                    >done</mat-icon
-                  >
-                  }
-                  <span class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</span>
-                </div>
-                <p class="text-lg text-end" [innerHTML]="mes.content | modify"></p>
-                @if (isImage(mes) && mes.attachments) {
-                  <div class="mt-2 text-end">
-                    <img [src]="imagePath + mes.attachments.url" alt="Image attachment" class="max-w-xs rounded-lg shadow-md cursor-pointer" (click)="viewImage(mes.attachments.url)">
-                  </div>
-                } @else if (isVideo(mes) && mes.attachments) {
-                  <div class="mt-2 text-end">
-                    <video [src]="imagePath + mes.attachments.url" controls class="max-w-xs rounded-lg shadow-md"></video>
-                  </div>
-                } @else if (isPdf(mes) && mes.attachments) {
-                  <div class="mt-2 text-end">
-                    <a [href]="imagePath + mes.attachments.url" target="_blank" class="flex items-center gap-2 text-blue-600 hover:underline justify-end">
-                      <span>{{ mes.attachments.name }}</span>
-                      <mat-icon>picture_as_pdf</mat-icon>
-                    </a>
-                  </div>
-                }
-              </div>
+      } @for (group of currentChatMessages(); track group.monthYear) { @for (mes of
+      group.messages;track mes.id) { @if(mes.sender_id === userData.user()?.id) {
+      <!-- My sent messages - show status icons -->
+      <li #messageItem class="" [style.align-self]="'end'" [attr.data-id]="mes.id">
+        <div class="flex items-center gap-4 flex-row-reverse">
+          <div class="w-12 h-12">
+            <img
+              [src]="imagePath + 'profileImages/' + userData.user()?.avatar_url"
+              alt="User avatar"
+            />
+          </div>
+          <div class="flex flex-col-reverse">
+            <div class="flex items-center justify-end-safe">
+              @if(mes.status === 'read') {
+              <mat-icon
+                class="shrink-0 text-xs! flex! items-center! justify-center! text-(--mat-sys-primary)!"
+                >done_all</mat-icon
+              >
+              } @else {
+              <mat-icon class="shrink-0 text-xs! flex! items-center! justify-center!"
+                >done</mat-icon
+              >
+              }
+              <span class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</span>
             </div>
-          </li>
-          } @else {
-          <!-- Received messages - no status icons -->
-          <li
-            #messageItem
-            [style.align-self]="'start'"
-            [attr.data-id]="mes.id"
-            [attr.data-status]="mes.status"
-          >
-            <div class="flex items-center gap-4 flex-row">
-              <div class="w-12 h-12">
-                <img [src]="imagePath + 'profileImages/' + receiverUser()?.avatar_url" alt="User avatar" />
+            <p class="text-lg text-end" [innerHTML]="mes.content | modify"></p>
+            @if (mes.attachments && mes.attachments.length) {
+            <div class="flex flex-col gap-2 mt-2 items-end">
+              @for (att of mes.attachments; track $index) { @if (isImage(att)) {
+              <div class="text-end">
+                <img
+                  [src]="imagePath + att.url"
+                  alt="Image attachment"
+                  class="max-w-xs rounded-lg shadow-md cursor-pointer"
+                  (click)="viewAssets(mes.attachments, $index)"
+                />
               </div>
-              <div class="flex flex-col-reverse">
-                <div class="flex items-center justify-start-safe">
-                  <p class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</p>
-                </div>
-                <p class="text-lg text-start" [innerHTML]="mes.content | modify"></p>
-                @if (isImage(mes) && mes.attachments) {
-                  <div class="mt-2 text-start">
-                    <img [src]="imagePath + mes.attachments.url" alt="Image attachment" class="max-w-xs rounded-lg shadow-md cursor-pointer" (click)="viewImage(mes.attachments.url)">
-                  </div>
-                } @else if (isVideo(mes) && mes.attachments) {
-                  <div class="mt-2 text-start">
-                    <video [src]="imagePath + mes.attachments.url" controls class="max-w-xs rounded-lg shadow-md"></video>
-                  </div>
-                } @else if (isPdf(mes) && mes.attachments) {
-                  <div class="mt-2 text-start">
-                    <a [href]="imagePath + mes.attachments.url" target="_blank" class="flex items-center gap-2 text-blue-600 hover:underline">
-                      <mat-icon>picture_as_pdf</mat-icon>
-                      <span>{{ mes.attachments.name }}</span>
-                    </a>
-                  </div>
-                }
+              } @else if (isVideo(att)) {
+              <div class="text-end">
+                <video
+                  (click)="viewAssets(mes.attachments, $index); $event.preventDefault(); $event.stopPropagation()"
+                  [src]="imagePath + att.url"
+                  controls
+                  class="max-w-xs rounded-lg shadow-md"
+                ></video>
               </div>
+              } @else if (isPdf(att)) {
+              <div class="text-end">
+                <a
+                  [href]="imagePath + att.url"
+                  target="_blank"
+                  class="flex items-center gap-2 text-blue-600 hover:underline justify-end"
+                >
+                  <span>{{ att.name }}</span>
+                  <mat-icon>picture_as_pdf</mat-icon>
+                </a>
+              </div>
+              } }
             </div>
-          </li>
-          }
-        }
+            }
+          </div>
+        </div>
+      </li>
+      } @else {
+      <!-- Received messages - no status icons -->
+      <li
+        #messageItem
+        [style.align-self]="'start'"
+        [attr.data-id]="mes.id"
+        [attr.data-status]="mes.status"
+      >
+        <div class="flex items-center gap-4 flex-row">
+          <div class="w-12 h-12">
+            <img
+              [src]="imagePath + 'profileImages/' + receiverUser()?.avatar_url"
+              alt="User avatar"
+            />
+          </div>
+          <div class="flex flex-col-reverse">
+            <div class="flex items-center justify-start-safe">
+              <p class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</p>
+            </div>
+            <p class="text-lg text-start" [innerHTML]="mes.content | modify"></p>
+            @if (mes.attachments && mes.attachments.length) {
+            <div class="flex flex-col gap-2 mt-2 items-start">
+              @for (att of mes.attachments; track $index) { @if (isImage(att)) {
+              <div class="text-start">
+                <img
+                  [src]="imagePath + att.url"
+                  alt="Image attachment"
+                  class="max-w-xs rounded-lg shadow-md cursor-pointer"
+                  (click)="viewAssets(mes.attachments, $index)"
+                />
+              </div>
+              } @else if (isVideo(att)) {
+              <div class="text-start">
+                <video
+                  (click)="viewAssets(mes.attachments, $index); $event.preventDefault(); $event.stopPropagation()"
+                  [src]="imagePath + att.url"
+                  controls
+                  class="max-w-xs rounded-lg shadow-md"
+                ></video>
+              </div>
+              } @else if (isPdf(att)) {
+              <div class="text-start">
+                <a
+                  [href]="imagePath + att.url"
+                  target="_blank"
+                  class="flex items-center gap-2 text-blue-600 hover:underline"
+                >
+                  <mat-icon>picture_as_pdf</mat-icon>
+                  <span>{{ att.name }}</span>
+                </a>
+              </div>
+              } }
+            </div>
+            }
+          </div>
+        </div>
+      </li>
+      } }
       <li class="relative w-full flex justify-center my-4 mb-2">
         <mat-divider class="w-full"></mat-divider>
         <span
           class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-(--mat-sys-surface) text-(--mat-sys-primary) rounded-(--mat-sys-corner-full) border border-(--mat-sys-outline) px-2 py-1"
         >
-          {{ group.monthYear | date: 'EEEE, MMMM d' }}
+          {{ group.monthYear | date : 'EEEE, MMMM d' }}
         </span>
       </li>
       } @empty {
@@ -135,12 +177,16 @@
       }
     </ul>
   </div>
-  <div class="w-full flex-none py-4 flex gap-2 items-baseline">
+  <div class="w-full flex-none py-4 flex gap-2 items-start">
     <div class="w-full">
       <mat-form-field class="w-full custom-input" appearance="outline">
-        <button matPrefix class="mb-1" (click)="fileInput.click()">
-        <mat-icon>attach_file</mat-icon>
-      </button>
+        <mat-icon
+          matPrefix
+          class="mb-1 p-0! my-1! hover:cursor-pointer"
+          (click)="fileInput.click(); $event.stopPropagation()"
+        >
+          attach_file
+        </mat-icon>
         <textarea
           #messageInput
           matInput
@@ -150,7 +196,7 @@
           rows="1"
         ></textarea>
       </mat-form-field>
-      <input type="file" #fileInput hidden (change)="onFileSelected($event)">
+      <input type="file" #fileInput hidden multiple (change)="onFileSelected($event)" />
     </div>
     <button
       matMiniFab

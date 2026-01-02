@@ -23,7 +23,7 @@ import { SocketConnection } from '../../../services/socket-connection';
 import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { GroupedChat, Message as ChatMessage } from '../../../models/chat';
+import { GroupedChat, Message as ChatMessage, AttachmentsType } from '../../../models/chat';
 import { UserService } from '../../../services/user-service';
 import { DatePipe } from '@angular/common';
 import { environment } from '../../../../environments/environment';
@@ -31,6 +31,8 @@ import { MatDivider } from '@angular/material/divider';
 import { ReceiverUser } from '../../../models/user';
 import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { AssetView } from '../../../dialogs/asset-view/asset-view';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-chat',
@@ -56,6 +58,7 @@ export class Chat implements OnInit, AfterViewInit {
   private chatId = signal('');
   userData = inject(UserService);
   private injector = inject(Injector);
+  private dialog = inject(MatDialog);
   isTyping = computed(() => {
     return (
       (this.receiverUser()?.is_typing ||
@@ -117,7 +120,6 @@ export class Chat implements OnInit, AfterViewInit {
       this.socketService.socket.on(
         'chatMessages',
         (data: { chat: GroupedChat[]; receiverData: ReceiverUser }) => {
-          console.log(data.chat)
           this.currentChatMessages.set(data.chat);
           this.receiverUser.set(data.receiverData);
         }
@@ -319,24 +321,32 @@ export class Chat implements OnInit, AfterViewInit {
   }
 
   onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
+    const files = event.target.files;
+    if (files && files.length > 0) {
       const formData = new FormData();
-      formData.append('file', file);
+      for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+      }
 
       this.userData.uploadFile(formData).subscribe({
         next: (res) => {
-          if (res.file) {
+          if (res.files && res.files.length > 0) {
             this.socketService.socket.emit('chatMessagesSend', {
-              message: '', // Optional: Add caption support later
+              message: this.message(),
               receiverId: this.chatId(),
-              messageType: res.file.type, // 'image', 'video', 'pdf'
-              attachments: res.file,
+              messageType: 'mixed',
+              attachments: res.files,
             });
             this.socketService.socket.emit('typing', {
               receiverId: this.chatId(),
               isTyping: false,
             });
+
+            this.message.set('');
+            const textarea = this.messageInput()?.nativeElement;
+            if (textarea) {
+              textarea.style.height = 'auto';
+            }
           }
         },
         error: (err) => {
@@ -352,16 +362,31 @@ export class Chat implements OnInit, AfterViewInit {
     window.open(url, '_blank');
   }
 
-  isPdf(message: ChatMessage): boolean {
-    return (message.message_type as any) === 'pdf';
+  viewAssets(attachment: AttachmentsType[], index: number) {
+    this.dialog.open(AssetView, {
+      maxWidth: '100%',
+      maxHeight: '100%',
+      width: '70%',
+      height: '70%',
+      panelClass: 'small-corners-dialog',
+      data: {
+        user: this.userData.user(),
+        attachments: attachment,
+        index: index,
+      },
+    });
   }
 
-  isImage(message: ChatMessage): boolean {
-    return message.message_type === 'image';
+  isPdf(attachment: any): boolean {
+    return attachment.type === 'pdf';
   }
 
-  isVideo(message: ChatMessage): boolean {
-    return message.message_type === 'video';
+  isImage(attachment: any): boolean {
+    return attachment.type === 'image';
+  }
+
+  isVideo(attachment: any): boolean {
+    return attachment.type === 'video';
   }
 
   scrollToFirstUnread() {

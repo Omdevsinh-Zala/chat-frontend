@@ -1,0 +1,68 @@
+<div class="w-full h-full relative">
+  <div class="absolute top-0 left-0 w-full flex items-center justify-between py-4 px-4 z-100">
+    <div class="flex items-center gap-4">
+      <img
+        class="size-12 rounded-full"
+        [src]="imagePath + 'profileImages/' + data.user.avatar_url"
+        [alt]="data.user.first_name"
+      />
+      <div class="flex flex-col gap-1">
+        <p>{{ data.user.first_name }}</p>
+        <p
+          class="text-xs w-44 text-ellipsis overflow-hidden line-clamp-1"
+          matTooltip="{{ data.attachments[0].name }}"
+        >
+          {{ data.attachments[0].name }}
+        </p>
+      </div>
+    </div>
+    <button
+      class="rounded-md bg-transparent p-2 hover:bg-gray-100/10 size-10 hover:cursor-pointer"
+      (click)="close()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  @if(data.attachments.length > 1) {
+  <swiper-container init="false" #assetSwiper class="w-full h-full">
+    @for (attach of data.attachments; track $index) {
+        @if(attach.type === "image") {
+    <swiper-slide class="w-full h-full flex items-center justify-center">
+      <img
+        class="w-full h-full object-contain"
+        [src]="imagePath + attach.url"
+        [alt]="attach.name"
+      />
+    </swiper-slide>
+    } @else if(attach.type === "video") {
+    <swiper-slide class="w-full h-full flex items-center justify-center">
+      <video class="w-full h-full object-contain" [src]="imagePath + attach.url" controls></video>
+    </swiper-slide>
+    }
+    }
+  </swiper-container>
+
+  <button
+    class="absolute top-1/2 left-4 -translate-y-1/2 z-50 swiper-button-prev rounded-full bg-black/20 text-white p-2 hover:bg-black/40 hover:cursor-pointer flex justify-center items-center backdrop-blur-sm transition-colors"
+  >
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+  <button
+    class="absolute top-1/2 right-4 -translate-y-1/2 z-50 swiper-button-next rounded-full bg-black/20 text-white p-2 hover:bg-black/40 hover:cursor-pointer flex justify-center items-center backdrop-blur-sm transition-colors"
+  >
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+  } @else { @if(data.attachments[0].type === "image") {
+  <img
+    class="w-full h-full object-contain"
+    [src]="imagePath + data.attachments[0].url"
+    [alt]="data.attachments[0].name"
+  />
+  } @else {
+  <video
+    class="w-full h-full object-contain"
+    [src]="imagePath + data.attachments[0].url"
+    controls
+  ></video>
+  } }
+</div>

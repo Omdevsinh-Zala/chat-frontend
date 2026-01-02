@@ -23,6 +23,12 @@
   @apply border-white bg-green-500;
 }
 
+.small-corners-dialog {
+  .mat-mdc-dialog-surface {
+    @apply rounded-(--mat-sys-corner-small)!;
+  }
+}
+
 @keyframes show {
   from {
     opacity: 0;
