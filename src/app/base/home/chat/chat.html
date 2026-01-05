@@ -62,38 +62,7 @@
             </div>
             <p class="text-lg text-end" [innerHTML]="mes.content | modify"></p>
             @if (mes.attachments && mes.attachments.length) {
-            <div class="flex flex-col gap-2 mt-2 items-end">
-              @for (att of mes.attachments; track $index) { @if (isImage(att)) {
-              <div class="text-end">
-                <img
-                  [src]="imagePath + att.url"
-                  alt="Image attachment"
-                  class="max-w-xs rounded-lg shadow-md cursor-pointer"
-                  (click)="viewAssets(mes.attachments, $index)"
-                />
-              </div>
-              } @else if (isVideo(att)) {
-              <div class="text-end">
-                <video
-                  (click)="viewAssets(mes.attachments, $index); $event.preventDefault(); $event.stopPropagation()"
-                  [src]="imagePath + att.url"
-                  controls
-                  class="max-w-xs rounded-lg shadow-md"
-                ></video>
-              </div>
-              } @else if (isPdf(att)) {
-              <div class="text-end">
-                <a
-                  [href]="imagePath + att.url"
-                  target="_blank"
-                  class="flex items-center gap-2 text-blue-600 hover:underline justify-end"
-                >
-                  <span>{{ att.name }}</span>
-                  <mat-icon>picture_as_pdf</mat-icon>
-                </a>
-              </div>
-              } }
-            </div>
+            <app-asset-container [attachments]="mes.attachments"></app-asset-container>
             }
           </div>
         </div>
@@ -119,38 +88,7 @@
             </div>
             <p class="text-lg text-start" [innerHTML]="mes.content | modify"></p>
             @if (mes.attachments && mes.attachments.length) {
-            <div class="flex flex-col gap-2 mt-2 items-start">
-              @for (att of mes.attachments; track $index) { @if (isImage(att)) {
-              <div class="text-start">
-                <img
-                  [src]="imagePath + att.url"
-                  alt="Image attachment"
-                  class="max-w-xs rounded-lg shadow-md cursor-pointer"
-                  (click)="viewAssets(mes.attachments, $index)"
-                />
-              </div>
-              } @else if (isVideo(att)) {
-              <div class="text-start">
-                <video
-                  (click)="viewAssets(mes.attachments, $index); $event.preventDefault(); $event.stopPropagation()"
-                  [src]="imagePath + att.url"
-                  controls
-                  class="max-w-xs rounded-lg shadow-md"
-                ></video>
-              </div>
-              } @else if (isPdf(att)) {
-              <div class="text-start">
-                <a
-                  [href]="imagePath + att.url"
-                  target="_blank"
-                  class="flex items-center gap-2 text-blue-600 hover:underline"
-                >
-                  <mat-icon>picture_as_pdf</mat-icon>
-                  <span>{{ att.name }}</span>
-                </a>
-              </div>
-              } }
-            </div>
+              <app-asset-container [attachments]="mes.attachments"></app-asset-container>
             }
           </div>
         </div>

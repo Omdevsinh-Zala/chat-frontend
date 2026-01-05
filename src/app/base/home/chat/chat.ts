@@ -23,7 +23,7 @@ import { SocketConnection } from '../../../services/socket-connection';
 import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { GroupedChat, Message as ChatMessage, AttachmentsType } from '../../../models/chat';
+import { GroupedChat } from '../../../models/chat';
 import { UserService } from '../../../services/user-service';
 import { DatePipe } from '@angular/common';
 import { environment } from '../../../../environments/environment';
@@ -31,8 +31,8 @@ import { MatDivider } from '@angular/material/divider';
 import { ReceiverUser } from '../../../models/user';
 import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { AssetView } from '../../../dialogs/asset-view/asset-view';
 import { MatDialog } from '@angular/material/dialog';
+import { AssetContainer } from "./asset-container/asset-container";
 
 @Component({
   selector: 'app-chat',
@@ -46,7 +46,8 @@ import { MatDialog } from '@angular/material/dialog';
     MatDivider,
     ModifyPipe,
     MatProgressSpinner,
-  ],
+    AssetContainer,
+],
   templateUrl: './chat.html',
   styleUrl: './chat.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -120,6 +121,7 @@ export class Chat implements OnInit, AfterViewInit {
       this.socketService.socket.on(
         'chatMessages',
         (data: { chat: GroupedChat[]; receiverData: ReceiverUser }) => {
+          console.log(data.chat)
           this.currentChatMessages.set(data.chat);
           this.receiverUser.set(data.receiverData);
         }
@@ -356,37 +358,6 @@ export class Chat implements OnInit, AfterViewInit {
     }
     // Reset input
     event.target.value = '';
-  }
-
-  viewImage(url: string) {
-    window.open(url, '_blank');
-  }
-
-  viewAssets(attachment: AttachmentsType[], index: number) {
-    this.dialog.open(AssetView, {
-      maxWidth: '100%',
-      maxHeight: '100%',
-      width: '70%',
-      height: '70%',
-      panelClass: 'small-corners-dialog',
-      data: {
-        user: this.userData.user(),
-        attachments: attachment,
-        index: index,
-      },
-    });
-  }
-
-  isPdf(attachment: any): boolean {
-    return attachment.type === 'pdf';
-  }
-
-  isImage(attachment: any): boolean {
-    return attachment.type === 'image';
-  }
-
-  isVideo(attachment: any): boolean {
-    return attachment.type === 'video';
   }
 
   scrollToFirstUnread() {
