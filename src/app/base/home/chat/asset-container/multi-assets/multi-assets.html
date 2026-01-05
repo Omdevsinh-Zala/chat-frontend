@@ -1,6 +1,5 @@
-<!-- Media Grid -->
 @if (mediaAttachments().length > 0) {
-<ul class="grid grid-cols-2 mb-2">
+<ul class="grid grid-cols-2 mb-2 w-full max-w-xs">
   @for (att of mediaAttachments(); track $index) {
   <!-- Show only first 4 items -->
   @if ($index < 4) {

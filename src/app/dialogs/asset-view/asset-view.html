@@ -25,21 +25,27 @@
   </div>
   @if(data.attachments.length > 1) {
   <swiper-container init="false" #assetSwiper class="w-full h-full">
-    @for (attach of data.attachments; track $index) {
-        @if(attach.type === "image") {
+    @for (attach of data.attachments; track $index) { @if(attach.type === "image") {
     <swiper-slide class="w-full h-full flex items-center justify-center">
       <img
         class="w-full h-full object-contain"
-        [src]="imagePath + attach.url"
+        [src]="
+          data.isObjectUrl ? data.attachments[$index].url : imagePath + data.attachments[$index].url
+        "
         [alt]="attach.name"
       />
     </swiper-slide>
     } @else if(attach.type === "video") {
     <swiper-slide class="w-full h-full flex items-center justify-center">
-      <video class="w-full h-full object-contain" [src]="imagePath + attach.url" controls></video>
+      <video
+        class="w-full h-full object-contain"
+        [src]="
+          data.isObjectUrl ? data.attachments[$index].url : imagePath + data.attachments[$index].url
+        "
+        controls
+      ></video>
     </swiper-slide>
-    }
-    }
+    } }
   </swiper-container>
 
   <button
@@ -55,13 +61,13 @@
   } @else { @if(data.attachments[0].type === "image") {
   <img
     class="w-full h-full object-contain"
-    [src]="imagePath + data.attachments[0].url"
+    [src]="data.isObjectUrl ? data.attachments[0].url : imagePath + data.attachments[0].url"
     [alt]="data.attachments[0].name"
   />
   } @else {
   <video
     class="w-full h-full object-contain"
-    [src]="imagePath + data.attachments[0].url"
+    [src]="data.isObjectUrl ? data.attachments[0].url : imagePath + data.attachments[0].url"
     controls
   ></video>
   } }

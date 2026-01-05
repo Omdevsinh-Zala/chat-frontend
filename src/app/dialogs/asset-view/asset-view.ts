@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, viewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  ElementRef,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -16,7 +23,12 @@ import { User } from '../../models/user';
 })
 export class AssetView implements AfterViewInit {
   private dialogRef = inject(MatDialogRef<AssetView>);
-  readonly data = inject<{ user: User, attachments: AttachmentsType[], index: number }>(MAT_DIALOG_DATA);
+  readonly data = inject<{
+    user: User;
+    attachments: AttachmentsType[];
+    index: number;
+    isObjectUrl: boolean;
+  }>(MAT_DIALOG_DATA);
 
   imagePath = environment.imageUrl;
 
@@ -29,15 +41,19 @@ export class AssetView implements AfterViewInit {
       nextEl: '.swiper-button-next',
       prevEl: '.swiper-button-prev',
     },
-  }
+  };
 
-  assetSwiper = viewChild<ElementRef>('assetSwiper')
+  assetSwiper = viewChild<ElementRef>('assetSwiper');
 
   ngAfterViewInit(): void {
-    if(this.assetSwiper() && this.assetSwiper()?.nativeElement && this.data.attachments.length > 1) {
-        Object.assign(this.assetSwiper()?.nativeElement, this.sliderConfig);
-        this.assetSwiper()?.nativeElement.initialize();
-      }
+    if (
+      this.assetSwiper() &&
+      this.assetSwiper()?.nativeElement &&
+      this.data.attachments.length > 1
+    ) {
+      Object.assign(this.assetSwiper()?.nativeElement, this.sliderConfig);
+      this.assetSwiper()?.nativeElement.initialize();
+    }
   }
 
   close() {

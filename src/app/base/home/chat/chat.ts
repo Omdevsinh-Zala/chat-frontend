@@ -23,7 +23,7 @@ import { SocketConnection } from '../../../services/socket-connection';
 import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { GroupedChat } from '../../../models/chat';
+import { AttachmentsType, GroupedChat } from '../../../models/chat';
 import { UserService } from '../../../services/user-service';
 import { DatePipe } from '@angular/common';
 import { environment } from '../../../../environments/environment';
@@ -32,7 +32,8 @@ import { ReceiverUser } from '../../../models/user';
 import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
-import { AssetContainer } from "./asset-container/asset-container";
+import { AssetContainer } from './asset-container/asset-container';
+import { AssetView } from '../../../dialogs/asset-view/asset-view';
 
 @Component({
   selector: 'app-chat',
@@ -47,7 +48,7 @@ import { AssetContainer } from "./asset-container/asset-container";
     ModifyPipe,
     MatProgressSpinner,
     AssetContainer,
-],
+  ],
   templateUrl: './chat.html',
   styleUrl: './chat.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,6 +69,10 @@ export class Chat implements OnInit, AfterViewInit {
       this.chatId() !== this.userData.user()?.id
     );
   });
+
+  isAssetsEntered = signal(false);
+  assetsData: WritableSignal<File[]> = signal([]);
+  base64AssetsData: WritableSignal<AttachmentsType[]> = signal([]);
 
   imagePath = environment.imageUrl;
 
@@ -121,7 +126,6 @@ export class Chat implements OnInit, AfterViewInit {
       this.socketService.socket.on(
         'chatMessages',
         (data: { chat: GroupedChat[]; receiverData: ReceiverUser }) => {
-          console.log(data.chat)
           this.currentChatMessages.set(data.chat);
           this.receiverUser.set(data.receiverData);
         }
@@ -304,6 +308,40 @@ export class Chat implements OnInit, AfterViewInit {
     if (event) {
       event.preventDefault();
     }
+    if (this.assetsData().length > 0) {
+      const formData = new FormData();
+      for (let i = 0; i < this.assetsData().length; i++) {
+        formData.append('files', this.assetsData()[i]);
+      }
+      this.userData.uploadFile(formData).subscribe({
+        next: (res) => {
+          if (res.data?.files && res.data.files.length > 0) {
+            this.socketService.socket.emit('chatMessagesSend', {
+              message: this.message(),
+              receiverId: this.chatId(),
+              messageType: 'mixed',
+              attachments: res.data.files,
+            });
+
+            this.message.set('');
+            const textarea = this.messageInput()?.nativeElement;
+            if (textarea) {
+              textarea.style.height = 'auto';
+            }
+          }
+        },
+        error: (err) => {
+          console.error('File upload failed', err);
+        },
+      });
+      this.socketService.socket.emit('typing', {
+        receiverId: this.chatId(),
+        isTyping: false,
+      });
+      this.assetsData.update(() => []);
+      this.base64AssetsData.update(() => []);
+      this.isAssetsEntered.set(false);
+    }
     if (!this.message()) return;
     this.socketService.socket.emit('chatMessagesSend', {
       message: this.message(),
@@ -325,35 +363,14 @@ export class Chat implements OnInit, AfterViewInit {
   onFileSelected(event: any) {
     const files = event.target.files;
     if (files && files.length > 0) {
-      const formData = new FormData();
-      for (let i = 0; i < files.length; i++) {
-        formData.append('files', files[i]);
-      }
+      const fileArray = Array.from(files) as File[];
+      this.isAssetsEntered.set(true);
+      this.assetsData.update((data) => [...data, ...fileArray]);
+      this.convertFilesToBase64(fileArray);
 
-      this.userData.uploadFile(formData).subscribe({
-        next: (res) => {
-          if (res.files && res.files.length > 0) {
-            this.socketService.socket.emit('chatMessagesSend', {
-              message: this.message(),
-              receiverId: this.chatId(),
-              messageType: 'mixed',
-              attachments: res.files,
-            });
-            this.socketService.socket.emit('typing', {
-              receiverId: this.chatId(),
-              isTyping: false,
-            });
-
-            this.message.set('');
-            const textarea = this.messageInput()?.nativeElement;
-            if (textarea) {
-              textarea.style.height = 'auto';
-            }
-          }
-        },
-        error: (err) => {
-          console.error('File upload failed', err);
-        },
+      this.socketService.socket.emit('typing', {
+        receiverId: this.chatId(),
+        isTyping: false,
       });
     }
     // Reset input
@@ -372,5 +389,63 @@ export class Chat implements OnInit, AfterViewInit {
     );
 
     element?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  convertFilesToBase64(files: File[]) {
+    this.base64AssetsData.update((data) => [
+      ...new Array(files.length).fill({ type: '', data: '' }),
+      ...data,
+    ]);
+
+    files.forEach((file, index) => {
+      const fileType = file.type.includes('image')
+        ? 'image'
+        : file.type.includes('video')
+        ? 'video'
+        : 'pdf';
+      this.base64AssetsData.update((data) => {
+        const newData = [...data];
+        newData[index] = {
+          type: fileType,
+          url: URL.createObjectURL(file),
+          name: file.name,
+          mimeType: file.type,
+          size: file.size,
+        };
+        return newData;
+      });
+    });
+  }
+
+  removeImage(index: number) {
+    this.assetsData.update((data) => {
+      const newData = [...data];
+      newData.splice(index, 1);
+      return newData;
+    });
+    this.base64AssetsData.update((data) => {
+      const newData = [...data];
+      newData.splice(index, 1);
+      return newData;
+    });
+    if (this.assetsData().length === 0) {
+      this.isAssetsEntered.set(false);
+    }
+  }
+
+  viewAssets(attachment: AttachmentsType[], index: number) {
+    this.dialog.open(AssetView, {
+      maxWidth: '100%',
+      maxHeight: '100%',
+      width: '70%',
+      height: '70%',
+      panelClass: 'small-corners-dialog',
+      data: {
+        user: this.userData.user(),
+        attachments: attachment,
+        index: index,
+        isObjectUrl: true,
+      },
+    });
   }
 }

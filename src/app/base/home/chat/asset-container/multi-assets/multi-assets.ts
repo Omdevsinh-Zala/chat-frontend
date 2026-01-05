@@ -35,6 +35,7 @@ export class MultiAssets {
         user: this.userData.user(),
         attachments: attachment,
         index: index,
+        isObjectUrl: false,
       },
     });
   }

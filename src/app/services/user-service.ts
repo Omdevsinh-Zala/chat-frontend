@@ -52,6 +52,6 @@ export class UserService {
   }
 
   uploadFile(formData: FormData) {
-    return this.http.post<{ message: string; files: any[] }>(`${this.apiUrl}/upload`, formData);
+    return this.http.post<GlobalResponse<{ files: any[] }>>(`${this.apiUrl}/upload`, formData);
   }
 }
