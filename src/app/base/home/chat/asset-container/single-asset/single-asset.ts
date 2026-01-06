@@ -34,14 +34,14 @@ export class SingleAsset {
   }
 
   isPdf(attachment: any): boolean {
-    return attachment.type === 'pdf';
+    return attachment.file_type === 'pdf';
   }
 
   isImage(attachment: any): boolean {
-    return attachment.type === 'image';
+    return attachment.file_type === 'image';
   }
 
   isVideo(attachment: any): boolean {
-    return attachment.type === 'video';
+    return attachment.file_type === 'video';
   }
 }

@@ -19,10 +19,10 @@ export class MultiAssets {
   private userData = inject(UserService);
 
   mediaAttachments = computed(() =>
-    this.attachments().filter((att) => att.type === 'image' || att.type === 'video')
+    this.attachments().filter((att) => att.file_type === 'image' || att.file_type === 'video')
   );
 
-  pdfAttachments = computed(() => this.attachments().filter((att) => att.type === 'pdf'));
+  pdfAttachments = computed(() => this.attachments().filter((att) => att.file_type === 'pdf'));
 
   viewAssets(attachment: AttachmentsType[], index: number) {
     this.dialog.open(AssetView, {
@@ -41,14 +41,14 @@ export class MultiAssets {
   }
 
   isPdf(attachment: any): boolean {
-    return attachment.type === 'pdf';
+    return attachment.file_type === 'pdf';
   }
 
   isImage(attachment: any): boolean {
-    return attachment.type === 'image';
+    return attachment.file_type === 'image';
   }
 
   isVideo(attachment: any): boolean {
-    return attachment.type === 'video';
+    return attachment.file_type === 'video';
   }
 }

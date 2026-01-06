@@ -56,9 +56,9 @@ export class UserService {
     return this.http.post<GlobalResponse<{ files: any[] }>>(`${this.apiUrl}/upload`, formData);
   }
 
-  getAllFiles(query?: string, limit?: number, page?: number) {
+  getAllFiles(order?: string, limit?: number, page?: number) {
     const params = new URLSearchParams();
-    if (query) params.append('search', query);
+    if (order) params.append('order', order);
     if (limit !== undefined) params.append('limit', limit.toString());
     if (page !== undefined) params.append('page', page.toString());
 

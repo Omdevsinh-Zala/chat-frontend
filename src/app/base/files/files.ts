@@ -1,4 +1,15 @@
-import { AfterViewInit, Component, DestroyRef, effect, inject, model, OnInit, signal, viewChild, WritableSignal } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  model,
+  OnInit,
+  signal,
+  viewChild,
+  WritableSignal,
+} from '@angular/core';
 import { UserService } from '../../services/user-service';
 import { MatPaginator } from '@angular/material/paginator';
 import { environment } from '../../../environments/environment';
@@ -7,7 +18,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatTableModule } from '@angular/material/table';
 import { AttachmentsType } from '../../models/chat';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatIcon } from "@angular/material/icon";
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-files',
@@ -33,8 +44,26 @@ export class Files implements OnInit, AfterViewInit {
   resultsLength = signal(0);
 
   ngOnInit(): void {
+    const defaultPageSize = 10;
+    const defaultPageIndex = 1;
     this.userService
-      .getAllFiles('', this.paginator()?.pageSize, this.paginator()?.pageIndex! + 1)
+      .getAllFiles(
+        this.sort(),
+        this.paginator()?.pageSize || defaultPageSize,
+        (this.paginator()?.pageIndex || 0) + 1
+      )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.filesData.set(res.data?.data || []);
+          this.resultsLength.set(res.data?.total || 0);
+        },
+      });
+  }
+
+  onSortOrderChange(value: 'ASC' | 'DESC') {
+    this.userService
+      .getAllFiles(value, this.paginator()?.pageSize || 10, (this.paginator()?.pageIndex || 0) + 1)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
@@ -48,9 +77,9 @@ export class Files implements OnInit, AfterViewInit {
     this.paginator()
       ?.page.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
+        next: (event) => {
           this.userService
-            .getAllFiles('', this.paginator()?.pageSize, this.paginator()?.pageIndex)
+            .getAllFiles(this.sort(), event.pageSize, event.pageIndex + 1)
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
               next: (res) => {

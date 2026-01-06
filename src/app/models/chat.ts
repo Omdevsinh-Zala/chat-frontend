@@ -23,9 +23,14 @@ export interface Message {
 }
 
 export interface AttachmentsType {
-  url: string;
-  name: string;
-  size: number;
-  type: string;
-  mimeType: string;
+  id?: string,
+  message_id?: string,
+  sender_id?: string,
+  receiver_id?: string,
+  file_type: string | null,
+  file_url: string,
+  file_name: string,
+  file_size: number,
+  mime_type: string,
+  metadata?: any
 }

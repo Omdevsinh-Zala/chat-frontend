@@ -406,11 +406,11 @@ export class Chat implements OnInit, AfterViewInit {
       this.base64AssetsData.update((data) => {
         const newData = [...data];
         newData[index] = {
-          type: fileType,
-          url: URL.createObjectURL(file),
-          name: file.name,
-          mimeType: file.type,
-          size: file.size,
+          file_type: fileType,
+          file_url: URL.createObjectURL(file),
+          file_name: file.name,
+          file_size: file.size,
+          mime_type: file.type,
         };
         return newData;
       });

@@ -3,7 +3,7 @@
     @if (isImage(att)) {
         <div class="text-start">
             <img
-            [src]="imagePath + att.url"
+            [src]="imagePath + att.file_url"
             alt="Image attachment"
             class="max-w-xs rounded-lg shadow-md cursor-pointer"
             (click)="viewAssets(attachments(), $index)"
@@ -13,7 +13,7 @@
         <div class="text-start">
             <video
             (click)="viewAssets(attachments(), $index); $event.preventDefault(); $event.stopPropagation()"
-            [src]="imagePath + att.url"
+            [src]="imagePath + att.file_url"
             controls
             class="max-w-xs rounded-lg shadow-md"
             ></video>
@@ -21,12 +21,12 @@
         } @else if (isPdf(att)) {
         <div class="text-start">
             <a
-            [href]="imagePath + att.url"
+            [href]="imagePath + att.file_url"
             target="_blank"
             class="flex items-center gap-2 text-blue-600 hover:underline"
             >
             <mat-icon>picture_as_pdf</mat-icon>
-            <span>{{ att.name }}</span>
+            <span>{{ att.file_name }}</span>
             </a>
         </div>
         }

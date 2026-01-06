@@ -10,9 +10,9 @@
         <p>{{ data.user.first_name }}</p>
         <p
           class="text-xs w-44 text-ellipsis overflow-hidden line-clamp-1"
-          matTooltip="{{ data.attachments[0].name }}"
+          matTooltip="{{ data.attachments[0].file_name }}"
         >
-          {{ data.attachments[0].name }}
+          {{ data.attachments[0].file_name }}
         </p>
       </div>
     </div>
@@ -25,22 +25,22 @@
   </div>
   @if(data.attachments.length > 1) {
   <swiper-container init="false" #assetSwiper class="w-full h-full">
-    @for (attach of data.attachments; track $index) { @if(attach.type === "image") {
+    @for (attach of data.attachments; track $index) { @if(attach.file_type === "image") {
     <swiper-slide class="w-full h-full flex items-center justify-center">
       <img
         class="w-full h-full object-contain"
         [src]="
-          data.isObjectUrl ? data.attachments[$index].url : imagePath + data.attachments[$index].url
+          data.isObjectUrl ? data.attachments[$index].file_url : imagePath + data.attachments[$index].file_url
         "
-        [alt]="attach.name"
+        [alt]="attach.file_name"
       />
     </swiper-slide>
-    } @else if(attach.type === "video") {
+    } @else if(attach.file_type === "video") {
     <swiper-slide class="w-full h-full flex items-center justify-center">
       <video
         class="w-full h-full object-contain"
         [src]="
-          data.isObjectUrl ? data.attachments[$index].url : imagePath + data.attachments[$index].url
+          data.isObjectUrl ? data.attachments[$index].file_url : imagePath + data.attachments[$index].file_url
         "
         controls
       ></video>
@@ -58,16 +58,16 @@
   >
     <mat-icon>chevron_right</mat-icon>
   </button>
-  } @else { @if(data.attachments[0].type === "image") {
+  } @else { @if(data.attachments[0].file_type === "image") {
   <img
     class="w-full h-full object-contain"
-    [src]="data.isObjectUrl ? data.attachments[0].url : imagePath + data.attachments[0].url"
-    [alt]="data.attachments[0].name"
+    [src]="data.isObjectUrl ? data.attachments[0].file_url : imagePath + data.attachments[0].file_url"
+    [alt]="data.attachments[0].file_name"
   />
   } @else {
   <video
     class="w-full h-full object-contain"
-    [src]="data.isObjectUrl ? data.attachments[0].url : imagePath + data.attachments[0].url"
+    [src]="data.isObjectUrl ? data.attachments[0].file_url : imagePath + data.attachments[0].file_url"
     controls
   ></video>
   } }
