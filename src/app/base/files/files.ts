@@ -1,0 +1,64 @@
+import { AfterViewInit, Component, DestroyRef, effect, inject, model, OnInit, signal, viewChild, WritableSignal } from '@angular/core';
+import { UserService } from '../../services/user-service';
+import { MatPaginator } from '@angular/material/paginator';
+import { environment } from '../../../environments/environment';
+import { FormsModule } from '@angular/forms';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatTableModule } from '@angular/material/table';
+import { AttachmentsType } from '../../models/chat';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatIcon } from "@angular/material/icon";
+
+@Component({
+  selector: 'app-files',
+  imports: [MatRadioModule, FormsModule, MatTableModule, MatPaginator, MatIcon],
+  templateUrl: './files.html',
+  styleUrl: './files.css',
+})
+export class Files implements OnInit, AfterViewInit {
+  private destroyRef = inject(DestroyRef);
+  private userService = inject(UserService);
+  private paginator = viewChild(MatPaginator);
+
+  readonly apiUrl: string = environment.apiUrl;
+  readonly imagePath: string = environment.imageUrl;
+
+  readonly sortOrder = ['ASC', 'DESC'];
+
+  sort = model<'ASC' | 'DESC'>('ASC');
+
+  displayedColumns: string[] = ['files'];
+
+  filesData: WritableSignal<AttachmentsType[]> = signal([]);
+  resultsLength = signal(0);
+
+  ngOnInit(): void {
+    this.userService
+      .getAllFiles('', this.paginator()?.pageSize, this.paginator()?.pageIndex! + 1)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.filesData.set(res.data?.data || []);
+          this.resultsLength.set(res.data?.total || 0);
+        },
+      });
+  }
+
+  ngAfterViewInit(): void {
+    this.paginator()
+      ?.page.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.userService
+            .getAllFiles('', this.paginator()?.pageSize, this.paginator()?.pageIndex)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: (res) => {
+                this.filesData.set(res.data?.data || []);
+                this.resultsLength.set(res.data?.total || 0);
+              },
+            });
+        },
+      });
+  }
+}

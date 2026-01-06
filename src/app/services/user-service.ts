@@ -7,6 +7,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RecentlyMessagedUsers } from '../models/recently-messaged-users';
 import { Router } from '@angular/router';
 import { PaginatedResponse, SearchUserResponse } from '../models/search';
+import { AttachmentsType } from '../models/chat';
 
 @Injectable({
   providedIn: 'root',
@@ -53,5 +54,17 @@ export class UserService {
 
   uploadFile(formData: FormData) {
     return this.http.post<GlobalResponse<{ files: any[] }>>(`${this.apiUrl}/upload`, formData);
+  }
+
+  getAllFiles(query?: string, limit?: number, page?: number) {
+    const params = new URLSearchParams();
+    if (query) params.append('search', query);
+    if (limit !== undefined) params.append('limit', limit.toString());
+    if (page !== undefined) params.append('page', page.toString());
+
+    const queryString = params.toString();
+    const url = queryString ? `${this.apiUrl}/users/files?${queryString}` : `${this.apiUrl}/users/files`;
+
+    return this.http.get<GlobalResponse<PaginatedResponse<AttachmentsType>>>(url);
   }
 }
