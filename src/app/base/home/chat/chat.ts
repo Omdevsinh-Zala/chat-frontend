@@ -286,14 +286,14 @@ export class Chat implements OnInit, AfterViewInit {
   messageInput = viewChild<ElementRef<HTMLTextAreaElement>>('messageInput');
 
   adjustTextareaHeight(textarea: HTMLTextAreaElement) {
-    if (textarea.value && !this.isTypingStatusSend()) {
+    const val = textarea.value;
+    if (val && !this.isTypingStatusSend()) {
       this.socketService.socket.emit('typing', {
         receiverId: this.chatId(),
         isTyping: true,
       });
       this.isTypingStatusSend.set(true);
-    }
-    if (!textarea.value && this.isTypingStatusSend()) {
+    } else if (!val && this.isTypingStatusSend()) {
       this.socketService.socket.emit('typing', {
         receiverId: this.chatId(),
         isTyping: false,
@@ -304,59 +304,69 @@ export class Chat implements OnInit, AfterViewInit {
     textarea.style.height = textarea.scrollHeight + 'px';
   }
 
-  sendMessage(event: any) {
+  private resetUI() {
+    this.message.set('');
+    this.isAssetsEntered.set(false);
+    this.assetsData.set([]);
+    this.base64AssetsData.set([]);
+
+    const textarea = this.messageInput()?.nativeElement;
+    if (textarea) {
+      textarea.style.height = 'auto';
+    }
+
+    if (this.isTypingStatusSend()) {
+      this.socketService.socket.emit('typing', {
+        receiverId: this.chatId(),
+        isTyping: false,
+      });
+      this.isTypingStatusSend.set(false);
+    }
+  }
+
+  sendMessage(event?: Event) {
     if (event) {
       event.preventDefault();
     }
-    if (this.assetsData().length > 0) {
+
+    const messageContent = this.message().trim();
+    const assets = this.assetsData();
+
+    if (!messageContent && assets.length === 0) {
+      return;
+    }
+
+    if (assets.length > 0) {
       const formData = new FormData();
-      for (let i = 0; i < this.assetsData().length; i++) {
-        formData.append('files', this.assetsData()[i]);
-      }
+      assets.forEach((file) => formData.append('files', file));
+
       this.userData.uploadFile(formData).subscribe({
         next: (res) => {
           if (res.data?.files && res.data.files.length > 0) {
             this.socketService.socket.emit('chatMessagesSend', {
-              message: this.message(),
+              message: messageContent,
               receiverId: this.chatId(),
               messageType: 'mixed',
               attachments: res.data.files,
             });
-
-            this.message.set('');
-            const textarea = this.messageInput()?.nativeElement;
-            if (textarea) {
-              textarea.style.height = 'auto';
-            }
+            this.resetUI();
           }
         },
         error: (err) => {
           console.error('File upload failed', err);
         },
       });
-      this.socketService.socket.emit('typing', {
-        receiverId: this.chatId(),
-        isTyping: false,
-      });
-      this.assetsData.update(() => []);
-      this.base64AssetsData.update(() => []);
-      this.isAssetsEntered.set(false);
+      return;
     }
-    if (!this.message()) return;
-    this.socketService.socket.emit('chatMessagesSend', {
-      message: this.message(),
-      receiverId: this.chatId(),
-    });
-    this.socketService.socket.emit('typing', {
-      receiverId: this.chatId(),
-      isTyping: false,
-    });
-    this.message.set('');
 
-    // Reset textarea height
-    const textarea = this.messageInput()?.nativeElement;
-    if (textarea) {
-      textarea.style.height = 'auto';
+    // Text-only message
+    if (messageContent) {
+      this.socketService.socket.emit('chatMessagesSend', {
+        message: messageContent,
+        receiverId: this.chatId(),
+        messageType: 'text',
+      });
+      this.resetUI();
     }
   }
 
@@ -366,12 +376,15 @@ export class Chat implements OnInit, AfterViewInit {
       const fileArray = Array.from(files) as File[];
       this.isAssetsEntered.set(true);
       this.assetsData.update((data) => [...data, ...fileArray]);
-      this.convertFilesToBase64(fileArray);
+      this.prepareFilesPreview(fileArray);
 
-      this.socketService.socket.emit('typing', {
-        receiverId: this.chatId(),
-        isTyping: false,
-      });
+      if (this.isTypingStatusSend()) {
+        this.socketService.socket.emit('typing', {
+          receiverId: this.chatId(),
+          isTyping: false,
+        });
+        this.isTypingStatusSend.set(false);
+      }
     }
     // Reset input
     event.target.value = '';
@@ -391,9 +404,9 @@ export class Chat implements OnInit, AfterViewInit {
     element?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  convertFilesToBase64(files: File[]) {
+  prepareFilesPreview(files: File[]) {
     this.base64AssetsData.update((data) => [
-      ...new Array(files.length).fill({ type: '', data: '' }),
+      ...new Array(files.length).fill({ file_type: '', file_url: '' }),
       ...data,
     ]);
 
