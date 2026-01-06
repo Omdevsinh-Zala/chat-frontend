@@ -127,7 +127,69 @@ export class Settings implements AfterViewInit {
       class: 'lavender-theme',
       isActive: false,
     },
+    {
+      name: 'Indigo Electric',
+      class: 'indigo-electric-theme',
+      isActive: false,
+    },
+    {
+      name: 'Solar Citrus',
+      class: 'solar-citrus-theme',
+      isActive: false,
+    },
+    {
+      name: 'Neon Mint',
+      class: 'neon-mint-theme',
+      isActive: false,
+    },
+    {
+      name: 'Berry Blast',
+      class: 'berry-blast-theme',
+      isActive: false,
+    },
+    {
+      name: 'Aurora',
+      class: 'aurora-theme',
+      isActive: false,
+    },
+    {
+      name: 'Cosmic Fusion',
+      class: 'cosmic-fusion-theme',
+      isActive: false,
+      gradient: 'linear-gradient(135deg, #13072e 0%, #3f2b96 50%, #a8c0ff 100%)',
+    },
+    {
+      name: 'Ocean Breeze',
+      class: 'ocean-breeze-theme',
+      isActive: false,
+      gradient: 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)',
+    },
+    {
+      name: 'Midnight Ember',
+      class: 'midnight-ember-theme',
+      isActive: false,
+      gradient: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+    },
+    {
+      name: 'Tropical Sunset',
+      class: 'tropical-sunset-theme',
+      isActive: false,
+      gradient: 'linear-gradient(135deg, #fc00ff 0%, #00dbde 100%)',
+    },
+    {
+      name: 'Cyberpunk',
+      class: 'cyberpunk-theme',
+      isActive: false,
+      gradient: 'linear-gradient(135deg, #00c6ff 0%, #0072ff 100%)',
+    },
   ]);
+
+  getThemePreview(theme: any) {
+    if (theme.gradient) {
+      return theme.gradient;
+    }
+    return ''; // Will fall back to CSS class split preview
+  }
 
   isGlassEnabled = signal(false);
 

@@ -490,6 +490,276 @@ $lavender-palette: map.merge(
   )
 );
 
+// --- Indigo Electric Theme (Vibrant Indigo) ---
+$_indigo-primary: (
+  0: #000000,
+  10: #00006e,
+  20: #1900a8,
+  30: #3300ff,
+  40: #4338ca,
+  50: #4f46e5,
+  60: #6366f1,
+  70: #818cf8,
+  80: #a5b4fc,
+  90: #c7d2fe,
+  95: #e0e7ff,
+  98: #eef2ff,
+  99: #f5f3ff,
+  100: #ffffff,
+);
+$indigo-palette: map.merge(
+  $_indigo-primary,
+  (
+    secondary: $_midnight-secondary,
+    neutral: $_midnight-neutral,
+    neutral-variant: $_midnight-neutral-variant,
+    error: $_base-error,
+  )
+);
+
+// --- Solar Citrus Theme (Bright Orange/Yellow) ---
+$_solar-primary: (
+  0: #000000,
+  10: #2a1800,
+  20: #482a00,
+  30: #663d00,
+  40: #855000,
+  50: #a46400,
+  60: #c77b00,
+  70: #fbbf24,
+  80: #fcd34d,
+  90: #fde68a,
+  95: #fef3c7,
+  98: #fff9db,
+  99: #fffbff,
+  100: #ffffff,
+);
+$solar-palette: map.merge(
+  $_solar-primary,
+  (
+    secondary: $_sunset-secondary,
+    neutral: $_sunset-neutral,
+    neutral-variant: $_sunset-neutral-variant,
+    error: $_base-error,
+  )
+);
+
+// --- Neon Mint Theme (Vivid Green/Cyan) ---
+$_neon-primary: (
+  0: #000000,
+  10: #002111,
+  20: #003920,
+  30: #005230,
+  40: #006d42,
+  50: #008954,
+  60: #00a667,
+  70: #34d399,
+  80: #6ee7b7,
+  90: #a7f3d0,
+  95: #d1fae5,
+  98: #ecfdf5,
+  99: #f0fff9,
+  100: #ffffff,
+);
+$neon-palette: map.merge(
+  $_neon-primary,
+  (
+    secondary: $_forest-secondary,
+    neutral: $_forest-neutral,
+    neutral-variant: $_forest-neutral-variant,
+    error: $_base-error,
+  )
+);
+
+// --- Berry Blast Theme (Intense Pink) ---
+$_berry-primary: (
+  0: #000000,
+  10: #3f001d,
+  20: #670032,
+  30: #910048,
+  40: #bc005f,
+  50: #e91e63,
+  60: #f06292,
+  70: #f48fb1,
+  80: #f8bbd0,
+  90: #fce4ec,
+  95: #ffebf1,
+  98: #fff8f9,
+  99: #fffbff,
+  100: #ffffff,
+);
+$berry-palette: map.merge(
+  $_berry-primary,
+  (
+    secondary: $_lavender-secondary,
+    neutral: $_lavender-neutral,
+    neutral-variant: $_lavender-neutral-variant,
+    error: $_base-error,
+  )
+);
+
+// --- Aurora Theme (Teal/Purple Mix) ---
+$_aurora-primary: (
+  0: #000000,
+  10: #00201a,
+  20: #00372e,
+  30: #005044,
+  40: #006b5b,
+  50: #008672,
+  60: #00a38c,
+  70: #00c1a7,
+  80: #00dec0,
+  90: #00fada,
+  95: #a0fff2,
+  98: #dffffa,
+  99: #f0fffd,
+  100: #ffffff,
+);
+$aurora-palette: map.merge(
+  $_aurora-primary,
+  (
+    secondary: $_lavender-secondary,
+    neutral: $_lavender-neutral,
+    neutral-variant: $_lavender-neutral-variant,
+    error: $_base-error,
+  )
+);
+
+// --- Cosmic Fusion (Purple/Magenta Gradient) ---
+$_cosmic-primary: (
+  0: #000000,
+  10: #21005d,
+  20: #381e72,
+  30: #4f378b,
+  40: #6750a4,
+  50: #7f67be,
+  60: #9a82d0,
+  70: #b69df8,
+  80: #d0bcff,
+  90: #eaddff,
+  95: #f6edff,
+  98: #fff7ff,
+  99: #fffbff,
+  100: #ffffff,
+);
+$cosmic-palette: map.merge(
+  $_cosmic-primary,
+  (
+    secondary: $_lavender-secondary,
+    neutral: $_midnight-neutral,
+    neutral-variant: $_midnight-neutral-variant,
+    error: $_base-error,
+  )
+);
+
+// --- Ocean Breeze (Teal/Mint Gradient) ---
+$_ocean-primary: (
+  0: #000000,
+  10: #00201e,
+  20: #003734,
+  30: #00504b,
+  40: #006a64,
+  50: #00867d,
+  60: #00a397,
+  70: #33beb1,
+  80: #5edacc,
+  90: #7ff7e8,
+  95: #bcfff5,
+  98: #e6fffb,
+  99: #f3fffd,
+  100: #ffffff,
+);
+$ocean-palette: map.merge(
+  $_ocean-primary,
+  (
+    secondary: $_forest-secondary,
+    neutral: $_forest-neutral,
+    neutral-variant: $_forest-neutral-variant,
+    error: $_base-error,
+  )
+);
+
+// --- Midnight Ember (Navy/Orange Gradient) ---
+$_ember-primary: (
+  0: #000000,
+  10: #001945,
+  20: #002e6a,
+  30: #00458d,
+  40: #005eb1,
+  50: #0077d6,
+  60: #0091fb,
+  70: #4eb0ff,
+  80: #a2c9ff,
+  90: #d1e4ff,
+  95: #e8f0ff,
+  98: #f7f9ff,
+  99: #fcfcff,
+  100: #ffffff,
+);
+$ember-palette: map.merge(
+  $_ember-primary,
+  (
+    secondary: $_sunset-secondary,
+    neutral: $_midnight-neutral,
+    neutral-variant: $_midnight-neutral-variant,
+    error: $_base-error,
+  )
+);
+
+// --- Tropical Sunset (Yellow/Pink Gradient) ---
+$_tropical-primary: (
+  0: #000000,
+  10: #301400,
+  20: #502400,
+  30: #713500,
+  40: #934700,
+  50: #b65a00,
+  60: #db6e00,
+  70: #ff8400,
+  80: #ffb16e,
+  90: #ffdcc2,
+  95: #ffede4,
+  98: #fff8f5,
+  99: #fffbff,
+  100: #ffffff,
+);
+$tropical-palette: map.merge(
+  $_tropical-primary,
+  (
+    secondary: $_berry-primary,
+    neutral: $_sunset-neutral,
+    neutral-variant: $_sunset-neutral-variant,
+    error: $_base-error,
+  )
+);
+
+// --- Cyberpunk (Blue/Purple Gradient) ---
+$_cyber-primary: (
+  0: #000000,
+  10: #00006e,
+  20: #0000ba,
+  30: #0000ed,
+  40: #3333ff,
+  50: #5c5cff,
+  60: #7a7aff,
+  70: #9999ff,
+  80: #b8b8ff,
+  90: #d6d6ff,
+  95: #e8e8ff,
+  98: #f5f5ff,
+  99: #fcfcff,
+  100: #ffffff,
+);
+$cyber-palette: map.merge(
+  $_cyber-primary,
+  (
+    secondary: $_indigo-primary,
+    neutral: $_midnight-neutral,
+    neutral-variant: $_midnight-neutral-variant,
+    error: $_base-error,
+  )
+);
+
 // --- Theme Class Definitions ---
 .midnight-theme {
   @include mat.theme(
@@ -527,71 +797,178 @@ $lavender-palette: map.merge(
     )
   );
 }
+.indigo-electric-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: $indigo-palette,
+      ),
+    )
+  );
+}
+.solar-citrus-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: $solar-palette,
+      ),
+    )
+  );
+}
+.neon-mint-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: $neon-palette,
+      ),
+    )
+  );
+}
+.berry-blast-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: $berry-palette,
+      ),
+    )
+  );
+}
+.aurora-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: $aurora-palette,
+      ),
+    )
+  );
+}
 
-// Universal Adaptive Glass Mode
+.cosmic-fusion-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: $cosmic-palette,
+      ),
+    )
+  );
+  --app-bg-gradient: linear-gradient(135deg, #13072e 0%, #3f2b96 50%, #a8c0ff 100%);
+}
+.ocean-breeze-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: $ocean-palette,
+      ),
+    )
+  );
+  --app-bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+}
+.midnight-ember-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: $ember-palette,
+      ),
+    )
+  );
+  --app-bg-gradient: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+}
+.tropical-sunset-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: $tropical-palette,
+      ),
+    )
+  );
+  --app-bg-gradient: linear-gradient(135deg, #fc00ff 0%, #00dbde 100%);
+}
+.cyberpunk-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: $cyber-palette,
+      ),
+    )
+  );
+  --app-bg-gradient: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+}
+
 // Universal Adaptive Glass Mode
 .glass-theme {
-  // Break circularity by defining glass-bg based on Primary color white/black mix
-  // This keeps the theme's hue while avoiding self-reference
-  --glass-bg: color-mix(in srgb, var(--mat-sys-primary), white 95%);
-  --glass-bg: color-mix(in srgb, var(--glass-bg), transparent 40%);
-  --glass-border: color-mix(in srgb, var(--mat-sys-primary), transparent 80%);
-  --glass-blur: blur(25px) saturate(180%);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+  // Enhanced Glass Variables
+  --glass-bg: color-mix(in srgb, var(--mat-sys-surface-container), transparent 40%);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-blur: blur(20px) saturate(180%);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  --glass-edge: 1px solid var(--glass-border);
 
   // Redefine system surface tokens to propagate glass effect deeply
-  // These are now non-circular because --glass-bg doesn't reference them
   --mat-sys-surface: var(--glass-bg);
-  --mat-sys-surface-container: color-mix(in srgb, var(--glass-bg), transparent 20%);
-  --mat-sys-surface-container-low: color-mix(in srgb, var(--glass-bg), transparent 30%);
-  --mat-sys-surface-container-lowest: color-mix(in srgb, var(--glass-bg), transparent 40%);
-  --mat-sys-surface-container-high: color-mix(in srgb, var(--glass-bg), white 10%);
-  --mat-sys-surface-container-highest: color-mix(in srgb, var(--glass-bg), white 20%);
-  --mat-sys-primary-container: color-mix(in srgb, var(--mat-sys-primary), transparent 85%);
-  --mat-sys-secondary-container: color-mix(in srgb, var(--mat-sys-secondary), transparent 85%);
+  --mat-sys-surface-container: color-mix(in srgb, var(--glass-bg), transparent 10%);
+  --mat-sys-surface-container-low: color-mix(in srgb, var(--glass-bg), transparent 20%);
+  --mat-sys-surface-container-lowest: color-mix(in srgb, var(--glass-bg), transparent 30%);
+  --mat-sys-surface-container-high: color-mix(in srgb, var(--glass-bg), white 5%);
+  --mat-sys-surface-container-highest: color-mix(in srgb, var(--glass-bg), white 10%);
+  --mat-sys-primary-container: color-mix(in srgb, var(--mat-sys-primary), transparent 80%);
+  --mat-sys-secondary-container: color-mix(in srgb, var(--mat-sys-secondary), transparent 80%);
   --mat-sys-outline-variant: var(--glass-border);
 
   body {
     background: fixed
       linear-gradient(
         135deg,
-        color-mix(in srgb, var(--mat-sys-primary), white 80%) 0%,
-        color-mix(in srgb, var(--mat-sys-secondary), white 80%) 50%,
-        color-mix(in srgb, var(--mat-sys-tertiary), white 80%) 100%
+        color-mix(in srgb, var(--mat-sys-primary), transparent 85%) 0%,
+        color-mix(in srgb, var(--mat-sys-surface), transparent 95%) 50%,
+        color-mix(in srgb, var(--mat-sys-tertiary), transparent 85%) 100%
       );
+    // Overlay the theme's custom gradient if present with high transparency
+    background-image: var(--app-bg-gradient),
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--mat-sys-primary), transparent 85%) 0%,
+        color-mix(in srgb, var(--mat-sys-surface), transparent 95%) 50%,
+        color-mix(in srgb, var(--mat-sys-tertiary), transparent 85%) 100%
+      );
+    background-blend-mode: overlay;
     background-size: 400% 400%;
     animation: glass-gradient 15s ease infinite;
 
     &::before {
       content: '';
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(0, 0, 0, 0.05) 100%);
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(
+        circle at 50% 50%,
+        color-mix(in srgb, var(--mat-sys-primary), transparent 90%) 0%,
+        transparent 50%
+      );
+      animation: aurora-float 20s infinite alternate-reverse;
       pointer-events: none;
       z-index: -1;
     }
   }
 
   &.dark-theme {
-    --glass-bg: color-mix(in srgb, var(--mat-sys-primary), black 90%);
-    --glass-bg: color-mix(in srgb, var(--glass-bg), transparent 50%);
-    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-bg: color-mix(in srgb, var(--mat-sys-surface-container), transparent 60%);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 
     body {
       background: fixed
         linear-gradient(
           135deg,
-          color-mix(in srgb, var(--mat-sys-primary), black 60%) 0%,
-          color-mix(in srgb, var(--mat-sys-secondary), black 60%) 50%,
-          color-mix(in srgb, var(--mat-sys-tertiary), black 60%) 100%
+          color-mix(in srgb, var(--mat-sys-primary), black 70%) 0%,
+          #000000 50%,
+          color-mix(in srgb, var(--mat-sys-tertiary), black 70%) 100%
         );
     }
   }
 
-  // Ensure major layout components AND their content areas are glass
+  // Deep Premium Glass Application
   .mat-drawer,
   .mat-drawer-container,
   .mat-drawer-content,
@@ -603,58 +980,59 @@ $lavender-palette: map.merge(
     background-color: var(--glass-bg) !important;
     backdrop-filter: var(--glass-blur) !important;
     -webkit-backdrop-filter: var(--glass-blur) !important;
-    border: 1px solid var(--glass-border) !important;
+    border: var(--glass-edge) !important;
     box-shadow: var(--glass-shadow) !important;
     background-image: none !important;
-    border: 0 !important;
   }
 
-  .mat-drawer,
-  .mat-drawer-container,
-  .mat-drawer-content {
-    box-shadow: none !important;
-  }
-
-  // Specific overrides for Nested areas to avoid "double frosting" saturation
-  .mat-mdc-dialog-content,
-  .mat-drawer-content {
+  // Remove redundant borders and backgrounds in nested containers
+  .mat-drawer-content,
+  .mat-mdc-dialog-content {
+    background-color: transparent !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border: none !important;
     box-shadow: none !important;
-    background-color: transparent !important;
   }
 
   .mat-drawer {
-    border-right: 1px solid var(--glass-border) !important;
-    border-top-right-radius: 24px !important;
-    border-bottom-right-radius: 24px !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  // Better Buttons in Glass Mode
+  .mat-mdc-button-base:not(.mat-mdc-raised-button) {
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   // Glass Scrollbar styles
   * {
     &::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
     }
     &::-webkit-scrollbar-track {
       background: transparent;
     }
     &::-webkit-scrollbar-thumb {
-      background: color-mix(in srgb, var(--mat-sys-primary), transparent 80%);
+      background: color-mix(in srgb, var(--mat-sys-primary), transparent 70%);
       border-radius: 10px;
-      border: 2px solid transparent;
-      background-clip: padding-box;
-
       &:hover {
-        background: color-mix(in srgb, var(--mat-sys-primary), transparent 60%);
-        background-clip: padding-box;
+        background: var(--mat-sys-primary);
       }
     }
-
-    // Firefox support
     scrollbar-width: thin;
-    scrollbar-color: color-mix(in srgb, var(--mat-sys-primary), transparent 80%) transparent;
+    scrollbar-color: color-mix(in srgb, var(--mat-sys-primary), transparent 70%) transparent;
+  }
+}
+
+@keyframes aurora-float {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(5%, 10%) rotate(10deg);
   }
 }
 
@@ -672,6 +1050,8 @@ $lavender-palette: map.merge(
 
 body {
   background-color: var(--mat-sys-surface);
+  background-image: var(--app-bg-gradient, none);
+  background-attachment: fixed;
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
   margin: 0;
