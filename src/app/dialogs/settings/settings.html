@@ -26,9 +26,9 @@
   </mat-drawer-container>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-    @if(!isDynamicContentChange) {
-        <button matButton="filled">Save</button>
-    }
+  @if(!isDynamicContentChange) {
+  <button matButton="filled">Save</button>
+  }
   <button matButton mat-dialog-close>Close</button>
 </mat-dialog-actions>
 
@@ -48,6 +48,35 @@
     </li>
     }
   </ul>
+  <div class="ps-2 pb-3 mt-6 flex gap-2 items-center">
+    <h3 class="text-3xl">Glass Effect</h3>
+    <span class="px-2 py-1 text-xs rounded-md bg-(--mat-sys-primary) text-(--mat-sys-on-primary)" >Experimental</span>
+  </div>
+  <div class="px-4 py-2">
+    <div
+      class="flex items-center justify-between p-4 border-2 border-(--mat-sys-outline) rounded-(--mat-sys-corner-medium) hover:cursor-pointer hover:bg-(--mat-sys-surface-container-high) transition-colors select-none"
+      (click)="toggleGlass()"
+      [style.border-color]="isGlassEnabled() ? 'var(--mat-sys-primary)' : ''"
+    >
+      <div class="flex items-center gap-4">
+        <mat-icon>{{ isGlassEnabled() ? 'blur_on' : 'blur_off' }}</mat-icon>
+        <div>
+          <p class="font-bold">Enable Glassmorphism</p>
+          <p class="text-sm opacity-70">Apply translucent frosted glass effect</p>
+        </div>
+      </div>
+      <div
+        class="size-6 rounded-full border-2 flex items-center justify-center"
+        [style.background]="isGlassEnabled() ? 'var(--mat-sys-primary)' : 'transparent'"
+      >
+        @if(isGlassEnabled()) {
+        <mat-icon class="text-xs text-(--mat-sys-on-primary)!">check</mat-icon>
+        }
+      </div>
+    </div>
+  </div>
+
+  <h3 class="ps-2 text-3xl pb-3 mt-6">Themes</h3>
   <ul class="px-4 py-4 grid grid-cols-3 gap-4 w-full">
     @for (theme of matThemes(); track $index) {
     <li

@@ -1,14 +1,28 @@
 <mat-drawer-container class="h-dvh w-auto">
-  <mat-drawer mode="side" opened class="w-22! p-4 bg-(--mat-sys-primary-container)! rounded-none!" >
+  <mat-drawer mode="side" opened class="w-22! p-4 rounded-none!">
     <div class="flex items-center flex-col h-full base-main-link-wrap">
-      <ul class="flex flex-col items-center" >
+      <ul class="flex flex-col items-center">
         <li class="mb-6">
-          <a mat-icon-button matTooltip="Home" aria-label="Chats page link" [routerLink]="['/home', user()?.active_chat_id]" routerLinkActive="filled" matTooltipPosition="right">
+          <a
+            mat-icon-button
+            matTooltip="Home"
+            aria-label="Chats page link"
+            [routerLink]="['/home', user()?.active_chat_id]"
+            routerLinkActive="filled"
+            matTooltipPosition="right"
+          >
             <mat-icon class="text-3xl">home</mat-icon>
           </a>
         </li>
         <li class="mb-6">
-          <a mat-icon-button matTooltip="Contacts" aria-label="Contacts page link" routerLink="contacts" routerLinkActive="filled" matTooltipPosition="right">
+          <a
+            mat-icon-button
+            matTooltip="Contacts"
+            aria-label="Contacts page link"
+            routerLink="contacts"
+            routerLinkActive="filled"
+            matTooltipPosition="right"
+          >
             <mat-icon class="text-3xl">contacts</mat-icon>
           </a>
         </li>
@@ -18,7 +32,14 @@
           </a>
         </li> -->
         <li class="mb-6">
-          <a mat-icon-button matTooltip="Files" aria-label="Files page link" routerLink="files" routerLinkActive="filled" matTooltipPosition="right">
+          <a
+            mat-icon-button
+            matTooltip="Files"
+            aria-label="Files page link"
+            routerLink="files"
+            routerLinkActive="filled"
+            matTooltipPosition="right"
+          >
             <mat-icon class="text-3xl">files</mat-icon>
           </a>
         </li>
@@ -36,24 +57,31 @@
         </li> -->
         <li>
           @if(user()?.first_name) {
-            <div matIconButton [matMenuTriggerFor]="profile" aria-label="Profile image with menu" class="hover:cursor-pointer relative h-12 w-12" [matTooltip]="user()?.first_name" matTooltipPosition="right">
-              <img
-                [src]=" imagePath + 'profileImages/' + user()?.avatar_url"
-                alt="User Avatar"
-                class="h-12 w-12 rounded-full"
-              />
-              <span
-                class="absolute bottom-0 right-0 h-4 w-4 rounded-full border-2"
-                [class.active]="user()?.is_active"
-                [class.away]="!user()?.is_active"
-              ></span>
-            </div>
+          <div
+            matIconButton
+            [matMenuTriggerFor]="profile"
+            aria-label="Profile image with menu"
+            class="hover:cursor-pointer relative h-12 w-12"
+            [matTooltip]="user()?.first_name"
+            matTooltipPosition="right"
+          >
+            <img
+              [src]="imagePath + 'profileImages/' + user()?.avatar_url"
+              alt="User Avatar"
+              class="h-12 w-12 rounded-full"
+            />
+            <span
+              class="absolute bottom-0 right-0 h-4 w-4 rounded-full border-2"
+              [class.active]="user()?.is_active"
+              [class.away]="!user()?.is_active"
+            ></span>
+          </div>
           }
         </li>
       </ul>
     </div>
   </mat-drawer>
-  <mat-drawer-content>
+  <mat-drawer-content class="overflow-hidden!" >
     <div>
       <router-outlet />
     </div>
@@ -69,11 +97,11 @@
     <mat-icon>person</mat-icon>
     <span>Profile</span>
   </a> -->
-  <button mat-menu-item (click)="openSettings()" aria-label="Settings page link" >
+  <button mat-menu-item (click)="openSettings()" aria-label="Settings page link">
     <mat-icon>settings</mat-icon>
     <span>Settings</span>
   </button>
-  <button mat-menu-item (click)="logout()" aria-label="Logout button" >
+  <button mat-menu-item (click)="logout()" aria-label="Logout button">
     <mat-icon>logout</mat-icon>
     <span>Logout</span>
   </button>

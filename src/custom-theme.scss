@@ -1,8 +1,4 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
+@use 'sass:map';
 @use '@angular/material' as mat;
 
 html {
@@ -128,22 +124,568 @@ html {
   );
 }
 
+// ---------------------------------------------------------
+// CUSTOM THEMES (Material 3 Comprehensive Palettes)
+// ---------------------------------------------------------
+
+// --- Shared Base Palette (Error) ---
+$_base-error: (
+  0: #000000,
+  10: #410002,
+  20: #690005,
+  30: #93000a,
+  40: #ba1a1a,
+  50: #de3730,
+  60: #ff5449,
+  70: #ff897d,
+  80: #ffb4ab,
+  90: #ffdad6,
+  95: #ffedea,
+  98: #fff8f7,
+  99: #fffbff,
+  100: #ffffff,
+);
+
+// --- Midnight Theme (Deep Blue) ---
+$_midnight-primary: (
+  0: #000000,
+  10: #001b3d,
+  20: #00305f,
+  30: #004782,
+  40: #005ea5,
+  50: #0079ca,
+  60: #0095f0,
+  70: #49b0ff,
+  80: #9bcbff,
+  90: #d1e4ff,
+  95: #e8f0ff,
+  98: #f7f9ff,
+  99: #fcfcff,
+  100: #ffffff,
+);
+$_midnight-secondary: (
+  0: #000000,
+  10: #001d36,
+  20: #003355,
+  30: #004a75,
+  40: #006295,
+  50: #007bb6,
+  60: #0096d7,
+  70: #42b1f8,
+  80: #93ccff,
+  90: #cce5ff,
+  95: #e5f1ff,
+  98: #f2f9ff,
+  99: #f9fcff,
+  100: #ffffff,
+);
+$_midnight-neutral: (
+  0: #000000,
+  10: #1a1c1e,
+  20: #2f3033,
+  30: #46474a,
+  40: #5d5e62,
+  50: #76777a,
+  60: #909194,
+  70: #abaaaf,
+  80: #c6c6ca,
+  90: #e2e2e6,
+  95: #f1f0f4,
+  98: #f9f9fd,
+  99: #fcfcff,
+  100: #ffffff,
+  4: #0e0e11,
+  6: #131316,
+  12: #201f22,
+  17: #2a292d,
+  22: #353438,
+  24: #3a393c,
+  87: #dcd9dd,
+  92: #ebe7eb,
+  94: #f0edf1,
+  96: #f6f2f7,
+);
+$_midnight-neutral-variant: (
+  0: #000000,
+  10: #1b1b23,
+  20: #303038,
+  30: #46464f,
+  40: #5e5e67,
+  50: #777680,
+  60: #90909a,
+  70: #abaab4,
+  80: #c7c5d0,
+  90: #e4e1ec,
+  95: #f2effa,
+  98: #fbf8ff,
+  99: #fffbff,
+  100: #ffffff,
+);
+
+$midnight-palette: map.merge(
+  $_midnight-primary,
+  (
+    secondary: $_midnight-secondary,
+    neutral: $_midnight-neutral,
+    neutral-variant: $_midnight-neutral-variant,
+    error: $_base-error,
+  )
+);
+
+// --- Sunset Theme (Warm Coral) ---
+$_sunset-primary: (
+  0: #000000,
+  10: #331100,
+  20: #552200,
+  30: #773300,
+  40: #ff5e3a,
+  50: #ff7b5c,
+  60: #ff987e,
+  70: #ffb5a0,
+  80: #ffd2c2,
+  90: #ffede4,
+  95: #fff5f0,
+  98: #fff9f7,
+  99: #fffbff,
+  100: #ffffff,
+);
+$_sunset-secondary: (
+  0: #000000,
+  10: #2d1600,
+  20: #4a2800,
+  30: #693b00,
+  40: #895000,
+  50: #aa6600,
+  60: #cd7d00,
+  70: #f19500,
+  80: #ffb85d,
+  90: #ffe0be,
+  95: #fff1e1,
+  98: #fff8f2,
+  99: #fffbff,
+  100: #ffffff,
+);
+$_sunset-neutral: (
+  0: #000000,
+  10: #201a17,
+  20: #352f2b,
+  30: #4c4541,
+  40: #655d58,
+  50: #7e7570,
+  60: #988f89,
+  70: #b3a9a3,
+  80: #cfc4be,
+  90: #ecdfd9,
+  95: #fbede7,
+  98: #fff8f5,
+  99: #fffbff,
+  100: #ffffff,
+  4: #0e0d0c,
+  6: #131211,
+  12: #201f1d,
+  17: #2a2927,
+  22: #353432,
+  24: #3a3937,
+  87: #dcd9d4,
+  92: #ebe7e3,
+  94: #f0ede9,
+  96: #f6f2ee,
+);
+$_sunset-neutral-variant: (
+  0: #000000,
+  10: #251914,
+  20: #3b2d28,
+  30: #53433d,
+  40: #6c5a54,
+  50: #86726c,
+  60: #a18c85,
+  70: #bda69f,
+  80: #d9c1b9,
+  90: #f6ddd5,
+  95: #ffede7,
+  98: #fff8f5,
+  99: #fffbff,
+  100: #ffffff,
+);
+
+$sunset-palette: map.merge(
+  $_sunset-primary,
+  (
+    secondary: $_sunset-secondary,
+    neutral: $_sunset-neutral,
+    neutral-variant: $_sunset-neutral-variant,
+    error: $_base-error,
+  )
+);
+
+// --- Forest Theme (Organic Green) ---
+$_forest-primary: (
+  0: #000000,
+  10: #00210e,
+  20: #00391c,
+  30: #00522b,
+  40: #0a6c3d,
+  50: #2c8654,
+  60: #48a16c,
+  70: #63bd85,
+  80: #7fd99f,
+  90: #9af5ba,
+  95: #bcffcf,
+  98: #e6fff0,
+  99: #f2fff6,
+  100: #ffffff,
+);
+$_forest-secondary: (
+  0: #000000,
+  10: #00210b,
+  20: #003916,
+  30: #005224,
+  40: #006d33,
+  50: #008942,
+  60: #00a651,
+  70: #3bc36b,
+  80: #61de83,
+  90: #83fba2,
+  95: #bcffcf,
+  98: #e6fff0,
+  99: #f2fff6,
+  100: #ffffff,
+);
+$_forest-neutral: (
+  0: #000000,
+  10: #191c19,
+  20: #2e312d,
+  30: #454743,
+  40: #5c5f5b,
+  50: #757873,
+  60: #8f928d,
+  70: #aaada7,
+  80: #c5c8c2,
+  90: #e2e4de,
+  95: #f0f3ec,
+  98: #f8fbef,
+  99: #fcfcf4,
+  100: #ffffff,
+  4: #0d0f0d,
+  6: #121412,
+  12: #1e201e,
+  17: #282a28,
+  22: #333533,
+  24: #383a38,
+  87: #dcded8,
+  92: #ebede7,
+  94: #f1f3ec,
+  96: #f6f8f1,
+);
+$_forest-neutral-variant: (
+  0: #000000,
+  10: #171d16,
+  20: #2b322a,
+  30: #424940,
+  40: #596157,
+  50: #72796f,
+  60: #8b9388,
+  70: #a6ada2,
+  80: #c1c9bc,
+  90: #dde5d8,
+  95: #ecf3eb,
+  98: #f4fbf0,
+  99: #f7fef3,
+  100: #ffffff,
+);
+
+$forest-palette: map.merge(
+  $_forest-primary,
+  (
+    secondary: $_forest-secondary,
+    neutral: $_forest-neutral,
+    neutral-variant: $_forest-neutral-variant,
+    error: $_base-error,
+  )
+);
+
+// --- Lavender Theme (Soft Violet) ---
+$_lavender-primary: (
+  0: #000000,
+  10: #1b133d,
+  20: #302854,
+  30: #463f6c,
+  40: #5d5685,
+  50: #766f9f,
+  60: #9088ba,
+  70: #aba3d6,
+  80: #c6bff2,
+  90: #e3deff,
+  95: #f1efff,
+  98: #f9f8ff,
+  99: #fcfcff,
+  100: #ffffff,
+);
+$_lavender-secondary: (
+  0: #000000,
+  10: #1e133d,
+  20: #332854,
+  30: #493f6d,
+  40: #615686,
+  50: #796f9f,
+  60: #9389ba,
+  70: #ad93d6,
+  80: #c9bff2,
+  90: #e5deff,
+  95: #f2efff,
+  98: #faf8ff,
+  99: #fdfcff,
+  100: #ffffff,
+);
+$_lavender-neutral: (
+  0: #000000,
+  10: #1c1a20,
+  20: #312f35,
+  30: #48464b,
+  40: #605d63,
+  50: #78767c,
+  60: #929096,
+  70: #adaab0,
+  80: #c8c5cb,
+  90: #e5e1e7,
+  95: #f3f0f6,
+  98: #fcf8fe,
+  99: #fffbff,
+  100: #ffffff,
+  4: #0e0e11,
+  6: #131316,
+  12: #201f22,
+  17: #2a292d,
+  22: #353438,
+  24: #3a393c,
+  87: #dcd9dd,
+  92: #ebe7eb,
+  94: #f0edf1,
+  96: #f6f2f7,
+);
+$_lavender-neutral-variant: (
+  0: #000000,
+  10: #1c1a25,
+  20: #312e3a,
+  30: #484551,
+  40: #5f5c6a,
+  50: #787583,
+  60: #928f9d,
+  70: #adabb8,
+  80: #c9c6d4,
+  90: #e5e2f0,
+  95: #f3f0fe,
+  98: #fbf8ff,
+  99: #fffbff,
+  100: #ffffff,
+);
+
+$lavender-palette: map.merge(
+  $_lavender-primary,
+  (
+    secondary: $_lavender-secondary,
+    neutral: $_lavender-neutral,
+    neutral-variant: $_lavender-neutral-variant,
+    error: $_base-error,
+  )
+);
+
+// --- Theme Class Definitions ---
+.midnight-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: $midnight-palette,
+      ),
+    )
+  );
+}
+.sunset-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: $sunset-palette,
+      ),
+    )
+  );
+}
+.forest-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: $forest-palette,
+      ),
+    )
+  );
+}
+.lavender-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: $lavender-palette,
+      ),
+    )
+  );
+}
+
+// Universal Adaptive Glass Mode
+// Universal Adaptive Glass Mode
+.glass-theme {
+  // Break circularity by defining glass-bg based on Primary color white/black mix
+  // This keeps the theme's hue while avoiding self-reference
+  --glass-bg: color-mix(in srgb, var(--mat-sys-primary), white 95%);
+  --glass-bg: color-mix(in srgb, var(--glass-bg), transparent 40%);
+  --glass-border: color-mix(in srgb, var(--mat-sys-primary), transparent 80%);
+  --glass-blur: blur(25px) saturate(180%);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+
+  // Redefine system surface tokens to propagate glass effect deeply
+  // These are now non-circular because --glass-bg doesn't reference them
+  --mat-sys-surface: var(--glass-bg);
+  --mat-sys-surface-container: color-mix(in srgb, var(--glass-bg), transparent 20%);
+  --mat-sys-surface-container-low: color-mix(in srgb, var(--glass-bg), transparent 30%);
+  --mat-sys-surface-container-lowest: color-mix(in srgb, var(--glass-bg), transparent 40%);
+  --mat-sys-surface-container-high: color-mix(in srgb, var(--glass-bg), white 10%);
+  --mat-sys-surface-container-highest: color-mix(in srgb, var(--glass-bg), white 20%);
+  --mat-sys-primary-container: color-mix(in srgb, var(--mat-sys-primary), transparent 85%);
+  --mat-sys-secondary-container: color-mix(in srgb, var(--mat-sys-secondary), transparent 85%);
+  --mat-sys-outline-variant: var(--glass-border);
+
+  body {
+    background: fixed
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--mat-sys-primary), white 80%) 0%,
+        color-mix(in srgb, var(--mat-sys-secondary), white 80%) 50%,
+        color-mix(in srgb, var(--mat-sys-tertiary), white 80%) 100%
+      );
+    background-size: 400% 400%;
+    animation: glass-gradient 15s ease infinite;
+
+    &::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(0, 0, 0, 0.05) 100%);
+      pointer-events: none;
+      z-index: -1;
+    }
+  }
+
+  &.dark-theme {
+    --glass-bg: color-mix(in srgb, var(--mat-sys-primary), black 90%);
+    --glass-bg: color-mix(in srgb, var(--glass-bg), transparent 50%);
+    --glass-border: rgba(255, 255, 255, 0.08);
+
+    body {
+      background: fixed
+        linear-gradient(
+          135deg,
+          color-mix(in srgb, var(--mat-sys-primary), black 60%) 0%,
+          color-mix(in srgb, var(--mat-sys-secondary), black 60%) 50%,
+          color-mix(in srgb, var(--mat-sys-tertiary), black 60%) 100%
+        );
+    }
+  }
+
+  // Ensure major layout components AND their content areas are glass
+  .mat-drawer,
+  .mat-drawer-container,
+  .mat-drawer-content,
+  .mat-mdc-card,
+  .mat-mdc-menu-panel,
+  .glass-card,
+  .mat-mdc-dialog-container .mdc-dialog__surface,
+  .mat-mdc-dialog-content {
+    background-color: var(--glass-bg) !important;
+    backdrop-filter: var(--glass-blur) !important;
+    -webkit-backdrop-filter: var(--glass-blur) !important;
+    border: 1px solid var(--glass-border) !important;
+    box-shadow: var(--glass-shadow) !important;
+    background-image: none !important;
+    border: 0 !important;
+  }
+
+  .mat-drawer,
+  .mat-drawer-container,
+  .mat-drawer-content {
+    box-shadow: none !important;
+  }
+
+  // Specific overrides for Nested areas to avoid "double frosting" saturation
+  .mat-mdc-dialog-content,
+  .mat-drawer-content {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+  }
+
+  .mat-drawer {
+    border-right: 1px solid var(--glass-border) !important;
+    border-top-right-radius: 24px !important;
+    border-bottom-right-radius: 24px !important;
+  }
+
+  // Glass Scrollbar styles
+  * {
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: color-mix(in srgb, var(--mat-sys-primary), transparent 80%);
+      border-radius: 10px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+
+      &:hover {
+        background: color-mix(in srgb, var(--mat-sys-primary), transparent 60%);
+        background-clip: padding-box;
+      }
+    }
+
+    // Firefox support
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--mat-sys-primary), transparent 80%) transparent;
+  }
+}
+
+@keyframes glass-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 body {
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
   margin: 0;
+  transition: background 0.5s ease;
+
+  // Default component backgrounds when not in glass mode
+  &:not(.glass-theme) {
+    .mat-drawer {
+      background-color: var(--mat-sys-primary-container);
+    }
+  }
 }
 
 html {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
   color-scheme: light dark;
   &.dark-theme {
     color-scheme: dark;
