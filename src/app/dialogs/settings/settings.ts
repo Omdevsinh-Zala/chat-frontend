@@ -107,17 +107,105 @@ export class Settings implements AfterViewInit {
       class: 'rose-theme',
       isActive: false,
     },
+    {
+      name: 'midnight',
+      class: 'midnight-theme',
+      isActive: false,
+    },
+    {
+      name: 'sunset',
+      class: 'sunset-theme',
+      isActive: false,
+    },
+    {
+      name: 'forest',
+      class: 'forest-theme',
+      isActive: false,
+    },
+    {
+      name: 'lavender',
+      class: 'lavender-theme',
+      isActive: false,
+    },
+    {
+      name: 'Indigo Electric',
+      class: 'indigo-electric-theme',
+      isActive: false,
+    },
+    {
+      name: 'Solar Citrus',
+      class: 'solar-citrus-theme',
+      isActive: false,
+    },
+    {
+      name: 'Neon Mint',
+      class: 'neon-mint-theme',
+      isActive: false,
+    },
+    {
+      name: 'Berry Blast',
+      class: 'berry-blast-theme',
+      isActive: false,
+    },
+    {
+      name: 'Aurora',
+      class: 'aurora-theme',
+      isActive: false,
+    },
+    {
+      name: 'Cosmic Fusion',
+      class: 'cosmic-fusion-theme',
+      isActive: false,
+      gradient: 'linear-gradient(135deg, #13072e 0%, #3f2b96 50%, #a8c0ff 100%)',
+    },
+    {
+      name: 'Ocean Breeze',
+      class: 'ocean-breeze-theme',
+      isActive: false,
+      gradient: 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)',
+    },
+    {
+      name: 'Midnight Ember',
+      class: 'midnight-ember-theme',
+      isActive: false,
+      gradient: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+    },
+    {
+      name: 'Tropical Sunset',
+      class: 'tropical-sunset-theme',
+      isActive: false,
+      gradient: 'linear-gradient(135deg, #fc00ff 0%, #00dbde 100%)',
+    },
+    {
+      name: 'Cyberpunk',
+      class: 'cyberpunk-theme',
+      isActive: false,
+      gradient: 'linear-gradient(135deg, #00c6ff 0%, #0072ff 100%)',
+    },
   ]);
+
+  getThemePreview(theme: any) {
+    if (theme.gradient) {
+      return theme.gradient;
+    }
+    return ''; // Will fall back to CSS class split preview
+  }
+
+  isGlassEnabled = signal(false);
 
   selectedMatTheme() {
     const bodyElement = window.document.getElementsByTagName('html')[0];
-    const index =  this.matThemes().findIndex((t) => bodyElement.classList.contains(t.class));
-    if(index === -1) {
+    const index = this.matThemes().findIndex((t) => bodyElement.classList.contains(t.class));
+    if (index === -1) {
       this.matThemes.update((themes) => themes.map((t, i) => ({ ...t, isActive: i === 0 })));
     } else {
       this.matThemes.update((themes) => themes.map((t, i) => ({ ...t, isActive: i === index })));
-      localStorage.setItem("matTheme", this.matThemes()[index].class)
+      localStorage.setItem('matTheme', this.matThemes()[index].class);
     }
+
+    // Initialize glass mode
+    const isGlass = bodyElement.classList.contains('glass-theme');
+    this.isGlassEnabled.set(isGlass);
   }
 
   matThemeChange(theme: any) {
@@ -130,12 +218,23 @@ export class Settings implements AfterViewInit {
     this.matThemes().forEach((t) => {
       bodyElement.classList.remove(t.class);
     });
-    if(theme.name === "azure-theme") {
-      localStorage.removeItem("matTheme");
+
+    bodyElement.classList.add(theme.class);
+    localStorage.setItem('matTheme', theme.class);
+  }
+
+  toggleGlass() {
+    const bodyElement = window.document.getElementsByTagName('html')[0];
+    const newState = !this.isGlassEnabled();
+    this.isGlassEnabled.set(newState);
+
+    if (newState) {
+      bodyElement.classList.add('glass-theme');
+      localStorage.setItem('isGlassEnabled', 'true');
     } else {
-      bodyElement.classList.add(theme.class);
-      localStorage.setItem("matTheme", theme.class)
-    };
+      bodyElement.classList.remove('glass-theme');
+      localStorage.setItem('isGlassEnabled', 'false');
+    }
   }
 
   systemThemes = signal([
@@ -169,22 +268,28 @@ export class Settings implements AfterViewInit {
     this.systemThemes().forEach((t) => {
       bodyElement.classList.remove(t.class);
     });
-    if(theme.name === "System") {
-      localStorage.removeItem("systemTheme");
+    if (theme.name === 'System') {
+      localStorage.removeItem('systemTheme');
     } else {
       bodyElement.classList.add(theme.class);
-      localStorage.setItem("systemTheme", theme.class)
+      localStorage.setItem('systemTheme', theme.class);
     }
   }
 
   selectSystemTheme() {
     const bodyElement = window.document.getElementsByTagName('html')[0];
-    if(bodyElement.classList.contains('light-theme')) {
-      this.systemThemes.update((themes) => themes.map((t) => ({ ...t, isActive: t.name === 'Light' })));
-    } else if(bodyElement.classList.contains('dark-theme')) {
-      this.systemThemes.update((themes) => themes.map((t) => ({ ...t, isActive: t.name === 'Dark' })));
+    if (bodyElement.classList.contains('light-theme')) {
+      this.systemThemes.update((themes) =>
+        themes.map((t) => ({ ...t, isActive: t.name === 'Light' }))
+      );
+    } else if (bodyElement.classList.contains('dark-theme')) {
+      this.systemThemes.update((themes) =>
+        themes.map((t) => ({ ...t, isActive: t.name === 'Dark' }))
+      );
     } else {
-      this.systemThemes.update((themes) => themes.map((t) => ({ ...t, isActive: t.name === 'System' })));
+      this.systemThemes.update((themes) =>
+        themes.map((t) => ({ ...t, isActive: t.name === 'System' }))
+      );
     }
   }
 

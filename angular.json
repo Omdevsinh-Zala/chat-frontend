@@ -45,10 +45,10 @@
               "outputHashing": "all"
             },
             "development": {
-              "optimization": true,
-              "extractLicenses": true,
-              "sourceMap": false,
-              "outputHashing": "all",
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "outputHashing": "none",
               "security": {
                 "autoCsp": true
               },

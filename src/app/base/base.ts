@@ -4,7 +4,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTooltip } from '@angular/material/tooltip';
-import { RouterOutlet, RouterLinkWithHref, Router } from '@angular/router';
+import { RouterOutlet, RouterLinkWithHref, Router, RouterLinkActive } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth-service';
 import { UserService } from '../services/user-service';
@@ -16,7 +16,7 @@ import { Settings } from '../dialogs/settings/settings';
 
 @Component({
   selector: 'app-base',
-  imports: [RouterOutlet, MatSidenavModule, MatIcon, MatButtonModule, MatTooltip, MatMenuModule, RouterLinkWithHref],
+  imports: [RouterOutlet, MatSidenavModule, MatIcon, MatButtonModule, MatTooltip, MatMenuModule, RouterLinkWithHref, RouterLinkActive],
   templateUrl: './base.html',
   styleUrl: './base.css',
 })

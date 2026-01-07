@@ -4,6 +4,14 @@ import { environment } from '../../environments/environment';
 import { UserService } from './user-service';
 import { AuthService } from './auth-service';
 
+declare global {
+  interface Error {
+    data: {
+      statusCode: number;
+    };
+  }
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -41,7 +49,6 @@ export class SocketConnection {
 
     this.socket.on('connect_error', (error) => {
       this.isConnected.set(false);
-      // @ts-ignore
       const statusCode = error.data?.statusCode;
       if (statusCode === 401) {
         this.authService.logoutUser().subscribe();

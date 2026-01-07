@@ -23,7 +23,7 @@ import { SocketConnection } from '../../../services/socket-connection';
 import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { GroupedChat, Message as ChatMessage } from '../../../models/chat';
+import { AttachmentsType, GroupedChat } from '../../../models/chat';
 import { UserService } from '../../../services/user-service';
 import { DatePipe } from '@angular/common';
 import { environment } from '../../../../environments/environment';
@@ -31,6 +31,9 @@ import { MatDivider } from '@angular/material/divider';
 import { ReceiverUser } from '../../../models/user';
 import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatDialog } from '@angular/material/dialog';
+import { AssetContainer } from './asset-container/asset-container';
+import { AssetView } from '../../../dialogs/asset-view/asset-view';
 
 @Component({
   selector: 'app-chat',
@@ -44,6 +47,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     MatDivider,
     ModifyPipe,
     MatProgressSpinner,
+    AssetContainer,
   ],
   templateUrl: './chat.html',
   styleUrl: './chat.css',
@@ -56,6 +60,7 @@ export class Chat implements OnInit, AfterViewInit {
   private chatId = signal('');
   userData = inject(UserService);
   private injector = inject(Injector);
+  private dialog = inject(MatDialog);
   isTyping = computed(() => {
     return (
       (this.receiverUser()?.is_typing ||
@@ -64,6 +69,10 @@ export class Chat implements OnInit, AfterViewInit {
       this.chatId() !== this.userData.user()?.id
     );
   });
+
+  isAssetsEntered = signal(false);
+  assetsData: WritableSignal<File[]> = signal([]);
+  base64AssetsData: WritableSignal<AttachmentsType[]> = signal([]);
 
   imagePath = environment.imageUrl;
 
@@ -277,14 +286,14 @@ export class Chat implements OnInit, AfterViewInit {
   messageInput = viewChild<ElementRef<HTMLTextAreaElement>>('messageInput');
 
   adjustTextareaHeight(textarea: HTMLTextAreaElement) {
-    if (textarea.value && !this.isTypingStatusSend()) {
+    const val = textarea.value;
+    if (val && !this.isTypingStatusSend()) {
       this.socketService.socket.emit('typing', {
         receiverId: this.chatId(),
         isTyping: true,
       });
       this.isTypingStatusSend.set(true);
-    }
-    if (!textarea.value && this.isTypingStatusSend()) {
+    } else if (!val && this.isTypingStatusSend()) {
       this.socketService.socket.emit('typing', {
         receiverId: this.chatId(),
         isTyping: false,
@@ -295,26 +304,90 @@ export class Chat implements OnInit, AfterViewInit {
     textarea.style.height = textarea.scrollHeight + 'px';
   }
 
-  sendMessage(event: any) {
-    if (event) {
-      event.preventDefault();
-    }
-    if (!this.message()) return;
-    this.socketService.socket.emit('chatMessagesSend', {
-      message: this.message(),
-      receiverId: this.chatId(),
-    });
-    this.socketService.socket.emit('typing', {
-      receiverId: this.chatId(),
-      isTyping: false,
-    });
+  private resetUI() {
     this.message.set('');
+    this.isAssetsEntered.set(false);
+    this.assetsData.set([]);
+    this.base64AssetsData.set([]);
 
-    // Reset textarea height
     const textarea = this.messageInput()?.nativeElement;
     if (textarea) {
       textarea.style.height = 'auto';
     }
+
+    if (this.isTypingStatusSend()) {
+      this.socketService.socket.emit('typing', {
+        receiverId: this.chatId(),
+        isTyping: false,
+      });
+      this.isTypingStatusSend.set(false);
+    }
+  }
+
+  sendMessage(event?: Event) {
+    if (event) {
+      event.preventDefault();
+    }
+
+    const messageContent = this.message().trim();
+    const assets = this.assetsData();
+
+    if (!messageContent && assets.length === 0) {
+      return;
+    }
+
+    if (assets.length > 0) {
+      const formData = new FormData();
+      assets.forEach((file) => formData.append('files', file));
+
+      this.userData.uploadFile(formData).subscribe({
+        next: (res) => {
+          if (res.data?.files && res.data.files.length > 0) {
+            this.socketService.socket.emit('chatMessagesSend', {
+              message: messageContent,
+              receiverId: this.chatId(),
+              messageType: 'mixed',
+              attachments: res.data.files,
+            });
+            this.resetUI();
+          }
+        },
+        error: (err) => {
+          console.error('File upload failed', err);
+        },
+      });
+      return;
+    }
+
+    // Text-only message
+    if (messageContent) {
+      this.socketService.socket.emit('chatMessagesSend', {
+        message: messageContent,
+        receiverId: this.chatId(),
+        messageType: 'text',
+      });
+      this.resetUI();
+    }
+  }
+
+  onFileSelected(event: any) {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const fileArray = Array.from(files) as File[];
+      this.isAssetsEntered.set(true);
+      this.assetsData.update((data) => [...data, ...fileArray]);
+      this.prepareFilesPreview(fileArray);
+
+      if (this.isTypingStatusSend()) {
+        this.socketService.socket.emit('typing', {
+          receiverId: this.chatId(),
+          isTyping: false,
+        });
+        this.isTypingStatusSend.set(false);
+      }
+    }
+    // Reset input
+    event.target.value = '';
   }
 
   scrollToFirstUnread() {
@@ -329,5 +402,63 @@ export class Chat implements OnInit, AfterViewInit {
     );
 
     element?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  prepareFilesPreview(files: File[]) {
+    this.base64AssetsData.update((data) => [
+      ...new Array(files.length).fill({ file_type: '', file_url: '' }),
+      ...data,
+    ]);
+
+    files.forEach((file, index) => {
+      const fileType = file.type.includes('image')
+        ? 'image'
+        : file.type.includes('video')
+        ? 'video'
+        : 'pdf';
+      this.base64AssetsData.update((data) => {
+        const newData = [...data];
+        newData[index] = {
+          file_type: fileType,
+          file_url: URL.createObjectURL(file),
+          file_name: file.name,
+          file_size: file.size,
+          mime_type: file.type,
+        };
+        return newData;
+      });
+    });
+  }
+
+  removeImage(index: number) {
+    this.assetsData.update((data) => {
+      const newData = [...data];
+      newData.splice(index, 1);
+      return newData;
+    });
+    this.base64AssetsData.update((data) => {
+      const newData = [...data];
+      newData.splice(index, 1);
+      return newData;
+    });
+    if (this.assetsData().length === 0) {
+      this.isAssetsEntered.set(false);
+    }
+  }
+
+  viewAssets(attachment: AttachmentsType[], index: number) {
+    this.dialog.open(AssetView, {
+      maxWidth: '100%',
+      maxHeight: '100%',
+      width: '70%',
+      height: '70%',
+      panelClass: 'small-corners-dialog',
+      data: {
+        user: this.userData.user(),
+        attachments: attachment,
+        index: index,
+        isObjectUrl: true,
+      },
+    });
   }
 }

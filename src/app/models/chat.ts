@@ -4,7 +4,7 @@ export interface GroupedChat {
 }
 
 export interface Message {
-  attachments: string | null;
+  attachments: AttachmentsType[] | null;
   channel_id: string | null;
   content: string;
   created_at: string;
@@ -12,7 +12,7 @@ export interface Message {
   deleted_at: string | null;
   edited_at: null;
   id: string;
-  message_type: 'text' | 'image' | 'video' | 'file' | 'audio' | 'system';
+  message_type: 'image' | 'video' | 'file' | 'audio' | 'pdf' | 'system' | null;
   reactions: null;
   receiver_id: string;
   reply_to: string | null;
@@ -20,4 +20,17 @@ export interface Message {
   status: 'sending' | 'sent' | 'failed' | 'delivered' | 'read';
   updatedAt: string;
   version: number;
+}
+
+export interface AttachmentsType {
+  id?: string,
+  message_id?: string,
+  sender_id?: string,
+  receiver_id?: string,
+  file_type: string | null,
+  file_url: string,
+  file_name: string,
+  file_size: number,
+  mime_type: string,
+  metadata?: any
 }

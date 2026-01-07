@@ -55,6 +55,10 @@ export const routes: Routes = [
         loadComponent: () => import('./base/contacts/contacts').then(m => m.Contacts),
       },
       {
+        path: 'files',
+        loadComponent: () => import('./base/files/files').then(m => m.Files),
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: "home"
