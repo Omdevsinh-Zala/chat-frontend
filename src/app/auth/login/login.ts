@@ -24,8 +24,8 @@ export class Login {
   private socketService = inject(SocketConnection);
 
   loginModel = signal<LoginModel>({
-    email: 'omdev@gmail.com',
-    password: '123123123Uy&',
+    email: '',
+    password: '',
   });
 
   loginForm = form(this.loginModel, (schemaPath) => {
