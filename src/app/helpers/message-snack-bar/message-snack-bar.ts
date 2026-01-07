@@ -1,7 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import {
   MAT_SNACK_BAR_DATA,
-  MatSnackBar,
   MatSnackBarAction,
   MatSnackBarActions,
   MatSnackBarLabel,
@@ -16,6 +15,6 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './message-snack-bar.css',
 })
 export class MessageSnackBar {
-  snackBarRef = inject(MatSnackBarRef<MessageSnackBar>);
+  snackBarRef = inject(MatSnackBarRef);
   data = signal(inject<string>(MAT_SNACK_BAR_DATA));
 }

@@ -1,0 +1,100 @@
+<h2 mat-dialog-title class="text-(--mat-sys-on-surface)!">Settings</h2>
+<mat-dialog-content>
+  <mat-drawer-container class="h-full w-auto border-0! shadow-none!">
+    <mat-drawer mode="side" opened class="w-48! py-4 bg-(--mat-sys-container)! rounded-none!">
+      <div class="flex items-center flex-col h-full settings-panel-wrap">
+        <ul class="flex flex-col items-center w-full">
+          @for(panelGroup of panelGroup(); track $index) {
+          <li class="mb-6 hover:cursor-pointer w-full">
+            <p
+              class="flex items-center justify-center py-1 gap-2 hover:bg-(--mat-sys-surface-container-high) w-full"
+              aria-label="Change appearance"
+            >
+              <mat-icon class="text-xs">{{ panelGroup.icon }}</mat-icon>
+              {{ panelGroup.name }}
+            </p>
+          </li>
+          }
+        </ul>
+      </div>
+    </mat-drawer>
+    <mat-drawer-content>
+      <div class="w-full h-full">
+        <ng-container *ngTemplateOutlet="visiblePanelFragment"></ng-container>
+      </div>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  @if(!isDynamicContentChange) {
+  <button matButton="filled">Save</button>
+  }
+  <button matButton mat-dialog-close>Close</button>
+</mat-dialog-actions>
+
+<ng-template #settingFragment>
+  <h3 class="ps-2 text-3xl pb-3">Color mode</h3>
+  <ul
+    class="flex items-center gap-4 px-4 py-2 *:bg-(--mat-sys-surface-container-lowest) *:text-(--mat-sys-on-surface) *:border-(--mat-sys-outline) *:border-2 *:rounded-(--mat-sys-corner-medium) *:hover:cursor-pointer"
+  >
+    @for(theme of systemThemes(); track $index) {
+    <li
+      class="flex justify-center items-center gap-2 border w-1/3 py-4"
+      (click)="systemThemeChange(theme)"
+      [style.border-color]="theme.isActive ? 'var(--mat-sys-primary)' : ''"
+    >
+      <mat-icon class="text-xs">{{ theme.icon }}</mat-icon>
+      <p>{{ theme.name }}</p>
+    </li>
+    }
+  </ul>
+  <div class="ps-2 pb-3 mt-6 flex gap-2 items-center">
+    <h3 class="text-3xl">Glass Effect</h3>
+    <span class="px-2 py-1 text-xs rounded-md bg-(--mat-sys-primary) text-(--mat-sys-on-primary)"
+      >Experimental</span
+    >
+  </div>
+  <div class="px-4 py-2">
+    <div
+      class="flex items-center justify-between p-4 border-2 border-(--mat-sys-outline) rounded-(--mat-sys-corner-medium) hover:cursor-pointer hover:bg-(--mat-sys-surface-container-high) transition-colors select-none"
+      (click)="toggleGlass()"
+      [style.border-color]="isGlassEnabled() ? 'var(--mat-sys-primary)' : ''"
+    >
+      <div class="flex items-center gap-4">
+        <mat-icon>{{ isGlassEnabled() ? 'blur_on' : 'blur_off' }}</mat-icon>
+        <div>
+          <p class="font-bold">Enable Glassmorphism</p>
+          <p class="text-sm opacity-70">Apply translucent frosted glass effect</p>
+        </div>
+      </div>
+      <div
+        class="size-6 rounded-full border-2 flex items-center justify-center"
+        [style.background]="isGlassEnabled() ? 'var(--mat-sys-primary)' : 'transparent'"
+      >
+        @if(isGlassEnabled()) {
+        <mat-icon class="text-xs text-(--mat-sys-on-primary)!">check</mat-icon>
+        }
+      </div>
+    </div>
+  </div>
+
+  <h3 class="ps-2 text-3xl pb-3 mt-6">Themes</h3>
+  <ul class="px-4 py-4 grid grid-cols-3 gap-4 w-full">
+    @for (theme of matThemes(); track $index) {
+    <li
+      class="border-2 border-(--mat-sys-outline) rounded-(--mat-sys-corner-medium) hover:cursor-pointer hover:bg-(--mat-sys-surface-container-high) transition-colors select-none"
+      (click)="matThemeChange(theme)"
+      [style.border-color]="theme.isActive ? 'var(--mat-sys-primary)' : ''"
+    >
+      <div class="px-4 py-2 flex items-center gap-4 justify-start">
+        <div
+          class="size-16 rounded-full theme-split-preview"
+          [class]="theme.class"
+          [style.background]="getThemePreview(theme)"
+        ></div>
+        <p>{{ theme.name }}</p>
+      </div>
+    </li>
+    }
+  </ul>
+</ng-template>

@@ -1,0 +1,65 @@
+@if (user()) {
+<mat-drawer-container class="w-auto h-dvh bg-(--mat-sys-primary-container)!">
+  <mat-drawer mode="side" opened class="w-auto! bg-(--mat-sys-surface)! rounded-none!">
+    <div class="flex items-start flex-col h-full channel-wrap px-4">
+      <mat-nav-list>
+        <h2 matSubheader>Channels</h2>
+        <button mat-list-item class="user-links">
+          <mat-icon matListItemIcon>add</mat-icon>
+          <span matListItemTitle>Add Channel</span>
+        </button>
+        @for (channel of userChannels(); track $index) {
+        <button mat-list-item class="user-links">
+          <mat-icon matListItemIcon>{{ channel.type === 'private' ? 'lock' : 'groups' }}</mat-icon>
+          <span matListItemTitle>{{ channel.name }}</span>
+        </button>
+        }
+      </mat-nav-list>
+      <mat-divider></mat-divider>
+      <mat-nav-list>
+        <h2 matSubheader>Direct messages</h2>
+        @for (chat of combinedChats(); track $index) {
+        <div class="relative">
+          @if(chat.unreadCount > 0) {
+          <div
+            class="absolute top-0 right-0 w-5 h-5 bg-(--mat-sys-error) text-(--mat-sys-on-error) rounded-full z-10 text-xs flex justify-center items-center"
+            [class.text-[10px]]="chat.unreadCount > 10"
+          >
+            {{ chat.unreadCount > 10 ? '10+' : chat.unreadCount }}
+          </div>
+          }
+          <a
+            class="relative flex flex-row user-links transition-all duration-200 ease-in-out"
+            mat-list-item
+            [routerLink]="chat.id"
+            routerLinkActive="chat-active"
+          >
+            <span
+              class="absolute w-2 h-2 rounded-full z-10 bottom-2.5 left-8"
+              [class.active]="chat?.is_active"
+              [class.away]="!chat?.is_active"
+            ></span>
+            <img matListItemIcon [src]="imagePath + 'profileImages/' + chat.avatar_url" />
+            <span class="w-auto" matListItemTitle>{{ chat.first_name }}</span>
+            @if(chat.is_typing && chat.id !== user()?.id) {
+            <div class="flex items-center gap-1">
+              <div class="w-1 h-1 rounded-full bg-(--mat-sys-inverse-surface) animate-pulse"></div>
+              <div
+                class="w-1 h-1 rounded-full bg-(--mat-sys-inverse-surface) animate-pulse [animation-delay:200ms]"
+              ></div>
+              <div
+                class="w-1 h-1 rounded-full bg-(--mat-sys-inverse-surface) animate-pulse [animation-delay:400ms]"
+              ></div>
+            </div>
+            }
+          </a>
+        </div>
+        }
+      </mat-nav-list>
+    </div>
+  </mat-drawer>
+  <mat-drawer-content class="overflow-hidden!">
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>
+}

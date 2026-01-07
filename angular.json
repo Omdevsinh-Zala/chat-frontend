@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -22,11 +23,10 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "src/assets"
             ],
-            "styles": [
-              "src/styles.css"
-            ]
+            "styles": ["src/custom-theme.scss", "src/styles.css"]
           },
           "configurations": {
             "production": {
@@ -48,10 +48,14 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
+              "outputHashing": "none",
+              "security": {
+                "autoCsp": true
+              },
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.development.ts"
+                  "with": "src/environments/environment.dev.ts"
                 }
               ]
             }

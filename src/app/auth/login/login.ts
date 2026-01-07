@@ -1,17 +1,17 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { form, Field, required, email, minLength, maxLength } from '@angular/forms/signals';
-import { LoginModel } from '../../models/auth.model';
+import { LoginModel } from '../../models/auth';
 import { AuthService } from '../../services/auth-service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MessageSnackBar } from '../../helpers/message-snack-bar/message-snack-bar';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router, RouterLink } from '@angular/router';
+import { SocketConnection } from '../../services/socket-connection';
 
 @Component({
   selector: 'app-login',
-  imports: [MatProgressSpinnerModule, Field, MatIcon, MatTooltipModule],
+  imports: [MatProgressSpinnerModule, Field, MatIcon, MatTooltipModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -20,48 +20,43 @@ export class Login {
   showPass = signal(false);
   authService = inject(AuthService);
   destroyRef = inject(DestroyRef);
-  private _snackBar = inject(MatSnackBar)
+  private router = inject(Router);
+  private socketService = inject(SocketConnection);
 
   loginModel = signal<LoginModel>({
-    email: '',
-    password: '',
-  })
+    email: 'omdev@gmail.com',
+    password: '123123123Uy&',
+  });
 
   loginForm = form(this.loginModel, (schemaPath) => {
-    required(schemaPath.email);
-    required(schemaPath.password);
+    required(schemaPath.email, { message: 'Email is required.' });
+    required(schemaPath.password, { message: 'Password is required.' });
 
-    email(schemaPath.email);
+    email(schemaPath.email, { message: 'Please enter valid email.' });
 
-    minLength(schemaPath.password, 8);
-    maxLength(schemaPath.password, 16);
-  })
+    minLength(schemaPath.password, 8, { message: 'Password must be at least 8 characters long.' });
+    maxLength(schemaPath.password, 16, { message: 'Password must not exceed 16 characters.' });
+  });
 
-  login() {
+  login(event: Event) {
+    event.preventDefault();
     this.loginProcess.update(() => true);
-    this.authService.loginUser(this.loginModel()).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (res) => {
-        if(res.success) {
-          this.openSnackBar(res.message);
+    this.authService
+      .loginUser(this.loginModel())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: async (resPromise) => {
+          const res = await resPromise;
+          if (res.success) {
+            this.loginProcess.update(() => false);
+            this.socketService.connectSocket();
+            return this.router.navigate(['/home', res?.data?.active_chat_id]);
+          }
           return this.loginProcess.update(() => false);
-        }
-        this.openSnackBar(res.message, 'error');
-        return this.loginProcess.update(() => false);
-      },
-      error: (err) => {
-        this.openSnackBar(err.message, 'error');
-        this.loginProcess.update(() => false);
-      }
-    })
-  }
-
-  private openSnackBar(message: string, type: 'error' | 'success' = 'success') {
-    this._snackBar.openFromComponent(MessageSnackBar, {
-      panelClass: `${type}-panel`,
-      data: message,
-      duration: 3000,
-    });
+        },
+        error: () => {
+          this.loginProcess.update(() => false);
+        },
+      });
   }
 }

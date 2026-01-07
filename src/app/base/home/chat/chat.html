@@ -1,0 +1,218 @@
+<div class="h-dvh w-full relative pt-8 pl-8 pr-4 bg-(--mat-sys-surface) flex flex-col">
+  @if (unreadCount() > 2 && canAppendMessages()) {
+  <div class="absolute top-8 left-1/2 -translate-x-1/2 z-10">
+    <button
+      mat-raised-button
+      class="flex! items-center! gap-2! bg-(--mat-sys-primary) text-(--mat-sys-on-primary) rounded-full! px-6! py-6!"
+      (click)="scrollToFirstUnread()"
+    >
+      <mat-icon>arrow_upward</mat-icon>
+      <span class="text-md">{{ unreadCount() }} Unread messages</span>
+    </button>
+  </div>
+  }
+  <div class="flex-1 overflow-hidden h-auto pb-4">
+    <ul
+      class="flex flex-col-reverse h-full items-end-safe gap-6 pr-4 overflow-y-auto custom-scroll-bar"
+    >
+      @if (isTyping()) {
+      <li [style.align-self]="'start'" animate.enter="enter-animation">
+        <div class="flex items-center gap-4 flex-row">
+          <div class="w-12 h-12">
+            <img
+              [src]="imagePath + 'profileImages/' + receiverUser()?.avatar_url"
+              alt="User avatar"
+            />
+          </div>
+          <div class="flex items-center gap-1">
+            <div class="w-1 h-1 rounded-full bg-(--mat-sys-inverse-surface) animate-bounce"></div>
+            <div
+              class="w-1 h-1 rounded-full bg-(--mat-sys-inverse-surface) animate-bounce [animation-delay:200ms]"
+            ></div>
+            <div
+              class="w-1 h-1 rounded-full bg-(--mat-sys-inverse-surface) animate-bounce [animation-delay:400ms]"
+            ></div>
+          </div>
+        </div>
+      </li>
+      } @for (group of currentChatMessages(); track group.monthYear) { @for (mes of
+      group.messages;track mes.id) { @if(mes.sender_id === userData.user()?.id) {
+      <!-- My sent messages - show status icons -->
+      <li #messageItem class="" [style.align-self]="'end'" [attr.data-id]="mes.id">
+        <div class="flex items-center gap-4 flex-row-reverse">
+          <div class="w-12 h-12">
+            <img
+              [src]="imagePath + 'profileImages/' + userData.user()?.avatar_url"
+              alt="User avatar"
+            />
+          </div>
+          <div class="flex flex-col-reverse">
+            <div class="flex items-center justify-end-safe">
+              @if(mes.status === 'read') {
+              <mat-icon
+                class="shrink-0 text-xs! flex! items-center! justify-center! text-(--mat-sys-primary)!"
+                >done_all</mat-icon
+              >
+              } @else {
+              <mat-icon class="shrink-0 text-xs! flex! items-center! justify-center!"
+                >done</mat-icon
+              >
+              }
+              <span class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</span>
+            </div>
+            <p class="text-lg text-end" [innerHTML]="mes.content | modify"></p>
+            @if (mes.attachments && mes.attachments.length) {
+            <app-asset-container [attachments]="mes.attachments"></app-asset-container>
+            }
+          </div>
+        </div>
+      </li>
+      } @else {
+      <!-- Received messages - no status icons -->
+      <li
+        #messageItem
+        [style.align-self]="'start'"
+        [attr.data-id]="mes.id"
+        [attr.data-status]="mes.status"
+      >
+        <div class="flex items-center gap-4 flex-row">
+          <div class="w-12 h-12">
+            <img
+              [src]="imagePath + 'profileImages/' + receiverUser()?.avatar_url"
+              alt="User avatar"
+            />
+          </div>
+          <div class="flex flex-col-reverse">
+            <div class="flex items-center justify-start-safe">
+              <p class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</p>
+            </div>
+            <p class="text-lg text-start" [innerHTML]="mes.content | modify"></p>
+            @if (mes.attachments && mes.attachments.length) {
+            <app-asset-container [attachments]="mes.attachments"></app-asset-container>
+            }
+          </div>
+        </div>
+      </li>
+      } }
+      <li class="relative w-full flex justify-center my-4 mb-2">
+        <mat-divider class="w-full"></mat-divider>
+        <span
+          class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-(--mat-sys-surface) text-(--mat-sys-primary) rounded-(--mat-sys-corner-full) border border-(--mat-sys-outline) px-2 py-1"
+        >
+          {{ group.monthYear | date : 'EEEE, MMMM d' }}
+        </span>
+      </li>
+      } @empty {
+      <li class="flex items-center justify-center h-full w-full">
+        <div>
+          <p class="text-xl">Start a conversation now</p>
+        </div>
+      </li>
+      } @if(!canAppendMessages()) {
+      <div class="w-full h-20 py-6 flex justify-center items-center">
+        <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+      </div>
+      }
+    </ul>
+  </div>
+  <div class="w-full flex-none py-4 flex gap-2 items-end">
+    <div class="w-full">
+      @if(isAssetsEntered()) {
+      <ul
+        class="h-24 flex items-center gap-4"
+        animate.enter="enter-animation"
+        animate.leave="leave-animation"
+      >
+        @for (asset of base64AssetsData(); track $index) {
+        <li
+          class="relative w-20 h-20 border flex items-center justify-center border-gray-300 rounded-md hover:cursor-pointer"
+        >
+          <div
+            class="w-8 h-8 z-10 rounded-full bg-(--mat-sys-surface) absolute top-0 translate-x-1/2 -translate-y-1/2 right-0 flex items-center justify-center"
+          >
+            <div
+              class="group hover:bg-(--mat-sys-error-container) rounded-full w-6 h-6 flex items-center justify-center transition-all"
+              (click)="removeImage($index)"
+            >
+              <mat-icon
+                class="text-(--mat-sys-error)! group-hover:text-(--mat-sys-on-error-container)! text-sm! w-auto! h-auto!"
+                >close</mat-icon
+              >
+            </div>
+          </div>
+          @if(asset) { @if(asset.file_type === 'pdf') {
+          <a
+            [href]="asset.file_url"
+            target="_blank"
+            class="w-full h-full flex items-center justify-center"
+          >
+            <mat-icon class="text-(--mat-sys-primary)!">picture_as_pdf</mat-icon>
+          </a>
+          } @else {
+          <div class="relative w-full pb-20" (click)="viewAssets(base64AssetsData(), $index)">
+            @if(asset.file_type === 'image') {
+            <img
+              [src]="asset.file_url"
+              class="absolute inset-0 w-full h-full object-contain"
+              alt="Asset"
+            />
+            } @else {
+            <video [src]="asset.file_url" class="absolute inset-0 w-full h-full object-contain"></video>
+            }
+          </div>
+          } } @else {
+          <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+          }
+        </li>
+        }
+        <li class="w-20 h-20 relative">
+          <div class="flex items-center justify-center w-full h-full">
+            <mat-icon
+              class="mb-1 p-0! my-1! hover:cursor-pointer text-(--mat-sys-primary)!"
+              (click)="fileInput.click(); $event.stopPropagation()"
+              >add</mat-icon
+            >
+          </div>
+        </li>
+      </ul>
+      }
+      <mat-form-field class="w-full custom-input" appearance="outline">
+        @if(base64AssetsData().length === 0) {
+        <mat-icon
+          animate.enter="enter-animation"
+          animate.leave="leave-animation"
+          matPrefix
+          class="mb-1 p-0! my-1! hover:cursor-pointer"
+          (click)="fileInput.click(); $event.stopPropagation()"
+        >
+          attach_file
+        </mat-icon>
+        }
+        <textarea
+          #messageInput
+          matInput
+          [(ngModel)]="message"
+          (keydown.enter)="sendMessage($event)"
+          (input)="adjustTextareaHeight(messageInput)"
+          rows="1"
+        ></textarea>
+      </mat-form-field>
+      <input
+        type="file"
+        #fileInput
+        accept="image/jpeg, image/png, image/jpg, image/webp, image/gif, video/mp4, video/quicktime, video/x-msvideo, video/x-ms-wmv, video/ogg, video/webm, application/pdf"
+        hidden
+        multiple
+        (change)="onFileSelected($event)"
+      />
+    </div>
+    <button
+      matMiniFab
+      class="mb-1.5"
+      (click)="sendMessage($event)"
+      [attr.aria-label]="'Send message'"
+    >
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
+</div>
