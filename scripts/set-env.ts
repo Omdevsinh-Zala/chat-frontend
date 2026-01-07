@@ -7,7 +7,7 @@ export const environment = {
   production: true,
   apiUrl: '${process.env.API_URL}',
   socketUrl: '${process.env.SOCKET_URL}',
-  authUrl: '${process.env.AUTH_URL}',
+  imageUrl: '${process.env.IMAGE_URL}',
 };
 `
 );
