@@ -898,9 +898,9 @@ $cyber-palette: map.merge(
 .glass-theme {
   // Enhanced Glass Variables
   --glass-bg: color-mix(in srgb, var(--mat-sys-surface-container), transparent 40%);
-  --glass-border: rgba(255, 255, 255, 0.25);
-  --glass-blur: blur(20px) saturate(180%);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-blur: blur(12px) saturate(150%);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
   --glass-edge: 1px solid var(--glass-border);
 
   // Redefine system surface tokens to propagate glass effect deeply
@@ -931,8 +931,9 @@ $cyber-palette: map.merge(
         color-mix(in srgb, var(--mat-sys-tertiary), transparent 85%) 100%
       );
     background-blend-mode: overlay;
-    background-size: 400% 400%;
-    animation: glass-gradient 15s ease infinite;
+    background-size: 200% 200%; // Reduced size for better performance
+    animation: glass-gradient 20s ease infinite; // Slower animation
+    will-change: background-position;
 
     &::before {
       content: '';
@@ -943,12 +944,14 @@ $cyber-palette: map.merge(
       height: 200%;
       background: radial-gradient(
         circle at 50% 50%,
-        color-mix(in srgb, var(--mat-sys-primary), transparent 90%) 0%,
+        color-mix(in srgb, var(--mat-sys-primary), transparent 92%) 0%,
         transparent 50%
       );
-      animation: aurora-float 20s infinite alternate-reverse;
+      animation: aurora-float 25s infinite alternate-reverse;
       pointer-events: none;
       z-index: -1;
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
     }
   }
 
@@ -983,6 +986,8 @@ $cyber-palette: map.merge(
     border: var(--glass-edge) !important;
     box-shadow: var(--glass-shadow) !important;
     background-image: none !important;
+    transform: translateZ(0); // Trigger hardware acceleration
+    will-change: backdrop-filter;
   }
 
   // Remove redundant borders and backgrounds in nested containers
@@ -1005,34 +1010,14 @@ $cyber-palette: map.merge(
     backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
-
-  // Glass Scrollbar styles
-  * {
-    &::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    &::-webkit-scrollbar-thumb {
-      background: color-mix(in srgb, var(--mat-sys-primary), transparent 70%);
-      border-radius: 10px;
-      &:hover {
-        background: var(--mat-sys-primary);
-      }
-    }
-    scrollbar-width: thin;
-    scrollbar-color: color-mix(in srgb, var(--mat-sys-primary), transparent 70%) transparent;
-  }
 }
 
 @keyframes aurora-float {
   0% {
-    transform: translate(0, 0) rotate(0deg);
+    transform: translate3d(0, 0, 0) rotate(0deg);
   }
   100% {
-    transform: translate(5%, 10%) rotate(10deg);
+    transform: translate3d(2%, 5%, 0) rotate(5deg); // Reduced movement range
   }
 }
 
@@ -1062,6 +1047,24 @@ body {
     .mat-drawer {
       background-color: var(--mat-sys-primary-container);
     }
+  }
+  * {
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: color-mix(in srgb, var(--mat-sys-primary), transparent 70%);
+      border-radius: 10px;
+      &:hover {
+        background: var(--mat-sys-primary);
+      }
+    }
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--mat-sys-primary), transparent 70%) transparent;
   }
 }
 

@@ -13,10 +13,11 @@ import { SwiperOptions } from 'swiper/types';
 import { environment } from '../../../environments/environment';
 import { AttachmentsType } from '../../models/chat';
 import { User } from '../../models/user';
+import { MatRippleModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-asset-view',
-  imports: [MatDialogModule, MatIcon, MatTooltip],
+  imports: [MatDialogModule, MatIcon, MatTooltip, MatRippleModule],
   templateUrl: './asset-view.html',
   styleUrl: './asset-view.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -58,5 +59,47 @@ export class AssetView implements AfterViewInit {
 
   close() {
     this.dialogRef.close();
+  }
+
+  download() {
+    let attachment: AttachmentsType;
+
+    if (this.data.attachments.length > 1 && this.assetSwiper()?.nativeElement) {
+      const activeIndex = this.assetSwiper()?.nativeElement.swiper.realIndex;
+      attachment = this.data.attachments[activeIndex];
+    } else {
+      attachment = this.data.attachments[0];
+    }
+
+    if (attachment) {
+      const url = this.data.isObjectUrl
+        ? attachment.file_url
+        : this.imagePath + attachment.file_url;
+      const fileName = attachment.file_name;
+
+      fetch(url)
+        .then((response) => response.blob())
+        .then((blob) => {
+          const blobUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = fileName;
+          link.target = '_blank';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(blobUrl);
+        })
+        .catch((error) => {
+          console.error('Download failed:', error);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = fileName;
+          link.target = '_blank';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        });
+    }
   }
 }

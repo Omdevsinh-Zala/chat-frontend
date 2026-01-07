@@ -16,12 +16,26 @@
         </p>
       </div>
     </div>
-    <button
-      class="rounded-md bg-transparent p-2 hover:bg-gray-100/10 size-10 hover:cursor-pointer"
-      (click)="close()"
-    >
-      <mat-icon>close</mat-icon>
-    </button>
+    <div class="flex items-center gap-2">
+      <button
+        class="rounded-md bg-transparent p-2 hover:bg-gray-100/10 size-10 hover:cursor-pointer"
+        (click)="download()"
+        matTooltip="Download"
+        matRipple
+        matRippleColor="var(light-dark(#e9e7eb02, #292a2c02))"
+      >
+        <mat-icon>cloud_download</mat-icon>
+      </button>
+      <button
+        class="rounded-md bg-transparent p-2 hover:bg-gray-100/10 size-10 hover:cursor-pointer"
+        (click)="close()"
+        matTooltip="Close"
+        matRipple
+        matRippleColor="var(light-dark(#e9e7eb02, #292a2c02))"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
   @if(data.attachments.length > 1) {
   <swiper-container init="false" #assetSwiper class="w-full h-full">
@@ -30,7 +44,9 @@
       <img
         class="w-full h-full object-contain"
         [src]="
-          data.isObjectUrl ? data.attachments[$index].file_url : imagePath + data.attachments[$index].file_url
+          data.isObjectUrl
+            ? data.attachments[$index].file_url
+            : imagePath + data.attachments[$index].file_url
         "
         [alt]="attach.file_name"
       />
@@ -40,7 +56,9 @@
       <video
         class="w-full h-full object-contain"
         [src]="
-          data.isObjectUrl ? data.attachments[$index].file_url : imagePath + data.attachments[$index].file_url
+          data.isObjectUrl
+            ? data.attachments[$index].file_url
+            : imagePath + data.attachments[$index].file_url
         "
         controls
       ></video>
@@ -61,13 +79,17 @@
   } @else { @if(data.attachments[0].file_type === "image") {
   <img
     class="w-full h-full object-contain"
-    [src]="data.isObjectUrl ? data.attachments[0].file_url : imagePath + data.attachments[0].file_url"
+    [src]="
+      data.isObjectUrl ? data.attachments[0].file_url : imagePath + data.attachments[0].file_url
+    "
     [alt]="data.attachments[0].file_name"
   />
   } @else {
   <video
     class="w-full h-full object-contain"
-    [src]="data.isObjectUrl ? data.attachments[0].file_url : imagePath + data.attachments[0].file_url"
+    [src]="
+      data.isObjectUrl ? data.attachments[0].file_url : imagePath + data.attachments[0].file_url
+    "
     controls
   ></video>
   } }
