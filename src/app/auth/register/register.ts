@@ -39,8 +39,8 @@ export class Register {
     firstName: '',
     lastName: '',
     username: '',
-    email: 'some@one.com',
-    password: '123123123Uy&',
+    email: '',
+    password: '',
   });
 
   registerForm = form(this.registerModel, (schemaPath) => {
