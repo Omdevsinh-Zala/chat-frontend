@@ -23,8 +23,8 @@ export class SingleAsset {
     this.dialog.open(AssetView, {
       maxWidth: '100%',
       maxHeight: '100%',
-      width: this.isTablet() ? '100%' : '70%',
-      height: this.isTablet() ? '100%' : '70%',
+      width: this.isTablet() ? '100dvh' : '70%',
+      height: this.isTablet() ? '100dvh' : '70%',
       panelClass: 'small-corners-dialog',
       data: {
         user: this.userData.user(),

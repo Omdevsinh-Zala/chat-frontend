@@ -39,6 +39,11 @@ export class Home implements OnInit {
   isOpen = this.responsiveService.homePanelOpen;
   isBaseOpen = this.responsiveService.basePanelOpen;
 
+  closeAll() {
+    this.responsiveService.homePanelOpen.set(false);
+    this.responsiveService.basePanelOpen.set(false);
+  }
+
   user = computed(() => {
     return this.userService.user();
   });
