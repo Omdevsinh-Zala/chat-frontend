@@ -18,6 +18,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { PanelGroup } from '../../models/preferences';
 import { NgTemplateOutlet } from '@angular/common';
+import { Responsive } from '../../services/responsive';
 
 @Component({
   selector: 'app-settings',
@@ -34,6 +35,7 @@ import { NgTemplateOutlet } from '@angular/common';
 })
 export class Settings implements AfterViewInit {
   readonly dialogRef = inject(MatDialogRef<Settings>);
+  readonly responsive = inject(Responsive);
 
   constructor() {
     effect(() => {
@@ -306,14 +308,14 @@ export class Settings implements AfterViewInit {
         fragments: this.settingFragment()!,
         isDynamic: true,
       },
-      {
-        index: 1,
-        name: 'Notifications',
-        icon: 'notifications',
-        isOpen: false,
-        fragments: this.notificationFragment()!,
-        isDynamic: true,
-      },
+      // {
+      //   index: 1,
+      //   name: 'Notifications',
+      //   icon: 'notifications',
+      //   isOpen: false,
+      //   fragments: this.notificationFragment()!,
+      //   isDynamic: true,
+      // },
     ]);
 
     const bodyElement = document.body;
@@ -340,6 +342,10 @@ export class Settings implements AfterViewInit {
   notificationFragment = viewChild<TemplateRef<unknown>>('notificationFragment');
 
   panelGroup: WritableSignal<PanelGroup[]> = signal([]);
+
+  changePanel(index: number) {
+    this.panelGroup.update((panels) => panels.map((p, i) => ({ ...p, isOpen: i === index })));
+  }
 
   close() {
     this.dialogRef.close();

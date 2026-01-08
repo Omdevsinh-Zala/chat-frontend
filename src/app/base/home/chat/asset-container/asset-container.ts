@@ -11,4 +11,5 @@ import { MultiAssets } from './multi-assets/multi-assets';
 })
 export class AssetContainer {
   attachments = input<AttachmentsType[]>([]);
+  isTablet = input<boolean>(false);
 }

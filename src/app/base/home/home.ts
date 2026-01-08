@@ -1,4 +1,5 @@
-import { Component, computed, inject, OnInit, WritableSignal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -11,6 +12,7 @@ import { RecentlyMessagedUsers } from '../../models/recently-messaged-users';
 import { SocketConnection } from '../../services/socket-connection';
 import { NotificationService } from '../../services/notification-service';
 import { GroupedChat } from '../../models/chat';
+import { Responsive } from '../../services/responsive';
 
 @Component({
   selector: 'app-home',
@@ -31,6 +33,12 @@ export class Home implements OnInit {
   private userService = inject(UserService);
   private socketService = inject(SocketConnection);
   private notificationService = inject(NotificationService);
+  private responsiveService = inject(Responsive);
+
+  isTablet = this.responsiveService.isTabletForHome;
+  isOpen = this.responsiveService.homePanelOpen;
+  isBaseOpen = this.responsiveService.basePanelOpen;
+
   user = computed(() => {
     return this.userService.user();
   });

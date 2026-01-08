@@ -1,4 +1,4 @@
-<div class="h-dvh w-full relative pt-8 pl-8 pr-4 bg-(--mat-sys-surface) flex flex-col">
+<div class="h-dvh w-full relative pt-8 pl-8 pr-4 bg-(--mat-sys-surface) flex flex-col" [class.h-[calc(100dvh-40px)]!]="isTablet()">
   @if (unreadCount() > 2 && canAppendMessages()) {
   <div class="absolute top-8 left-1/2 -translate-x-1/2 z-10">
     <button
@@ -38,9 +38,9 @@
       } @for (group of currentChatMessages(); track group.monthYear) { @for (mes of
       group.messages;track mes.id) { @if(mes.sender_id === userData.user()?.id) {
       <!-- My sent messages - show status icons -->
-      <li #messageItem class="" [style.align-self]="'end'" [attr.data-id]="mes.id">
+      <li #messageItem [style.align-self]="'end'" [attr.data-id]="mes.id">
         <div class="flex items-center gap-4 flex-row-reverse">
-          <div class="w-12 h-12">
+          <div class="w-12 h-12 shrink-0">
             <img
               [src]="imagePath + 'profileImages/' + userData.user()?.avatar_url"
               alt="User avatar"
@@ -60,9 +60,9 @@
               }
               <span class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</span>
             </div>
-            <p class="text-lg text-end" [innerHTML]="mes.content | modify"></p>
+            <p class="text-lg text-end" [class.text-xs!]="isTablet()" [innerHTML]="mes.content | modify"></p>
             @if (mes.attachments && mes.attachments.length) {
-            <app-asset-container [attachments]="mes.attachments"></app-asset-container>
+            <app-asset-container [attachments]="mes.attachments" [isTablet]="isTablet()"></app-asset-container>
             }
           </div>
         </div>
@@ -76,7 +76,7 @@
         [attr.data-status]="mes.status"
       >
         <div class="flex items-center gap-4 flex-row">
-          <div class="w-12 h-12">
+          <div class="w-12 h-12" [class.w-8!]="isTablet()" [class.h-8!]="isTablet()">
             <img
               [src]="imagePath + 'profileImages/' + receiverUser()?.avatar_url"
               alt="User avatar"
@@ -86,9 +86,9 @@
             <div class="flex items-center justify-start-safe">
               <p class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</p>
             </div>
-            <p class="text-lg text-start" [innerHTML]="mes.content | modify"></p>
+            <p class="text-lg text-start" [class.text-xs!]="isTablet()" [innerHTML]="mes.content | modify"></p>
             @if (mes.attachments && mes.attachments.length) {
-            <app-asset-container [attachments]="mes.attachments"></app-asset-container>
+            <app-asset-container [attachments]="mes.attachments" [isTablet]="isTablet()"></app-asset-container>
             }
           </div>
         </div>

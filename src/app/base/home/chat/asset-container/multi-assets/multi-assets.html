@@ -1,9 +1,9 @@
 @if (mediaAttachments().length > 0) {
-<ul class="grid grid-cols-2 mb-2 w-full max-w-xs">
+<ul class="grid grid-cols-2 mb-2 w-full xs:w-auto max-w-xs">
   @for (att of mediaAttachments(); track $index) {
   <!-- Show only first 4 items -->
   @if ($index < 4) {
-  <li class="relative aspect-square w-36 h-36">
+  <li class="relative aspect-square w-auto h-auto lg:w-36 lg:h-36">
     @if (isImage(att)) {
     <div class="w-full h-full">
       <img
@@ -14,7 +14,7 @@
       />
     </div>
     } @else if (isVideo(att)) {
-    <div class="w-36 h-36 relative">
+    <div class="w-auto h-auto lg:w-36 lg:h-36 relative">
       <video
         [src]="imagePath + att.file_url"
         class="w-full h-full object-cover border border-gray-200"

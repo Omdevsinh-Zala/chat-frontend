@@ -13,15 +13,23 @@ export class Responsive {
   basePanelOpen = signal(false);
   homePanelOpen = signal(false);
 
+  forSettingDialog = signal(false);
+
+  breakpointsToObserve = signal(['(max-width: 839.98px)', '(max-width: 1200px)'])
+
   constructor() {
-    this.breakpointObserver.observe('(max-width: 839.98px)').subscribe((result) => {
-      if(result) {
-        this.isTabletForBase.set(result.matches);
-        this.isTabletForHome.set(result.matches);
-      } else {
-        this.isTabletForBase.set(false);
-        this.isTabletForHome.set(false);
-      }
-    });
+    this.breakpointObserver
+      .observe(this.breakpointsToObserve())
+      .subscribe((result) => {
+        if (result) {
+          this.isTabletForBase.set(result.breakpoints[this.breakpointsToObserve()[0]]);
+          this.isTabletForHome.set(result.breakpoints[this.breakpointsToObserve()[0]]);
+          this.forSettingDialog.set(result.breakpoints[this.breakpointsToObserve()[1]]);
+        } else {
+          this.isTabletForBase.set(false);
+          this.isTabletForHome.set(false);
+          this.forSettingDialog.set(false);
+        }
+      });
   }
 }
