@@ -10,6 +10,7 @@
             [routerLink]="['/home', user()?.active_chat_id]"
             routerLinkActive="filled"
             matTooltipPosition="right"
+            (click)="openForBase()"
           >
             <mat-icon class="text-3xl">home</mat-icon>
           </a>
@@ -22,6 +23,7 @@
             routerLink="contacts"
             routerLinkActive="filled"
             matTooltipPosition="right"
+            (click)="openForBase()"
           >
             <mat-icon class="text-3xl">contacts</mat-icon>
           </a>
@@ -39,6 +41,7 @@
             routerLink="files"
             routerLinkActive="filled"
             matTooltipPosition="right"
+            (click)="openForBase()"
           >
             <mat-icon class="text-3xl">files</mat-icon>
           </a>

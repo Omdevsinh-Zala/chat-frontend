@@ -38,6 +38,7 @@
             mat-list-item
             [routerLink]="chat.id"
             routerLinkActive="chat-active"
+            (click)="closeAll()"
           >
             <span
               class="absolute w-2 h-2 rounded-full z-10 bottom-2.5 left-8"
