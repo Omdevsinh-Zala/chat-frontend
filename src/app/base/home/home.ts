@@ -13,6 +13,8 @@ import { SocketConnection } from '../../services/socket-connection';
 import { NotificationService } from '../../services/notification-service';
 import { GroupedChat } from '../../models/chat';
 import { Responsive } from '../../services/responsive';
+import { MatDialog } from '@angular/material/dialog';
+import { ChannelForm } from '../../dialogs/channel-form/channel-form';
 
 @Component({
   selector: 'app-home',
@@ -34,6 +36,7 @@ export class Home implements OnInit {
   private socketService = inject(SocketConnection);
   private notificationService = inject(NotificationService);
   private responsiveService = inject(Responsive);
+  private dialog = inject(MatDialog);
 
   isTablet = this.responsiveService.isTabletForHome;
   isOpen = this.responsiveService.homePanelOpen;
@@ -91,5 +94,25 @@ export class Home implements OnInit {
         return users;
       });
     });
+  }
+
+  openDialog() {
+    const dialog = this.dialog.open(ChannelForm, {
+      maxHeight: '100dvh',
+      maxWidth: '100dvw',
+      height: '70%',
+      width: '70%',
+    })
+
+    dialog.afterClosed().subscribe({
+      next: (result) => {
+        if(result) {
+          this.socketService.socket.emit('channelCreated');
+        }
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
   }
 }

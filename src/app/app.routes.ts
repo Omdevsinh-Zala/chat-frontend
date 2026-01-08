@@ -25,7 +25,11 @@ export const routes: Routes = [
           {
             path: ':id',
             loadComponent: () => import('./base/home/chat/chat').then(m => m.Chat),
-          }
+          },
+          {
+            path: 'channel/:id',
+            loadComponent: () => import('./base/home/channel-chat/channel-chat').then(m => m.ChannelChat),
+          },
         ]
       },
       {

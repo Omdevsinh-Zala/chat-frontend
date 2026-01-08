@@ -1,0 +1,37 @@
+::ng-deep .mat-mdc-checkbox label {
+    font-size: var(--mat-sys-body-large) !important;
+    line-height: var(--mat-sys-body-large-tracking) !important;
+}
+
+::ng-deep .mat-mdc-dialog-panel {
+  @media (max-width: 1200px) {
+    width: 100dvw !important;
+    max-width: 100dvw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    margin: 0 !important;
+  }
+}
+
+::ng-deep .mat-mdc-dialog-surface {
+  @media (max-width: 1200px) {
+    border-radius: 0 !important;
+  }
+}
+
+::ng-deep mat-dialog-content {
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  @media (max-width: 1200px) {
+    max-height: unset !important;
+    flex: 1;
+  }
+}
+
+mat-dialog-actions {
+  @media (max-width: 1200px) {
+    padding: 16px !important;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+}

@@ -8,6 +8,7 @@ import { RecentlyMessagedUsers } from '../models/recently-messaged-users';
 import { Router } from '@angular/router';
 import { PaginatedResponse, SearchUserResponse } from '../models/search';
 import { AttachmentsType } from '../models/chat';
+import { Channel, CreateChannel } from '../models/channel';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +20,7 @@ export class UserService {
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
 
-  userChannels: WritableSignal<any> = signal([]);
+  userChannels: WritableSignal<Channel[]> = signal([]);
   recentlyMessagesUsers: WritableSignal<RecentlyMessagedUsers[]> = signal([]);
   personalChat: WritableSignal<RecentlyMessagedUsers | null> = signal(null);
 
@@ -63,8 +64,14 @@ export class UserService {
     if (page !== undefined) params.append('page', page.toString());
 
     const queryString = params.toString();
-    const url = queryString ? `${this.apiUrl}/users/files?${queryString}` : `${this.apiUrl}/users/files`;
+    const url = queryString
+      ? `${this.apiUrl}/users/files?${queryString}`
+      : `${this.apiUrl}/users/files`;
 
     return this.http.get<GlobalResponse<PaginatedResponse<AttachmentsType>>>(url);
+  }
+
+  createChannel(data: CreateChannel) {
+    return this.http.post<GlobalResponse<boolean>>(`${this.apiUrl}/users/channels`, data);
   }
 }

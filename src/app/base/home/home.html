@@ -7,19 +7,19 @@
     class="w-auto! bg-(--mat-sys-surface)! rounded-none!"
   >
     <div class="flex items-start flex-col h-full channel-wrap px-4">
-      <!-- <mat-nav-list>
+      <mat-nav-list>
         <h2 matSubheader>Channels</h2>
-        <button mat-list-item class="user-links">
+        <button mat-list-item class="user-links" (click)="openDialog()">
           <mat-icon matListItemIcon>add</mat-icon>
           <span matListItemTitle>Add Channel</span>
         </button>
         @for (channel of userChannels(); track $index) {
-        <button mat-list-item class="user-links">
-          <mat-icon matListItemIcon>{{ channel.type === 'private' ? 'lock' : 'groups' }}</mat-icon>
-          <span matListItemTitle>{{ channel.name }}</span>
-        </button>
+        <a [routerLink]="['/home/channel', channel.id]" mat-list-item class="user-links">
+          <mat-icon matListItemIcon>{{ channel.is_private ? 'lock' : 'groups' }}</mat-icon>
+          <span matListItemTitle>{{ channel.title }}</span>
+        </a>
         }
-      </mat-nav-list> -->
+      </mat-nav-list>
       <mat-divider></mat-divider>
       <mat-nav-list>
         <h2 matSubheader>Direct messages</h2>
