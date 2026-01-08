@@ -34,6 +34,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { AssetContainer } from './asset-container/asset-container';
 import { AssetView } from '../../../dialogs/asset-view/asset-view';
+import { Responsive } from '../../../services/responsive';
 
 @Component({
   selector: 'app-chat',
@@ -61,6 +62,7 @@ export class Chat implements OnInit, AfterViewInit {
   userData = inject(UserService);
   private injector = inject(Injector);
   private dialog = inject(MatDialog);
+  private responsiveService = inject(Responsive);
   isTyping = computed(() => {
     return (
       (this.receiverUser()?.is_typing ||
@@ -69,6 +71,8 @@ export class Chat implements OnInit, AfterViewInit {
       this.chatId() !== this.userData.user()?.id
     );
   });
+
+  isTablet = this.responsiveService.isTabletForBase;
 
   isAssetsEntered = signal(false);
   assetsData: WritableSignal<File[]> = signal([]);
