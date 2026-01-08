@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -13,6 +13,7 @@ import { SocketConnection } from '../services/socket-connection';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import { Settings } from '../dialogs/settings/settings';
+import { Responsive } from '../services/responsive';
 
 @Component({
   selector: 'app-base',
@@ -31,6 +32,19 @@ export class Base {
   private socketConnection = inject(SocketConnection)
   private destroyRef = inject(DestroyRef);
   private dialog = inject(MatDialog);
+  private responsiveService = inject(Responsive);
+
+  isTablet = this.responsiveService.isTabletForBase;
+  isOpen = this.responsiveService.basePanelOpen;
+  isHomeOpen = this.responsiveService.homePanelOpen;
+
+  openForBase() {
+    this.responsiveService.basePanelOpen.update((value) => !value);
+  }
+
+  openForHome() {
+    this.responsiveService.homePanelOpen.update((value) => !value);
+  }
 
   logout() {
     this.authService.logoutUser().pipe(

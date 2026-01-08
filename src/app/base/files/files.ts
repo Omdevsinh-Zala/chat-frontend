@@ -19,6 +19,7 @@ import { MatTableModule } from '@angular/material/table';
 import { AttachmentsType } from '../../models/chat';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
+import { Responsive } from '../../services/responsive';
 
 @Component({
   selector: 'app-files',
@@ -30,6 +31,7 @@ export class Files implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private userService = inject(UserService);
   private paginator = viewChild(MatPaginator);
+  readonly responsive = inject(Responsive);
 
   readonly apiUrl: string = environment.apiUrl;
   readonly imagePath: string = environment.imageUrl;

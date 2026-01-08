@@ -1,5 +1,5 @@
 <mat-drawer-container class="h-dvh w-auto">
-  <mat-drawer mode="side" opened class="w-22! p-4 rounded-none!">
+  <mat-drawer [mode]="isTablet() ? 'over' : 'side'" [opened]="(!isTablet() || isOpen() && !isHomeOpen())" class="w-22! p-4 rounded-none!">
     <div class="flex items-center flex-col h-full base-main-link-wrap">
       <ul class="flex flex-col items-center">
         <li class="mb-6">
@@ -43,6 +43,31 @@
             <mat-icon class="text-3xl">files</mat-icon>
           </a>
         </li>
+        @if(isTablet()) {
+          <li class="mb-6">
+            <a
+              [routerLink]="['/home', user()?.active_chat_id]"
+              mat-icon-button
+              matTooltip="Open recent chats"
+              aria-label="Open recent chats"
+              matTooltipPosition="right"
+              (click)="openForHome()"
+            >
+              <mat-icon class="text-3xl">chat_bubble</mat-icon>
+            </a>
+          </li>
+          <li class="mb-6">
+            <button
+              mat-icon-button
+              matTooltip="Close side panel"
+              aria-label="Close side panel"
+              matTooltipPosition="right"
+              (click)="openForBase()"
+            >
+              <mat-icon class="text-3xl">arrow_left_alt</mat-icon>
+            </button>
+          </li>
+        }
         <!-- <li class="mb-6">
           <button mat-icon-button matTooltip="Settings" aria-label="Settings page link" >
             <mat-icon class="text-3xl">settings</mat-icon>
@@ -83,6 +108,33 @@
   </mat-drawer>
   <mat-drawer-content class="overflow-hidden!" >
     <div>
+      @if(isTablet()) {
+        <div class="">
+          @if(isHomeOpen()) {
+            <li class="mb-6">
+              <button
+                mat-icon-button
+                matTooltip="Close chat menu"
+                aria-label="Close chat menu"
+                matTooltipPosition="right"
+                (click)="openForHome()"
+              >
+                <mat-icon class="text-3xl">arrow_left_alt</mat-icon>
+              </button>
+            </li>
+          } @else {
+            <button
+                mat-icon-button
+                matTooltip="Open side panel"
+                aria-label="Open side panel"
+                matTooltipPosition="right"
+                (click)="openForBase()"
+              >
+                <mat-icon class="text-3xl">menu</mat-icon>
+              </button>
+          }
+        </div>
+      }
       <router-outlet />
     </div>
   </mat-drawer-content>

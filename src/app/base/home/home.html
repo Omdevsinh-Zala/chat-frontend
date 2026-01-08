@@ -1,8 +1,13 @@
 @if (user()) {
 <mat-drawer-container class="w-auto h-dvh bg-(--mat-sys-primary-container)!">
-  <mat-drawer mode="side" opened class="w-auto! bg-(--mat-sys-surface)! rounded-none!">
+  <mat-drawer
+    [mode]="isTablet() ? 'over' : 'side'"
+    [opened]="!isTablet() || isOpen()"
+    opened
+    class="w-auto! bg-(--mat-sys-surface)! rounded-none!"
+  >
     <div class="flex items-start flex-col h-full channel-wrap px-4">
-      <mat-nav-list>
+      <!-- <mat-nav-list>
         <h2 matSubheader>Channels</h2>
         <button mat-list-item class="user-links">
           <mat-icon matListItemIcon>add</mat-icon>
@@ -14,7 +19,7 @@
           <span matListItemTitle>{{ channel.name }}</span>
         </button>
         }
-      </mat-nav-list>
+      </mat-nav-list> -->
       <mat-divider></mat-divider>
       <mat-nav-list>
         <h2 matSubheader>Direct messages</h2>

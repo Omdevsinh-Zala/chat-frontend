@@ -14,6 +14,7 @@ import { UserService } from '../../../../../services/user-service';
 })
 export class SingleAsset {
   attachments = input<AttachmentsType[]>([]);
+  isTablet = input<boolean>(false);
   imagePath = environment.imageUrl;
   private dialog = inject(MatDialog);
   private userData = inject(UserService);
@@ -22,8 +23,8 @@ export class SingleAsset {
     this.dialog.open(AssetView, {
       maxWidth: '100%',
       maxHeight: '100%',
-      width: '70%',
-      height: '70%',
+      width: this.isTablet() ? '100%' : '70%',
+      height: this.isTablet() ? '100%' : '70%',
       panelClass: 'small-corners-dialog',
       data: {
         user: this.userData.user(),

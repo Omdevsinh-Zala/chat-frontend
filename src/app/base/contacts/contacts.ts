@@ -20,6 +20,7 @@ import { GlobalResponse } from '../../models/auth';
 import { environment } from '../../../environments/environment';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
+import { Responsive } from '../../services/responsive';
 
 @Component({
   selector: 'app-contacts',
@@ -39,6 +40,7 @@ export class Contacts implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private userService = inject(UserService);
   private paginator = viewChild(MatPaginator);
+  readonly responsive = inject(Responsive);
 
   apiUrl = environment.apiUrl;
   imagePath = environment.imageUrl;
