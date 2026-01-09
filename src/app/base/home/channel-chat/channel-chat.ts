@@ -32,6 +32,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
 import { AssetContainer } from '../chat/asset-container/asset-container';
+import { ChannelData } from '../../../models/channel';
 
 @Component({
   selector: 'app-channel-chat',
@@ -59,14 +60,14 @@ export class ChannelChat {
   private injector = inject(Injector);
   private dialog = inject(MatDialog);
   private responsiveService = inject(Responsive);
-  isTyping = computed(() => {
-    return (
-      (this.receiverUser()?.is_typing ||
-        this.userData.recentlyMessagesUsers()?.find((user) => user.id === this.chatId())
-          ?.is_typing) &&
-      this.chatId() !== this.userData.user()?.id
-    );
-  });
+  // isTyping = computed(() => {
+  //   return (
+  //     (this.channelData()?.is_typing ||
+  //       this.userData.recentlyMessagesUsers()?.find((user) => user.id === this.chatId())
+  //         ?.is_typing) &&
+  //     this.chatId() !== this.userData.user()?.id
+  //   );
+  // });
 
   isTablet = this.responsiveService.isTabletForBase;
 
@@ -81,15 +82,21 @@ export class ChannelChat {
   private observer: IntersectionObserver | null = null;
   private isTypingStatusSend = signal(false);
   private pendingReadMessageIds = new Set<string>();
-  receiverUser: WritableSignal<ReceiverUser | null> = signal(null);
+  channelData: WritableSignal<ChannelData | null> = signal(null);
   currentChatMessages: WritableSignal<GroupedChat[]> = signal<GroupedChat[]>([]);
   unreadCount = computed(() => this.unreadMessages().length);
   unreadMessages = computed(() => {
     const userId = this.userData.user()?.id;
-    const chatId = this.chatId();
+    const myMember = this.channelData()?.ChannelMembers.find((m) => m.user_id === userId);
+    if (!myMember) return [];
+
     return this.currentChatMessages()
       .flatMap((group) => group.messages)
-      .filter((m) => m.status !== 'read' && m.sender_id === chatId && m.receiver_id === userId);
+      .filter((m) => {
+        if (m.sender_id === userId) return false;
+        if (!myMember.last_read_at) return true;
+        return new Date(m.created_at) > new Date(myMember.last_read_at);
+      });
   });
   canAppendMessages = signal(true);
 
@@ -108,26 +115,27 @@ export class ChannelChat {
 
       this.chatId.set(params['id']);
       this.currentChatMessages.set([]);
-      this.receiverUser.set(null);
+      this.channelData.set(null);
 
-      this.socketService.socket.emit('channelChatChange', { receiverId: this.chatId() });
+      this.socketService.socket.emit('channelChatChange', { channelId: this.chatId() });
 
-      this.socketService.socket.on('channelUserTyping', (data: { isTyping: boolean }) => {
-        this.receiverUser.update((user) => {
-          if (user) {
-            const updatedUser = { ...user };
-            updatedUser.is_typing = data.isTyping!;
-            return updatedUser;
-          }
-          return user;
-        });
-      });
+      // this.socketService.socket.on('channelUserTyping', (data: { isTyping: boolean }) => {
+      //   this.channelData.update((user) => {
+      //     if (user) {
+      //       const updatedUser = { ...user };
+      //       updatedUser.is_typing = data.isTyping!;
+      //       return updatedUser;
+      //     }
+      //     return user;
+      //   });
+      // });
 
       this.socketService.socket.on(
         'channelChatMessages',
-        (data: { chat: GroupedChat[]; channelData: ReceiverUser }) => {
+        (data: { chat: GroupedChat[]; channelData: ChannelData }) => {
           this.currentChatMessages.set(data.chat);
-          this.receiverUser.set(data.channelData);
+          this.channelData.set(data.channelData);
+          this.markRead();
         }
       );
 
@@ -156,50 +164,40 @@ export class ChannelChat {
         const message = data.chat.messages?.[0];
         const dateKey = data.chat.monthYear;
 
-        const isMyMessage =
-          message.sender_id === this.userData.user()?.id && message.receiver_id === this.chatId();
-        const isTheirMessage =
-          message.sender_id === this.chatId() && message.receiver_id === this.userData.user()?.id;
-
-        if (!isMyMessage && !isTheirMessage) return;
-
         this.currentChatMessages.update((chat) => {
           const updatedChat = [...chat];
-          // Check if message already exists in any group
-          let messageIndex = -1;
-          let groupIndex = -1;
-          for (let i = 0; i < updatedChat.length; i++) {
-            messageIndex = updatedChat[i].messages.findIndex((m) => m.id === message.id);
-            if (messageIndex !== -1) {
-              groupIndex = i;
-              break;
-            }
-          }
 
-          if (messageIndex === -1) {
-            // New message
-            const gIndex = updatedChat.findIndex((g) => g.monthYear === dateKey);
-            if (gIndex !== -1) {
-              updatedChat[gIndex] = {
-                ...updatedChat[gIndex],
-                messages: [message, ...updatedChat[gIndex].messages],
-              };
-            } else {
-              updatedChat.unshift({ monthYear: dateKey, messages: [message] });
-            }
+          const gIndex = updatedChat.findIndex((g) => g.monthYear === dateKey);
+          if (gIndex !== -1) {
+            updatedChat[gIndex] = {
+              ...updatedChat[gIndex],
+              messages: [message, ...updatedChat[gIndex].messages],
+            };
           } else {
-            // Update existing message
-            const updatedMessages = [...updatedChat[groupIndex].messages];
-            updatedMessages[messageIndex] = message;
-            updatedChat[groupIndex] = { ...updatedChat[groupIndex], messages: updatedMessages };
-
-            if (message.status === 'read') {
-              this.pendingReadMessageIds.delete(message.id);
-            }
+            updatedChat.unshift({ monthYear: dateKey, messages: [message] });
           }
           return updatedChat;
         });
+        this.markRead();
       });
+
+      this.socketService.socket.on(
+        'channelReadUpdated',
+        (data: { channelId: string; userId: string; lastReadAt: string }) => {
+          if (data.channelId === this.chatId()) {
+            this.channelData.update((currentData) => {
+              if (!currentData) return currentData;
+              const updatedMembers = currentData.ChannelMembers.map((m) => {
+                if (m.user_id === data.userId) {
+                  return { ...m, last_read_at: new Date(data.lastReadAt) };
+                }
+                return m;
+              });
+              return { ...currentData, ChannelMembers: updatedMembers };
+            });
+          }
+        }
+      );
     });
 
     this.destroyRef.onDestroy(() => {
@@ -210,6 +208,7 @@ export class ChannelChat {
         this.socketService.socket.off('appendedChannelMessages');
         this.socketService.socket.off('typing');
         this.socketService.socket.off('channelUserTyping');
+        this.socketService.socket.off('channelReadUpdated');
       }
       this.observer?.disconnect();
     });
@@ -236,29 +235,7 @@ export class ChannelChat {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const messageId = entry.target.getAttribute('data-id');
             const flatMessages = this.currentChatMessages().flatMap((g) => g.messages);
-
-            if (messageId) {
-              const message = flatMessages.find((m) => m.id === messageId);
-              if (
-                message &&
-                message.sender_id === this.chatId() &&
-                message.receiver_id === this.userData.user()?.id &&
-                message.status !== 'read' &&
-                !this.pendingReadMessageIds.has(messageId)
-              ) {
-                this.pendingReadMessageIds.add(messageId);
-                this.socketService.socket.emit('readChannelMessage', {
-                  messageId,
-                  receiverId: this.userData.user()?.id,
-                });
-              }
-              const isLastMessage = messageId === flatMessages[flatMessages.length - 1]?.id;
-              if (!isLastMessage) {
-                this.observer?.unobserve(entry.target);
-              }
-            }
 
             if (
               entry.target.getAttribute('data-id') === flatMessages[flatMessages.length - 1]?.id &&
@@ -267,7 +244,7 @@ export class ChannelChat {
               this.canAppendMessages.set(false);
               setTimeout(() => {
                 this.socketService.socket.emit('appendChannelMessages', {
-                  receiverId: this.chatId(),
+                  channelId: this.chatId(),
                   offset: flatMessages.length,
                 });
               }, 300);
@@ -345,7 +322,7 @@ export class ChannelChat {
           if (res.data?.files && res.data.files.length > 0) {
             this.socketService.socket.emit('channelChatMessagesSend', {
               message: messageContent,
-              receiverId: this.chatId(),
+              channelId: this.chatId(),
               messageType: 'mixed',
               attachments: res.data.files,
             });
@@ -363,7 +340,7 @@ export class ChannelChat {
     if (messageContent) {
       this.socketService.socket.emit('channelChatMessagesSend', {
         message: messageContent,
-        receiverId: this.chatId(),
+        channelId: this.chatId(),
         messageType: 'text',
       });
       this.resetUI();
@@ -459,6 +436,23 @@ export class ChannelChat {
         index: index,
         isObjectUrl: true,
       },
+    });
+  }
+
+  private markRead() {
+    this.socketService.socket.emit('markChannelRead', { channelId: this.chatId() });
+  }
+
+  membersUnseen(message: any) {
+    const channelData = this.channelData();
+    if (!channelData) return [];
+
+    const userId = this.userData.user()?.id;
+    return channelData.ChannelMembers.filter((m) => {
+      if (m.user_id === message.sender_id) return false;
+      if (m.user_id === userId) return false;
+      if (!m.last_read_at) return true;
+      return new Date(message.created_at) > new Date(m.last_read_at);
     });
   }
 }

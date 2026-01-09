@@ -1,8 +1,3 @@
-::ng-deep .mat-mdc-checkbox label {
-  font-size: var(--mat-sys-body-large) !important;
-  line-height: var(--mat-sys-body-large-tracking) !important;
-}
-
 ::ng-deep .mat-mdc-dialog-panel {
   @media (max-width: 1200px) {
     width: 100dvw !important;
@@ -34,4 +29,17 @@ mat-dialog-actions {
     padding: 16px !important;
     border-top: 1px solid var(--mat-sys-outline-variant);
   }
+}
+
+.description-container {
+  overflow: hidden;
+  display: block;
+}
+
+.description-container.collapsed {
+  max-height: 4em;
+}
+
+.description-container.expanded {
+  max-height: 1000px;
 }

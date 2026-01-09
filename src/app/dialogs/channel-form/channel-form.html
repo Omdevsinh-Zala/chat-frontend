@@ -64,7 +64,7 @@
     mat-button
     class="flex justify-center items-center"
     (click)="createChannel()"
-    [disabled]="channelForm().invalid()"
+    [disabled]="channelForm().invalid() || isCreating()"
   >
     @if(isCreating()) {
     <mat-spinner mode="indeterminate" diameter="20"></mat-spinner>

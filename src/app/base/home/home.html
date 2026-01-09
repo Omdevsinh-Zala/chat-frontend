@@ -14,7 +14,7 @@
           <span matListItemTitle>Add Channel</span>
         </button>
         @for (channel of userChannels(); track $index) {
-        <a [routerLink]="['/home/channel', channel.id]" mat-list-item class="user-links">
+        <a [routerLink]="['/home/channel', channel.id]" routerLinkActive="chat-active" mat-list-item class="user-links">
           <mat-icon matListItemIcon>{{ channel.is_private ? 'lock' : 'groups' }}</mat-icon>
           <span matListItemTitle>{{ channel.title }}</span>
         </a>

@@ -38,10 +38,9 @@ export class ChannelForm implements OnInit {
   isCreating = signal<boolean>(false);
 
   ngOnInit(): void {
-    // if (this.data) {
-    //   console.log(this.data);
-    //   this.groupFormModel.set(this.data);
-    // }
+    if (this.data) {
+      this.channelFormModel.set(this.data);
+    }
   }
 
   backendFormValidationErrors = signal<CreateChannel | null>(null);
@@ -76,7 +75,7 @@ export class ChannelForm implements OnInit {
     minLength(schemaPath.description, 3, {
       message: 'Description must be at least 3 characters long.',
     });
-    maxLength(schemaPath.description, 100, {
+    maxLength(schemaPath.description, 1000, {
       message: 'Description must not exceed 100 characters.',
     });
   });

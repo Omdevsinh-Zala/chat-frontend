@@ -63,6 +63,10 @@ export const routes: Routes = [
         loadComponent: () => import('./base/files/files').then(m => m.Files),
       },
       {
+        path: 'channels',
+        loadComponent: () => import('./base/channels-list/channels-list').then(m => m.ChannelsList),
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: "home"

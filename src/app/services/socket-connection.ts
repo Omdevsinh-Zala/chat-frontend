@@ -30,7 +30,6 @@ export class SocketConnection {
     });
 
     this.socket.on('channels', ({ channels }) => {
-      console.log(channels);
       this.userService.userChannels.set(channels);
     });
 

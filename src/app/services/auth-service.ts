@@ -5,6 +5,7 @@ import { GlobalResponse, LoginModel, PrivateKeyResponse, RegisterModel } from '.
 import { map } from 'rxjs';
 import { UserService } from './user-service';
 import { Router } from '@angular/router';
+import { User } from '../models/user';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +18,7 @@ export class AuthService {
 
   loginUser(data: LoginModel) {
     return this.http
-      .post<GlobalResponse<PrivateKeyResponse>>(`${this.apiUrl}/auth/login`, data)
+      .post<GlobalResponse<User>>(`${this.apiUrl}/auth/login`, data)
       .pipe(
         map(async (res) => {
           if (res.success) {
