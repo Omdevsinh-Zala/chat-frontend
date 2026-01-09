@@ -53,8 +53,9 @@
           <div class="flex flex-col-reverse">
             <div class="flex flex-col items-end gap-1">
               <p
-                class="text-lg text-end"
+                class="text-lg text-end w-[calc(100dvw-470px)]"
                 [class.text-xs!]="isTablet()"
+                [class.w-[95dvw]!]="isTablet()"
                 [innerHTML]="mes.content | modify"
               ></p>
             </div>
@@ -81,8 +82,9 @@
                 <p class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</p>
               </div>
               <p
-                class="text-lg text-start"
+                class="text-lg text-start w-[calc(100dvw-470px)]"
                 [class.text-xs!]="isTablet()"
+                [class.w-[95dvw]!]="isTablet()"
                 [innerHTML]="mes.content | modify"
               ></p>
             </div>
