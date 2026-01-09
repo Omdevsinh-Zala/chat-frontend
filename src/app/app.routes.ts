@@ -25,7 +25,11 @@ export const routes: Routes = [
           {
             path: ':id',
             loadComponent: () => import('./base/home/chat/chat').then(m => m.Chat),
-          }
+          },
+          {
+            path: 'channel/:id',
+            loadComponent: () => import('./base/home/channel-chat/channel-chat').then(m => m.ChannelChat),
+          },
         ]
       },
       {
@@ -57,6 +61,10 @@ export const routes: Routes = [
       {
         path: 'files',
         loadComponent: () => import('./base/files/files').then(m => m.Files),
+      },
+      {
+        path: 'channels',
+        loadComponent: () => import('./base/channels-list/channels-list').then(m => m.ChannelsList),
       },
       {
         path: '',

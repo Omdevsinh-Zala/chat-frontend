@@ -1,0 +1,75 @@
+<h2 mat-dialog-title class="text-(--mat-sys-on-surface)!">
+  {{ data ? 'Edit details' : 'Create Channel' }}
+</h2>
+<mat-dialog-content>
+  <form class="flex flex-col gap-2 py-4">
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input [field]="channelForm.title" matInput />
+      @if(channelForm.title().invalid() && channelForm.title().touched() ||
+      backendFormValidationErrors()?.title) { @if(channelForm.title().invalid() &&
+      channelForm.title().touched()) { @for(error of channelForm.title().errors(); track $index) {
+      @if ($first) {
+      <mat-error>
+        {{ error.message }}
+      </mat-error>
+      } } } @if(backendFormValidationErrors()?.title) {
+      <mat-error>
+        {{ backendFormValidationErrors()?.title }}
+      </mat-error>
+      } }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Topic</mat-label>
+      <input [field]="channelForm.topic" matInput />
+      @if(channelForm.topic().invalid() && channelForm.topic().touched() ||
+      backendFormValidationErrors()?.topic) { @if(channelForm.topic().invalid() &&
+      channelForm.topic().touched()) { @for(error of channelForm.topic().errors(); track $index) {
+      @if ($first) {
+      <mat-error>
+        {{ error.message }}
+      </mat-error>
+      } } } @if(backendFormValidationErrors()?.topic) {
+      <mat-error>
+        {{ backendFormValidationErrors()?.topic }}
+      </mat-error>
+      } }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea class="resize-none" [field]="channelForm.description" matInput rows="5" ></textarea>
+      @if(channelForm.description().invalid() && channelForm.description().touched() ||
+      backendFormValidationErrors()?.description) { @if(channelForm.description().invalid() &&
+      channelForm.description().touched()) { @for(error of channelForm.description().errors();
+      track $index) { @if ($first) { <mat-error> {{ error.message }} </mat-error> } } } @if(backendFormValidationErrors()?.description) {
+      <mat-error>
+        {{ backendFormValidationErrors()?.description }}
+      </mat-error>
+      } }
+    </mat-form-field>
+
+    <mat-checkbox
+      [checked]="channelForm.isPrivate()"
+      [field]="channelForm.isPrivate"
+      class="text-(--mat-sys-on-surface)! font-(--mat-sys-body-large)! leading-(--mat-sys-body-large-tracking)!"
+      >Private</mat-checkbox
+    >
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button
+    mat-button
+    class="flex justify-center items-center"
+    (click)="createChannel()"
+    [disabled]="channelForm().invalid() || isCreating()"
+  >
+    @if(isCreating()) {
+    <mat-spinner mode="indeterminate" diameter="20"></mat-spinner>
+    } @else {
+    {{ data ? 'Update' : 'Create' }}
+    }
+  </button>
+</mat-dialog-actions>
