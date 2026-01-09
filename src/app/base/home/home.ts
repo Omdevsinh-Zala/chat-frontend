@@ -47,6 +47,10 @@ export class Home implements OnInit {
     this.responsiveService.basePanelOpen.set(false);
   }
 
+  showChannel(id: string) {
+    return window.location.href.includes(id);
+  }
+
   user = computed(() => {
     return this.userService.user();
   });
@@ -63,14 +67,13 @@ export class Home implements OnInit {
     this.socketService.socket.on('receiveChatMessage', (data: { chat: GroupedChat }) => {
       const message = data.chat.messages[0];
       const isMyMessage = message.sender_id === this.user()?.id;
+      const currentUrl = window.location.href;
 
       if (!isMyMessage && message.status !== 'read') {
         // Play sound for all incoming messages
         this.notificationService.playSound();
 
         // Show notification only if tab is hidden OR user is not in the specific chat
-        // We can check if the current URL contains the sender's ID
-        const currentUrl = window.location.href;
         if (document.visibilityState === 'hidden' || !currentUrl.includes(message.sender_id)) {
           const sender = this.combinedChats().find((u) => u?.id === message.sender_id);
           const senderName = sender ? `${sender.first_name} ${sender.last_name}` : 'New message';
@@ -79,6 +82,35 @@ export class Home implements OnInit {
             senderName,
             message.content,
             sender?.avatar_url
+          );
+        }
+      }
+    });
+
+    this.socketService.socket.on('receiveChannelChatMessage', (data: { chat: GroupedChat }) => {
+      const message = data.chat.messages[0];
+      const isMyMessage = message.sender_id === this.user()?.id;
+      const currentUrl = this.showChannel(message.channel_id!);
+
+      if (!isMyMessage) {
+        if (!currentUrl) {
+          this.userChannels.update((channels) => {
+            const index = channels.findIndex((c) => c.id === message.channel_id);
+            if (index !== -1) {
+              channels[index].unread_count = (channels[index].unread_count || 0) + 1;
+              return [...channels];
+            }
+            return channels;
+          });
+        }
+
+        if (document.visibilityState === 'hidden' || !currentUrl) {
+          this.notificationService.playSound();
+          const channel = this.userChannels().find((c) => c.id === message.channel_id);
+          this.notificationService.showNotification(
+            channel?.title || 'New message',
+            message.content,
+            channel?.avatar_url
           );
         }
       }
@@ -102,17 +134,17 @@ export class Home implements OnInit {
       maxWidth: '100dvw',
       height: '70%',
       width: '70%',
-    })
+    });
 
     dialog.afterClosed().subscribe({
       next: (result) => {
-        if(result) {
+        if (result) {
           this.socketService.socket.emit('channelCreated');
         }
       },
       error: (err) => {
         console.log(err);
-      }
-    })
+      },
+    });
   }
 }

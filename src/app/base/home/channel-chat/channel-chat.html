@@ -39,8 +39,8 @@
         </div>
       </li>
       } -->
-      @for (group of currentChatMessages(); track group.monthYear) { @for (mes of
-      group.messages;track mes.id) { @if(mes.sender_id === userData.user()?.id) {
+      @for (group of currentChatMessages(); track $index) { @for (mes of
+      group.messages;track $index) { @if(mes.sender_id === userData.user()?.id) {
       <!-- My sent messages -->
       <li #messageItem class="wrap-break-word" [style.align-self]="'end'" [attr.data-id]="mes.id">
         <div class="flex items-center gap-4 flex-row-reverse">

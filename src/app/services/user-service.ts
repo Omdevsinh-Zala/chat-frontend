@@ -95,6 +95,9 @@ export class UserService {
   }
 
   joinChannel(id: string, inviteBy: string | null) {
-    return this.http.post<GlobalResponse<boolean>>(`${this.apiUrl}/users/channels/join`, { channelId: id, inviteBy });
+    return this.http.post<GlobalResponse<boolean>>(`${this.apiUrl}/users/channels/join`, {
+      channelId: id,
+      inviteBy,
+    });
   }
 }
