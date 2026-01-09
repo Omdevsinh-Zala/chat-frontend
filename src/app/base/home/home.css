@@ -3,6 +3,9 @@
   span {
     color: var(--mat-sys-on-primary) !important;
   }
+  mat-icon {
+    color: var(--mat-sys-on-primary) !important;
+  }
 }
 
 .channel-wrap {

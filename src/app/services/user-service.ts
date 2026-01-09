@@ -7,7 +7,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RecentlyMessagedUsers } from '../models/recently-messaged-users';
 import { Router } from '@angular/router';
 import { PaginatedResponse, SearchUserResponse } from '../models/search';
-import { AttachmentsType } from '../models/chat';
+import { AttachmentsType, ChannelList } from '../models/chat';
+import { Channel, CreateChannel } from '../models/channel';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +20,7 @@ export class UserService {
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
 
-  userChannels: WritableSignal<any> = signal([]);
+  userChannels: WritableSignal<Channel[]> = signal([]);
   recentlyMessagesUsers: WritableSignal<RecentlyMessagedUsers[]> = signal([]);
   personalChat: WritableSignal<RecentlyMessagedUsers | null> = signal(null);
 
@@ -63,8 +64,37 @@ export class UserService {
     if (page !== undefined) params.append('page', page.toString());
 
     const queryString = params.toString();
-    const url = queryString ? `${this.apiUrl}/users/files?${queryString}` : `${this.apiUrl}/users/files`;
+    const url = queryString
+      ? `${this.apiUrl}/users/files?${queryString}`
+      : `${this.apiUrl}/users/files`;
 
     return this.http.get<GlobalResponse<PaginatedResponse<AttachmentsType>>>(url);
+  }
+
+  createChannel(data: CreateChannel) {
+    return this.http.post<GlobalResponse<boolean>>(`${this.apiUrl}/users/channels`, data);
+  }
+
+  getChannelData(id: string) {
+    return this.http.get<GlobalResponse<Channel>>(`${this.apiUrl}/users/channels/${id}`);
+  }
+
+  getAllChannels(search?: string, order?: string, limit?: number, page?: number) {
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (order) params.append('order', order);
+    if (limit !== undefined) params.append('limit', limit.toString());
+    if (page !== undefined) params.append('page', page.toString());
+
+    const queryString = params.toString();
+    const url = queryString
+      ? `${this.apiUrl}/users/channels?${queryString}`
+      : `${this.apiUrl}/users/channels`;
+
+    return this.http.get<GlobalResponse<PaginatedResponse<ChannelList>>>(url);
+  }
+
+  joinChannel(id: string, inviteBy: string | null) {
+    return this.http.post<GlobalResponse<boolean>>(`${this.apiUrl}/users/channels/join`, { channelId: id, inviteBy });
   }
 }

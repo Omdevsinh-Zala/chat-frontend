@@ -1,0 +1,58 @@
+@if(loading()) {
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+  <mat-spinner mode="indeterminate" diameter="40"></mat-spinner>
+</div>
+} @else {
+<mat-dialog-content>
+  <div class="px-4 pt-6 pb-4 flex flex-col items-center gap-4">
+    <img
+      class="w-24 h-24 rounded-full"
+      [src]="imagePath + 'profileImages/' + channelData().avatar_url"
+      alt="Channel Image"
+    />
+    <h2 class="text-2xl font-medium">{{ channelData().title }}</h2>
+  </div>
+  <div class="px-8 py-2 flex flex-col gap-4">
+    @if(channelData().topic) {
+    <div class="flex gap-2 items-start">
+      <h3 class="lg:text-xl md:text-lg text-base">Topic:-</h3>
+      <p class="text-sm md:text-base lg:text-lg">{{ channelData().topic }}</p>
+    </div>
+    } @if(channelData().description) {
+    <div class="flex gap-2 items-start w-full">
+      <h3 class="lg:text-xl md:text-lg text-base shrink-0">Description:-</h3>
+      <div class="flex-1 overflow-hidden">
+        <div
+          class="description-container transition-all duration-500 ease-in-out"
+          [class.collapsed]="!expendText()"
+          [class.expanded]="expendText()"
+        >
+          <p class="text-sm md:text-base lg:text-lg">
+            {{ channelData().description }}
+          </p>
+        </div>
+        @if(channelData().description.length > 120) {
+        <div class="flex justify-end mt-1">
+          <button
+            matMiniFab
+            (click)="expendText.set(!expendText())"
+            class="text-xs! h-6 leading-none min-w-0 px-2 text-(--mat-sys-primary) font-medium shadow-none!"
+          >
+          <mat-icon>{{ expendText() ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button matButton (click)="close()">Close</button>
+  @if(channelData().isMember) {
+  <button matButton (click)="redirect(channelData().id)">Open</button>
+  } @else {
+  <button matButton (click)="joinChannel()">Join</button>
+  }
+</mat-dialog-actions>
+}
