@@ -33,6 +33,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
 import { AssetContainer } from '../chat/asset-container/asset-container';
 import { ChannelData } from '../../../models/channel';
+import { MatCardModule } from "@angular/material/card";
 
 @Component({
   selector: 'app-channel-chat',
@@ -47,7 +48,8 @@ import { ChannelData } from '../../../models/channel';
     ModifyPipe,
     MatProgressSpinner,
     AssetContainer,
-  ],
+    MatCardModule,
+],
   templateUrl: './channel-chat.html',
   styleUrl: './channel-chat.css',
 })
@@ -70,6 +72,12 @@ export class ChannelChat {
   // });
 
   isTablet = this.responsiveService.isTabletForBase;
+  isOpen = this.responsiveService.basePanelOpen;
+  isHomeOpen = this.responsiveService.homePanelOpen;
+
+  openForHome() {
+    this.responsiveService.homePanelOpen.update((value) => !value);
+  }
 
   isAssetsEntered = signal(false);
   assetsData: WritableSignal<File[]> = signal([]);

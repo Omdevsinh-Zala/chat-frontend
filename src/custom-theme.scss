@@ -14,6 +14,19 @@ html {
   );
 }
 
+.azure-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
 .rose-theme {
   @include mat.theme(
     (

@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-2 mt-2 items-start">
+<div class="flex flex-col gap-2 mt-2 items-start mb-2">
   @for (att of attachments(); track $index) { @if (isImage(att)) {
   <div class="text-start xs:w-auto max-w-xs">
     <img
@@ -14,7 +14,7 @@
       (click)="viewAssets(attachments(), $index); $event.preventDefault(); $event.stopPropagation()"
       [src]="imagePath + att.file_url"
       controls
-      class="w-full rounded-lg shadow-md"
+      class="w-full aspect-video rounded-lg shadow-md"
     ></video>
   </div>
   } @else if (isPdf(att)) {

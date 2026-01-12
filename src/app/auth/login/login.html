@@ -12,7 +12,7 @@
         />
         <label class="label"
           [class.float-label]="loginForm.email().value().trim() !== ''"
-          [class.text-pink-600]="loginForm.email().touched() && loginForm.email().invalid()"
+          [class.text-(--mat-sys-error)]="loginForm.email().touched() && loginForm.email().invalid()"
           [class.peer-focus\:text-inherit]="loginForm.email().touched() && loginForm.email().invalid()"
         >
           Email<span class="ps-0.5">*</span>
@@ -47,7 +47,7 @@
         <label
           class="label"
           [class.float-label]="loginForm.password().value().trim() !== ''"
-          [class.text-pink-600]="loginForm.password().touched() && loginForm.password().invalid()"
+          [class.text-(--mat-sys-error)]="loginForm.password().touched() && loginForm.password().invalid()"
           [class.peer-focus\:text-inherit]="loginForm.password().touched() && loginForm.password().invalid()"
         >
           Password<span class="ps-0.5">*</span>
