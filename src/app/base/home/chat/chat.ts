@@ -32,9 +32,11 @@ import { ReceiverUser } from '../../../models/user';
 import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { AssetContainer } from './asset-container/asset-container';
 import { AssetView } from '../../../dialogs/asset-view/asset-view';
 import { Responsive } from '../../../services/responsive';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-chat',
@@ -49,6 +51,8 @@ import { Responsive } from '../../../services/responsive';
     ModifyPipe,
     MatProgressSpinner,
     AssetContainer,
+    MatToolbarModule,
+    MatCardModule,
   ],
   templateUrl: './chat.html',
   styleUrl: './chat.css',
@@ -73,6 +77,12 @@ export class Chat implements OnInit, AfterViewInit {
   });
 
   isTablet = this.responsiveService.isTabletForBase;
+  isOpen = this.responsiveService.basePanelOpen;
+  isHomeOpen = this.responsiveService.homePanelOpen;
+
+  openForHome() {
+    this.responsiveService.homePanelOpen.update((value) => true);
+  }
 
   isAssetsEntered = signal(false);
   assetsData: WritableSignal<File[]> = signal([]);

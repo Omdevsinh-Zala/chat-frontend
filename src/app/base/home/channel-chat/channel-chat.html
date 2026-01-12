@@ -1,7 +1,28 @@
-<div
-  class="h-dvh w-full relative pt-8 pl-8 pr-4 bg-(--mat-sys-surface) flex flex-col"
-  [class.h-[calc(100dvh-40px)]!]="isTablet()"
->
+<mat-card class="border-0! rounded-none!" appearance="outlined">
+  <mat-card-header>
+    @if(isTablet()) {
+    <button
+      mat-icon-button
+      class="order-1!"
+      matTooltip="Close chat menu"
+      aria-label="Close chat menu"
+      matTooltipPosition="right"
+      (click)="openForHome()"
+    >
+      <mat-icon class="text-3xl">arrow_left_alt</mat-icon>
+    </button>
+    }
+    <div
+      mat-card-avatar
+      class="bg-cover order-2! ms-2"
+      [style.background-image]="
+        'url(' + imagePath + 'profileImages/' + channelData()?.avatar_url + ')'
+      "
+    ></div>
+    <mat-card-title>{{ channelData()?.title }}</mat-card-title>
+  </mat-card-header>
+</mat-card>
+<div class="h-[calc(100dvh-72px)] w-full relative pt-8 px-4 bg-(--mat-sys-surface) flex flex-col">
   @if (unreadCount() > 2 && canAppendMessages()) {
   <div class="absolute top-8 left-1/2 -translate-x-1/2 z-10">
     <button
@@ -39,8 +60,8 @@
         </div>
       </li>
       } -->
-      @for (group of currentChatMessages(); track $index) { @for (mes of
-      group.messages;track $index) { @if(mes.sender_id === userData.user()?.id) {
+      @for (group of currentChatMessages(); track $index) { @for (mes of group.messages;track
+      $index) { @if(mes.sender_id === userData.user()?.id) {
       <!-- My sent messages -->
       <li #messageItem class="wrap-break-word" [style.align-self]="'end'" [attr.data-id]="mes.id">
         <div class="flex items-center gap-4 flex-row-reverse">
@@ -50,12 +71,12 @@
               alt="User avatar"
             />
           </div>
-          <div class="flex flex-col-reverse">
+          <div class="flex flex-col-reverse items-end-safe">
             <div class="flex flex-col items-end gap-1">
               <p
                 class="text-lg text-end w-[calc(100dvw-470px)]"
                 [class.text-xs!]="isTablet()"
-                [class.w-[95dvw]!]="isTablet()"
+                [class.w-[calc(98dvw-110px)]!]="isTablet()"
                 [innerHTML]="mes.content | modify"
               ></p>
             </div>
@@ -75,7 +96,7 @@
           <div class="w-12 h-12 shrink-0" [class.w-8!]="isTablet()" [class.h-8!]="isTablet()">
             <img [src]="imagePath + 'profileImages/' + mes.Sender?.avatar_url" alt="User avatar" />
           </div>
-          <div class="flex flex-col-reverse">
+          <div class="flex flex-col-reverse items-start">
             <div class="flex flex-col items-start gap-1">
               <div class="flex items-center justify-start-safe gap-2">
                 <span class="text-xs font-bold">{{ mes.Sender?.full_name }}</span>
@@ -84,7 +105,7 @@
               <p
                 class="text-lg text-start w-[calc(100dvw-470px)]"
                 [class.text-xs!]="isTablet()"
-                [class.w-[95dvw]!]="isTablet()"
+                [class.w-[calc(98dvw-110px)]!]="isTablet()"
                 [innerHTML]="mes.content | modify"
               ></p>
             </div>

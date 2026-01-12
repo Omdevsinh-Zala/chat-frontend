@@ -1,4 +1,30 @@
-<div class="h-dvh w-full relative pt-8 pl-8 pr-4 bg-(--mat-sys-surface) flex flex-col" [class.h-[calc(100dvh-40px)]!]="isTablet()">
+<mat-card class="border-0! rounded-none!" appearance="outlined">
+  <mat-card-header>
+    @if(isTablet()) {
+    <button
+      mat-icon-button
+      class="order-1!"
+      matTooltip="Close chat menu"
+      aria-label="Close chat menu"
+      matTooltipPosition="right"
+      (click)="openForHome()"
+    >
+      <mat-icon class="text-3xl">arrow_left_alt</mat-icon>
+    </button>
+    }
+    <div
+      mat-card-avatar
+      class="bg-cover order-2! ms-2"
+      [style.background-image]="
+        'url(' + imagePath + 'profileImages/' + receiverUser()?.avatar_url + ')'
+      "
+    ></div>
+    <mat-card-title class="text-lg! md:text-xl!">{{ receiverUser()?.full_name }}</mat-card-title>
+  </mat-card-header>
+</mat-card>
+<div
+  class="h-[calc(100dvh-72px)]! w-full relative pt-8 px-4 bg-(--mat-sys-surface) flex flex-col"
+>
   @if (unreadCount() > 2 && canAppendMessages()) {
   <div class="absolute top-8 left-1/2 -translate-x-1/2 z-10">
     <button
@@ -46,7 +72,7 @@
               alt="User avatar"
             />
           </div>
-          <div class="flex flex-col-reverse">
+          <div class="flex flex-col-reverse items-end-safe">
             <div class="flex items-center justify-end-safe">
               @if(mes.status === 'read') {
               <mat-icon
@@ -60,9 +86,17 @@
               }
               <span class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</span>
             </div>
-            <p class="text-lg text-end w-[calc(100dvw-470px)]" [class.text-xs!]="isTablet()" [class.w-[95dvw]!]="isTablet()" [innerHTML]="mes.content | modify"></p>
+            <p
+              class="text-lg text-end w-[calc(100dvw-470px)]"
+              [class.text-xs!]="isTablet()"
+              [class.w-[calc(98dvw-110px)]!]="isTablet()"
+              [innerHTML]="mes.content | modify"
+            ></p>
             @if (mes.attachments && mes.attachments.length) {
-            <app-asset-container [attachments]="mes.attachments" [isTablet]="isTablet()"></app-asset-container>
+            <app-asset-container
+              [attachments]="mes.attachments"
+              [isTablet]="isTablet()"
+            ></app-asset-container>
             }
           </div>
         </div>
@@ -70,7 +104,8 @@
       } @else {
       <!-- Received messages - no status icons -->
       <li
-        #messageItem class="wrap-break-word"
+        #messageItem
+        class="wrap-break-word"
         [style.align-self]="'start'"
         [attr.data-id]="mes.id"
         [attr.data-status]="mes.status"
@@ -82,13 +117,21 @@
               alt="User avatar"
             />
           </div>
-          <div class="flex flex-col-reverse">
+          <div class="flex flex-col-reverse items-start">
             <div class="flex items-center justify-start-safe">
               <p class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</p>
             </div>
-            <p class="text-lg text-start w-[calc(100dvw-470px)]" [class.text-xs!]="isTablet()" [class.w-[95dvw]!]="isTablet()" [innerHTML]="mes.content | modify"></p>
+            <p
+              class="text-lg text-start w-[calc(100dvw-470px)]"
+              [class.text-xs!]="isTablet()"
+              [class.w-[calc(98dvw-110px)]!]="isTablet()"
+              [innerHTML]="mes.content | modify"
+            ></p>
             @if (mes.attachments && mes.attachments.length) {
-            <app-asset-container [attachments]="mes.attachments" [isTablet]="isTablet()"></app-asset-container>
+            <app-asset-container
+              [attachments]="mes.attachments"
+              [isTablet]="isTablet()"
+            ></app-asset-container>
             }
           </div>
         </div>
@@ -157,7 +200,10 @@
               alt="Asset"
             />
             } @else {
-            <video [src]="asset.file_url" class="absolute inset-0 w-full h-full object-contain"></video>
+            <video
+              [src]="asset.file_url"
+              class="absolute inset-0 w-full h-full object-contain"
+            ></video>
             }
           </div>
           } } @else {
@@ -206,11 +252,7 @@
         (change)="onFileSelected($event)"
       />
     </div>
-    <button
-      matMiniFab
-      (click)="sendMessage($event)"
-      [attr.aria-label]="'Send message'"
-    >
+    <button matMiniFab (click)="sendMessage($event)" [attr.aria-label]="'Send message'">
       <mat-icon>send</mat-icon>
     </button>
   </div>

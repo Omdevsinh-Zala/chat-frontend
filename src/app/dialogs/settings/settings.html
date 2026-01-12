@@ -1,4 +1,4 @@
-<h2 mat-dialog-title class="text-(--mat-sys-on-surface)!">Settings</h2>
+<h2 mat-dialog-title class="text-(--mat-sys-on-surface)! text-3xl!">Settings</h2>
 <mat-dialog-content>
   @if(responsive.isTabletForBase()) {
   <div
@@ -52,16 +52,13 @@
 </mat-dialog-actions>
 
 <ng-template #settingFragment>
-  <h3 class="ps-2 text-3xl pb-3">Color mode</h3>
+  <h3 class="ps-2 text-xl pb-3">Color mode</h3>
   <ul class="flex items-center flex-wrap px-4 py-2">
     @for(theme of systemThemes(); track $index) {
-    <li
-      class="sm:w-1/3 w-full p-4"
-      (click)="systemThemeChange(theme)"
-      [style.border-color]="theme.isActive ? 'var(--mat-sys-primary)' : ''"
-    >
+    <li class="sm:w-1/3 w-full p-4" (click)="systemThemeChange(theme)">
       <div
         class="flex justify-center items-center gap-2 py-4 bg-(--mat-sys-surface-container-lowest) text-(--mat-sys-on-surface) border-(--mat-sys-outline) border-2 rounded-(--mat-sys-corner-medium) hover:cursor-pointer"
+        [style.border-color]="theme.isActive ? 'var(--mat-sys-primary)' : ''"
       >
         <mat-icon class="text-xs">{{ theme.icon }}</mat-icon>
         <p>{{ theme.name }}</p>
@@ -69,7 +66,7 @@
     </li>
     }
   </ul>
-  <div class="ps-2 pb-3 mt-6 flex gap-2 items-center">
+  <!-- <div class="ps-2 pb-3 mt-6 flex gap-2 items-center">
     <h3 class="text-3xl">Glass Effect</h3>
     <span class="px-2 py-1 text-xs rounded-md bg-(--mat-sys-primary) text-(--mat-sys-on-primary)"
       >Experimental</span
@@ -97,10 +94,13 @@
         }
       </div>
     </div>
-  </div>
+  </div> -->
 
-  <h3 class="ps-2 text-3xl pb-3 mt-6">Themes</h3>
-  <ul [class.sm:grid-cols-1]="responsive.isTabletForBase()" class="px-4 py-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+  <h3 class="ps-2 text-xl pb-3 mt-6">Themes</h3>
+  <ul
+    [class.sm:grid-cols-1]="responsive.isTabletForBase()"
+    class="px-4 py-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full"
+  >
     @for (theme of matThemes(); track $index) {
     <li
       class="border-2 border-(--mat-sys-outline) rounded-(--mat-sys-corner-medium) hover:cursor-pointer hover:bg-(--mat-sys-surface-container-high) transition-colors select-none"
