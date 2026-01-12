@@ -15,10 +15,12 @@
 }
 
 ::ng-deep mat-dialog-content {
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  max-height: 80vh !important;
+
   @media (max-width: 1200px) {
-    padding: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
     max-height: unset !important;
     flex: 1;
   }
