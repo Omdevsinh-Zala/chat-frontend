@@ -48,7 +48,7 @@
   </div>
   <div class="flex-1 overflow-y-auto min-h-0">
     <ul class="flex flex-col pt-4 justify-center items-center">
-      @if(channelData().ChannelMembers.length > 0) {
+      @if(channelData().isMember) {
         @for(member of channelData().ChannelMembers; track $index) {
         <li class="py-2 px-2 w-1/2">
           <div class="">
