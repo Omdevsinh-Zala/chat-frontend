@@ -14,10 +14,25 @@
           <span matListItemTitle>Add Channel</span>
         </button>
         @for (channel of userChannels(); track $index) {
-        <a [routerLink]="['/home/channel', channel.id]" routerLinkActive="chat-active" mat-list-item class="user-links">
-          <mat-icon matListItemIcon>{{ channel.is_private ? 'lock' : 'groups' }}</mat-icon>
-          <span matListItemTitle>{{ channel.title }}</span>
-        </a>
+        <div class="relative">
+          @if(channel.unread_count && channel.unread_count > 0) {
+          <div
+            class="absolute top-0 right-0 w-5 h-5 bg-(--mat-sys-error) text-(--mat-sys-on-error) rounded-full z-10 text-xs flex justify-center items-center"
+            [class.text-[10px]]="channel.unread_count > 10"
+          >
+            {{ channel.unread_count > 10 ? '10+' : channel.unread_count }}
+          </div>
+          }
+          <a
+            [routerLink]="['/home/channel', channel.id]"
+            routerLinkActive="chat-active"
+            mat-list-item
+            class="user-links"
+          >
+            <mat-icon matListItemIcon>{{ channel.is_private ? 'lock' : 'groups' }}</mat-icon>
+            <span matListItemTitle>{{ channel.title }}</span>
+          </a>
+        </div>
         }
       </mat-nav-list>
       <mat-divider></mat-divider>

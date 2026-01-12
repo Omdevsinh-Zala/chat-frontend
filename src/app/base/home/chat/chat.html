@@ -60,7 +60,7 @@
               }
               <span class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</span>
             </div>
-            <p class="text-lg text-end" [class.text-xs!]="isTablet()" [innerHTML]="mes.content | modify"></p>
+            <p class="text-lg text-end w-[calc(100dvw-470px)]" [class.text-xs!]="isTablet()" [class.w-[95dvw]!]="isTablet()" [innerHTML]="mes.content | modify"></p>
             @if (mes.attachments && mes.attachments.length) {
             <app-asset-container [attachments]="mes.attachments" [isTablet]="isTablet()"></app-asset-container>
             }
@@ -86,7 +86,7 @@
             <div class="flex items-center justify-start-safe">
               <p class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</p>
             </div>
-            <p class="text-lg text-start" [class.text-xs!]="isTablet()" [innerHTML]="mes.content | modify"></p>
+            <p class="text-lg text-start w-[calc(100dvw-470px)]" [class.text-xs!]="isTablet()" [class.w-[95dvw]!]="isTablet()" [innerHTML]="mes.content | modify"></p>
             @if (mes.attachments && mes.attachments.length) {
             <app-asset-container [attachments]="mes.attachments" [isTablet]="isTablet()"></app-asset-container>
             }

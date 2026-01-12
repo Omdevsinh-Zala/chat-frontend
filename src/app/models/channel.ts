@@ -24,12 +24,14 @@ export interface ChannelMember {
 }
 
 export interface Channel {
+  id: string;
   avatar_url: string;
   created_at: Date;
   is_private: boolean;
   last_message_at: Date | null;
   slug: string;
   title: string;
+  unread_count?: number;
 }
 
 export interface ChannelData {
