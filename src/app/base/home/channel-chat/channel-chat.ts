@@ -441,6 +441,16 @@ export class ChannelChat {
 
   private markRead() {
     this.socketService.socket.emit('markChannelRead', { channelId: this.chatId() });
+
+    // Clear unread count locally
+    this.userData.userChannels.update((channels) => {
+      const index = channels.findIndex((c) => c.id === this.chatId());
+      if (index !== -1) {
+        channels[index].unread_count = 0;
+        return [...channels];
+      }
+      return channels;
+    });
   }
 
   membersUnseen(message: any) {

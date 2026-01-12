@@ -12,7 +12,6 @@ export class ModifyPipe implements PipeTransform {
     if (!value) return value;
 
     // 1. Escape HTML to prevent XSS (basic escaping)
-    // We do this BEFORE modifying so that we don't escape our own <a> tags later.
     const escapedText = this.escapeHtml(value);
 
     // 2. Regex for URLs
@@ -37,10 +36,8 @@ export class ModifyPipe implements PipeTransform {
 
     // 4. Regex for Phone Numbers
     // Matches formats like: 123-456-7890, (123) 456-7890, 123 456 7890, +1-123-456-7890
-    const phoneRegex = /(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g;
+    const phoneRegex = /(?<!\d)(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}(?!\d)/g;
     const finalHtml = withEmails.replace(phoneRegex, (phone) => {
-      // Basic check to avoid matching parts of timestamps or other numbers if possible,
-      // but this regex is specific enough for standard phone formats.
       return `<a href="tel:${phone.trim()}" class="underline text-blue-500 hover:text-blue-700">${phone}</a>`;
     });
 
