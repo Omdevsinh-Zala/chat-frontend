@@ -3,7 +3,7 @@
   <mat-spinner mode="indeterminate" diameter="40"></mat-spinner>
 </div>
 } @else {
-<mat-dialog-content>
+<mat-dialog-content class="overflow-hidden! flex flex-col h-full">
   <div class="px-4 pt-6 pb-4 flex flex-col items-center gap-4">
     <img
       class="w-24 h-24 rounded-full"
@@ -38,13 +38,42 @@
             (click)="expendText.set(!expendText())"
             class="text-xs! h-6 leading-none min-w-0 px-2 text-(--mat-sys-primary) font-medium shadow-none!"
           >
-          <mat-icon>{{ expendText() ? 'expand_less' : 'expand_more' }}</mat-icon>
+            <mat-icon>{{ expendText() ? 'expand_less' : 'expand_more' }}</mat-icon>
           </button>
         </div>
         }
       </div>
     </div>
     }
+  </div>
+  <div class="flex-1 overflow-y-auto min-h-0">
+    <ul class="flex flex-col pt-4 justify-center items-center">
+      @if(channelData().ChannelMembers.length > 0) {
+        @for(member of channelData().ChannelMembers; track $index) {
+        <li class="py-2 px-2 w-1/2">
+          <div class="">
+            <mat-card class="shadow-none! border! border-(--mat-sys-outline)!">
+              <mat-card-header>
+                <div
+                  mat-card-avatar
+                  class="bg-cover"
+                  [style.background-image]="
+                    'url(' + imagePath + 'profileImages/' + member.avatar_url + ')'
+                  "
+                ></div>
+                <mat-card-title class="text-lg! text-(--mat-sys-on-surface)">{{
+                  member.full_name
+                }}</mat-card-title>
+                <mat-card-subtitle class="text-base! font-normal! text-(--mat-sys-on-surface)">{{
+                  member.role
+                }}</mat-card-subtitle>
+              </mat-card-header>
+            </mat-card>
+          </div>
+        </li>
+        }
+      }
+    </ul>
   </div>
 </mat-dialog-content>
 <mat-dialog-actions>
