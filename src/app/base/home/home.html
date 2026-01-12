@@ -5,9 +5,29 @@
     [opened]="!isTablet() || isOpen()"
     opened
     class="w-auto! bg-(--mat-sys-surface)! rounded-none!"
+    [class.w-dvw!]="isTablet() && isOpen()"
+    [class.home-scroll]="isTablet() && isOpen()"
   >
-    <div class="flex items-start flex-col h-full channel-wrap px-4">
-      <mat-nav-list>
+    @if(isTablet() && isOpen()) {
+    <mat-card class="border-0! rounded-none!" appearance="outlined">
+      <mat-card-header [class.px-2!]="isTablet()" [class.pt-2!]="isTablet()">
+        <button
+          mat-icon-button
+          matTooltip="Open side panel"
+          aria-label="Open side panel"
+          matTooltipPosition="right"
+          (click)="openForBase()"
+        >
+          <mat-icon class="text-3xl">menu</mat-icon>
+        </button>
+      </mat-card-header>
+    </mat-card>
+    }
+    <div
+      class="flex items-start flex-col h-full channel-wrap px-4"
+      [class.h-[calc(100%-48px)]!]="isTablet() && isOpen()"
+    >
+      <mat-nav-list class="w-full">
         <h2 matSubheader>Channels</h2>
         <button mat-list-item class="user-links" (click)="openDialog()">
           <mat-icon matListItemIcon>add</mat-icon>
@@ -28,6 +48,7 @@
             routerLinkActive="chat-active"
             mat-list-item
             class="user-links"
+            (click)="closeAll()"
           >
             <mat-icon matListItemIcon>{{ channel.is_private ? 'lock' : 'groups' }}</mat-icon>
             <span matListItemTitle>{{ channel.title }}</span>
@@ -36,7 +57,7 @@
         }
       </mat-nav-list>
       <mat-divider></mat-divider>
-      <mat-nav-list>
+      <mat-nav-list class="w-full">
         <h2 matSubheader>Direct messages</h2>
         @for (chat of combinedChats(); track $index) {
         <div class="relative">

@@ -59,21 +59,21 @@ export class Settings implements AfterViewInit {
       class: 'red-theme',
       isActive: false,
     },
-    {
-      name: 'Green',
-      class: 'green-theme',
-      isActive: false,
-    },
+    // {
+    //   name: 'Green',
+    //   class: 'green-theme',
+    //   isActive: false,
+    // },
     {
       name: 'Blue',
       class: 'blue-theme',
       isActive: false,
     },
-    {
-      name: 'Yellow',
-      class: 'yellow-theme',
-      isActive: false,
-    },
+    // {
+    //   name: 'Yellow',
+    //   class: 'yellow-theme',
+    //   isActive: false,
+    // },
     {
       name: 'Cyan',
       class: 'cyan-theme',
@@ -84,21 +84,21 @@ export class Settings implements AfterViewInit {
       class: 'magenta-theme',
       isActive: false,
     },
-    {
-      name: 'Orange',
-      class: 'orange-theme',
-      isActive: false,
-    },
-    {
-      name: 'Chartreuse',
-      class: 'chartreuse-theme',
-      isActive: false,
-    },
-    {
-      name: 'Spring green',
-      class: 'spring-green-theme',
-      isActive: false,
-    },
+    // {
+    //   name: 'Orange',
+    //   class: 'orange-theme',
+    //   isActive: false,
+    // },
+    // {
+    //   name: 'Chartreuse',
+    //   class: 'chartreuse-theme',
+    //   isActive: false,
+    // },
+    // {
+    //   name: 'Spring green',
+    //   class: 'spring-green-theme',
+    //   isActive: false,
+    // },
     {
       name: 'violet',
       class: 'violet-theme',
@@ -119,11 +119,11 @@ export class Settings implements AfterViewInit {
       class: 'sunset-theme',
       isActive: false,
     },
-    {
-      name: 'forest',
-      class: 'forest-theme',
-      isActive: false,
-    },
+    // {
+    //   name: 'forest',
+    //   class: 'forest-theme',
+    //   isActive: false,
+    // },
     {
       name: 'lavender',
       class: 'lavender-theme',
@@ -139,11 +139,11 @@ export class Settings implements AfterViewInit {
       class: 'solar-citrus-theme',
       isActive: false,
     },
-    {
-      name: 'Neon Mint',
-      class: 'neon-mint-theme',
-      isActive: false,
-    },
+    // {
+    //   name: 'Neon Mint',
+    //   class: 'neon-mint-theme',
+    //   isActive: false,
+    // },
     {
       name: 'Berry Blast',
       class: 'berry-blast-theme',

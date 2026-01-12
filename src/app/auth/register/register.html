@@ -11,7 +11,7 @@
         />
         <label class="label"
           [class.float-label]="registerForm.firstName().value().trim() !== ''"
-          [class.text-pink-600]="registerForm.firstName().touched() && registerForm.firstName().invalid()"
+          [class.text-(--mat-sys-error)]="registerForm.firstName().touched() && registerForm.firstName().invalid()"
           [class.peer-focus\:text-inherit]="registerForm.firstName().touched() && registerForm.firstName().invalid()"
         >
           First Name<span class="ps-0.5">*</span>
@@ -40,7 +40,7 @@
         />
         <label class="label"
           [class.float-label]="registerForm.lastName().value().trim() !== ''"
-          [class.text-pink-600]="registerForm.lastName().touched() && registerForm.lastName().invalid()"
+          [class.text-(--mat-sys-error)]="registerForm.lastName().touched() && registerForm.lastName().invalid()"
           [class.peer-focus\:text-inherit]="registerForm.lastName().touched() && registerForm.lastName().invalid()"
         >
           Last Name<span class="ps-0.5">*</span>
@@ -76,7 +76,7 @@
         }
         <label class="label"
           [class.float-label]="registerForm.username().value().trim() !== ''"
-          [class.text-pink-600]="registerForm.username().touched() && registerForm.username().invalid()"
+          [class.text-(--mat-sys-error)]="registerForm.username().touched() && registerForm.username().invalid()"
           [class.peer-focus\:text-inherit]="registerForm.username().touched() && registerForm.username().invalid()"
         >
           Username<span class="ps-0.5">*</span>
@@ -105,7 +105,7 @@
         />
         <label class="label"
           [class.float-label]="registerForm.email().value().trim() !== ''"
-          [class.text-pink-600]="registerForm.email().touched() && registerForm.email().invalid()"
+          [class.text-(--mat-sys-error)]="registerForm.email().touched() && registerForm.email().invalid()"
           [class.peer-focus\:text-inherit]="registerForm.email().touched() && registerForm.email().invalid()"
         >
           Email<span class="ps-0.5">*</span>
@@ -146,7 +146,7 @@
         <label
           class="label"
           [class.float-label]="registerForm.password().value().trim() !== ''"
-          [class.text-pink-600]="registerForm.password().touched() && registerForm.password().invalid()"
+          [class.text-(--mat-sys-error)]="registerForm.password().touched() && registerForm.password().invalid()"
           [class.peer-focus\:text-inherit]="registerForm.password().touched() && registerForm.password().invalid()"
         >
           Password<span class="ps-0.5">*</span>

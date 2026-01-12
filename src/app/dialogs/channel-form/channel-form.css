@@ -21,7 +21,7 @@
 
 ::ng-deep mat-dialog-content {
   @media (max-width: 1200px) {
-    padding: 0 !important;
+    padding: 16 !important;
     display: flex !important;
     flex-direction: column !important;
     max-height: unset !important;

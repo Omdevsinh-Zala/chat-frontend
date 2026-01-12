@@ -15,6 +15,7 @@ import { GroupedChat } from '../../models/chat';
 import { Responsive } from '../../services/responsive';
 import { MatDialog } from '@angular/material/dialog';
 import { ChannelForm } from '../../dialogs/channel-form/channel-form';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-home',
@@ -27,6 +28,7 @@ import { ChannelForm } from '../../dialogs/channel-form/channel-form';
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
+    MatCardModule,
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
@@ -41,6 +43,10 @@ export class Home implements OnInit {
   isTablet = this.responsiveService.isTabletForHome;
   isOpen = this.responsiveService.homePanelOpen;
   isBaseOpen = this.responsiveService.basePanelOpen;
+
+  openForBase() {
+    this.responsiveService.basePanelOpen.update((value) => !value);
+  }
 
   closeAll() {
     this.responsiveService.homePanelOpen.set(false);

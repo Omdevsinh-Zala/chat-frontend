@@ -1,3 +1,7 @@
+::ng-deep .mat-mdc-card-header-text {
+    order: 2;
+}
+
 .custom-input {
     --mat-form-field-outlined-container-shape: 20px;
     --mat-form-field-container-vertical-padding: 8px;
