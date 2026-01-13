@@ -34,6 +34,7 @@ import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
 import { AssetContainer } from '../chat/asset-container/asset-container';
 import { ChannelData } from '../../../models/channel';
 import { MatCardModule } from "@angular/material/card";
+import { ChannelInfo } from '../../../dialogs/channel-info/channel-info';
 
 @Component({
   selector: 'app-channel-chat',
@@ -471,6 +472,20 @@ export class ChannelChat {
       if (m.user_id === userId) return false;
       if (!m.last_read_at) return true;
       return new Date(message.created_at) > new Date(m.last_read_at);
+    });
+  }
+
+  openChannelInfo() {
+    this.dialog.open(ChannelInfo, {
+      maxWidth: '100%',
+      maxHeight: '100%',
+      width: '70%',
+      height: '70%',
+      panelClass: 'small-corners-dialog',
+      data: {
+        id: this.channelData()?.id,
+        fromGroup: true
+      },
     });
   }
 }
