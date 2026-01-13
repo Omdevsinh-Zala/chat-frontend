@@ -38,9 +38,13 @@ export class SocketConnection {
     });
 
     this.socket.on('personalChat', ({ chat }) => {
-      if(chat) {
+      if (chat) {
         this.userService.personalChat.set(chat);
       }
+    });
+
+    this.socket.on('userStatusChanged', ({ userId, isOnline }) => {
+      this.userService.updateUserStatus(userId, isOnline);
     });
 
     this.socket.on('disconnect', (reason) => {

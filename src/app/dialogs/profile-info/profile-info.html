@@ -1,0 +1,33 @@
+@if(loading()) {
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+  <mat-spinner mode="indeterminate" diameter="40"></mat-spinner>
+</div>
+} @else {
+<mat-dialog-content class="overflow-hidden! flex flex-col h-full">
+  <div class="px-4 pt-6 pb-4 flex flex-col items-center gap-4">
+    <img
+      class="w-24 h-24 rounded-full"
+      [src]="imagePath + 'profileImages/' + profileData()?.avatar_url"
+      alt="Channel Image"
+    />
+    <h2 class="text-base sm:text-2xl font-medium">{{ profileData()?.full_name }}<span class="text-xs sm:text-sm">(@{{ profileData()?.username }})</span></h2>
+  </div>
+  <div class="px-8 py-2 flex flex-col gap-4">
+    <div class="flex gap-2 items-center">
+      <h3 class="lg:text-xl md:text-lg text-base">Email:-</h3>
+      <p class="text-sm md:text-base lg:text-lg">{{ profileData()?.email }}</p>
+    </div>
+    <!-- <div class="flex gap-2 items-start">
+      <h3 class="lg:text-xl md:text-lg text-base">Phone:-</h3>
+      <p class="text-sm md:text-base lg:text-lg">{{ profileData()?.phone }}</p>
+    </div>
+    <div class="flex gap-2 items-start">
+      <h3 class="lg:text-xl md:text-lg text-base">Address:-</h3>
+      <p class="text-sm md:text-base lg:text-lg">{{ profileData()?.address }}</p>
+    </div> -->
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button matButton (click)="close()">Close</button>
+</mat-dialog-actions>
+}

@@ -1,5 +1,5 @@
-<mat-card class="border-0! rounded-none!" appearance="outlined">
-  <mat-card-header>
+<mat-card class="border-s-0! border-t-0! border-e-0! rounded-none!" appearance="outlined">
+  <mat-card-header class="hover:cursor-pointer" (click)="openProfileInfo()">
     @if(isTablet()) {
     <button
       mat-icon-button
@@ -7,7 +7,7 @@
       matTooltip="Close chat menu"
       aria-label="Close chat menu"
       matTooltipPosition="right"
-      (click)="openForHome()"
+      (click)="openForHome(); $event.stopPropagation()"
     >
       <mat-icon class="text-3xl">arrow_left_alt</mat-icon>
     </button>
@@ -23,10 +23,10 @@
   </mat-card-header>
 </mat-card>
 <div
-  class="h-[calc(100dvh-72px)]! w-full relative pt-8 px-4 bg-(--mat-sys-surface) flex flex-col"
+  class="h-[calc(100dvh-64px)]! w-full relative px-4 bg-(--mat-sys-surface) flex flex-col"
 >
   @if (unreadCount() > 2 && canAppendMessages()) {
-  <div class="absolute top-8 left-1/2 -translate-x-1/2 z-10">
+  <div class="absolute top-4 left-1/2 -translate-x-1/2 z-10">
     <button
       mat-raised-button
       class="flex! items-center! gap-2! bg-(--mat-sys-primary) text-(--mat-sys-on-primary) rounded-full! px-6! py-6!"

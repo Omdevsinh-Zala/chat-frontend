@@ -41,6 +41,10 @@ export class UserService {
       });
   }
 
+  getProfileData(id: string) {
+    return this.http.get<GlobalResponse<User>>(`${this.apiUrl}/users/profile/${id}`);
+  }
+
   searchUser(query?: string, limit?: number, page?: number) {
     const params = new URLSearchParams();
     if (query) params.append('search', query);
@@ -94,10 +98,21 @@ export class UserService {
     return this.http.get<GlobalResponse<PaginatedResponse<ChannelList>>>(url);
   }
 
-  joinChannel(id: string, inviteBy: string | null) {
-    return this.http.post<GlobalResponse<boolean>>(`${this.apiUrl}/users/channels/join`, {
-      channelId: id,
-      inviteBy,
+  updateUserStatus(userId: string, isOnline: boolean) {
+    this.recentlyMessagesUsers.update((users) => {
+      return users.map((u) => {
+        if (u.id === userId) {
+          return { ...u, is_active: isOnline };
+        }
+        return u;
+      });
+    });
+
+    this.personalChat.update((chat) => {
+      if (chat && chat.id === userId) {
+        return { ...chat, is_active: isOnline };
+      }
+      return chat;
     });
   }
 }

@@ -65,6 +65,10 @@ body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
+mat-button, a {
+  @apply transition-all duration-150 ease-in-out;
+}
+
 .mat-icon {
   font-family: 'Material Symbols Outlined' !important;
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
