@@ -37,6 +37,7 @@ import { AssetContainer } from './asset-container/asset-container';
 import { AssetView } from '../../../dialogs/asset-view/asset-view';
 import { Responsive } from '../../../services/responsive';
 import { MatCardModule } from '@angular/material/card';
+import { ProfileInfo } from '../../../dialogs/profile-info/profile-info';
 
 @Component({
   selector: 'app-chat',
@@ -472,6 +473,19 @@ export class Chat implements OnInit, AfterViewInit {
         attachments: attachment,
         index: index,
         isObjectUrl: true,
+      },
+    });
+  }
+
+  openProfileInfo() {
+    this.dialog.open(ProfileInfo, {
+      maxWidth: '100%',
+      maxHeight: '100%',
+      width: '70%',
+      height: '70%',
+      panelClass: 'small-corners-dialog',
+      data: {
+        id: this.receiverUser()?.id,
       },
     });
   }

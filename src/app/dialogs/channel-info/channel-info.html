@@ -48,40 +48,109 @@
   </div>
   <div class="flex-1 overflow-y-auto min-h-0">
     <ul class="flex flex-col pt-4 justify-center items-center">
-      @if(channelData().isMember) {
-        @for(member of channelData().ChannelMembers; track $index) {
-        <li class="py-2 px-2 w-1/2">
-          <div class="">
-            <mat-card class="shadow-none! border! border-(--mat-sys-outline)!">
-              <mat-card-header>
-                <div
-                  mat-card-avatar
-                  class="bg-cover"
-                  [style.background-image]="
-                    'url(' + imagePath + 'profileImages/' + member.avatar_url + ')'
-                  "
-                ></div>
-                <mat-card-title class="text-lg! text-(--mat-sys-on-surface)">{{
-                  member.full_name
-                }}</mat-card-title>
-                <mat-card-subtitle class="text-base! font-normal! text-(--mat-sys-on-surface)">{{
-                  member.role
-                }}</mat-card-subtitle>
-              </mat-card-header>
-            </mat-card>
-          </div>
-        </li>
-        }
-      }
+      @if(channelData().isMember) { @for(member of channelData().ChannelMembers; track $index) {
+      <li class="py-2 px-2 w-full md:w-1/2">
+        <div class="">
+          <mat-card class="shadow-none! border! border-(--mat-sys-outline)!">
+            <mat-card-header>
+              <div
+                mat-card-avatar
+                class="bg-cover"
+                [style.background-image]="
+                  'url(' + imagePath + 'profileImages/' + member.avatar_url + ')'
+                "
+              ></div>
+              <mat-card-title class="text-lg! text-(--mat-sys-on-surface)"
+                >{{ member.full_name }}
+                @if(member.id === userService.user()?.id) {
+                <span class="text-xs! text-(--mat-sys-on-surface)">(You)</span>
+                }
+              </mat-card-title>
+              <mat-card-subtitle class="text-base! font-normal! text-(--mat-sys-on-surface)">{{
+                member.role
+              }}</mat-card-subtitle>
+              @if(channelData().isMember && channelData().owner_id === userService.user()?.id) {
+              <div class="order-3! ms-auto!">
+                <button ngMenuTrigger #origin #trigger="ngMenuTrigger" [menu]="formatMenu()">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+              </div>
+              <ng-template
+                [cdkConnectedOverlayOpen]="trigger.expanded()"
+                [cdkConnectedOverlay]="{origin, usePopover: 'inline'}"
+                [cdkConnectedOverlayPositions]="[
+                  {
+                    originX: 'start',
+                    originY: 'bottom',
+                    overlayX: 'start',
+                    overlayY: 'top',
+                    offsetY: 4
+                  }
+                ]"
+                cdkAttachPopoverAsChild
+              >
+                <div ngMenu #formatMenu="ngMenu">
+                  <ng-template ngMenuContent>
+                    <div class="group">
+                      <div ngMenuItem value="Info" (click)="onMenuAction('Info', member)">
+                        <mat-icon translate="no" aria-hidden="true">info</mat-icon>
+                        <span class="label">Info</span>
+                      </div>
+                      <div
+                        ngMenuItem
+                        value="Promote as Admin"
+                        (click)="onMenuAction('Promote as Admin', member)"
+                      >
+                        <mat-icon translate="no" aria-hidden="true">admin_panel_settings</mat-icon>
+                        <span class="label">Promote as Admin</span>
+                      </div>
+                      <div
+                        ngMenuItem
+                        value="Promote as Owner"
+                        (click)="onMenuAction('Promote as Owner', member)"
+                      >
+                        <mat-icon translate="no" aria-hidden="true">stars</mat-icon>
+                        <span class="label">Promote as Owner</span>
+                      </div>
+                      <div
+                        ngMenuItem
+                        value="Demote as Member"
+                        (click)="onMenuAction('Demote as Member', member)"
+                      >
+                        <mat-icon translate="no" aria-hidden="true">remove_moderator</mat-icon>
+                        <span class="label">Demote as Member</span>
+                      </div>
+                      <div ngMenuItem value="Remove" (click)="onMenuAction('Remove', member)">
+                        <mat-icon translate="no" aria-hidden="true">remove</mat-icon>
+                        <span class="label">Remove user</span>
+                      </div>
+                    </div>
+                  </ng-template>
+                </div>
+              </ng-template>
+              }
+            </mat-card-header>
+          </mat-card>
+        </div>
+      </li>
+      } }
     </ul>
   </div>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button matButton (click)="close()">Close</button>
-  @if(channelData().isMember) {
+  @if(data.fromGroup) {
+  <button
+    matButton
+    class="text-(--mat-sys-error)! bg-(--mat-sys-error-container)/40! hover:bg-(--mat-sys-error-container)!"
+    (click)="leaveChannel()"
+  >
+    Leave
+  </button>
+  } @else { @if(channelData().isMember) {
   <button matButton (click)="redirect(channelData().id)">Open</button>
   } @else {
   <button matButton (click)="joinChannel()">Join</button>
-  }
+  } }
 </mat-dialog-actions>
 }
