@@ -184,6 +184,11 @@ export class Settings implements AfterViewInit {
       isActive: false,
       gradient: 'linear-gradient(135deg, #00c6ff 0%, #0072ff 100%)',
     },
+    {
+      name: 'GPT',
+      class: 'gpt-theme',
+      isActive: false,
+    },
   ]);
 
   getThemePreview(theme: any) {
