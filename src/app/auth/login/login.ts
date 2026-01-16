@@ -51,9 +51,9 @@ export class Login {
             this.loginProcess.update(() => false);
             this.socketService.connectSocket();
             if(res?.data?.is_last_active_chat_channel) {
-              return this.router.navigate(['/home/channel', res?.data?.active_chat_id]);
+              return this.router.navigate(['/chat/channel', res?.data?.active_chat_id]);
             } else {
-              return this.router.navigate(['/home', res?.data?.active_chat_id]);
+              return this.router.navigate(['/chat', res?.data?.active_chat_id]);
             }
           }
           return this.loginProcess.update(() => false);

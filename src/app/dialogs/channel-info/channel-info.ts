@@ -115,10 +115,10 @@ export class ChannelInfo implements OnInit, OnDestroy {
 
   redirect(id?: string) {
     if (id) {
-      this.router.navigate(['/home/channel', id]);
+      this.router.navigate(['/chat/channel', id]);
       this.dialogRef.close();
     } else {
-      this.router.navigateByUrl('/home');
+      this.router.navigateByUrl('/chat');
       this.dialogRef.close();
     }
   }

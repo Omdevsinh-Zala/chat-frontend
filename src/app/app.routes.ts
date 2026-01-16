@@ -19,7 +19,7 @@ export const routes: Routes = [
     canActivate: [authUserGuard],
     children: [
       {
-        path: 'home',
+        path: 'chat',
         loadComponent: () => import('./base/home/home').then(m => m.Home),
         children: [
           {
@@ -69,17 +69,17 @@ export const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: "home"
+        redirectTo: "chat"
       },
       {
         path: '**',
-        redirectTo: "home"
+        redirectTo: "chat"
       }
     ]
   },
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: "home"
+    redirectTo: "chat"
   }
 ];

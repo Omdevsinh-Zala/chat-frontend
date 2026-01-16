@@ -68,6 +68,8 @@ export class Chat implements OnInit, AfterViewInit {
   private injector = inject(Injector);
   private dialog = inject(MatDialog);
   private responsiveService = inject(Responsive);
+  loadingChat = signal(true);
+
   isTyping = computed(() => {
     return (
       (this.receiverUser()?.is_typing ||
@@ -143,6 +145,7 @@ export class Chat implements OnInit, AfterViewInit {
         (data: { chat: GroupedChat[]; receiverData: ReceiverUser }) => {
           this.currentChatMessages.set(data.chat);
           this.receiverUser.set(data.receiverData);
+          this.loadingChat.set(false);
         }
       );
 

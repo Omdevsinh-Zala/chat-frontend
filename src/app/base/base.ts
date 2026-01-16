@@ -50,13 +50,15 @@ export class Base implements OnInit {
   isHomeNavigation = signal(false);
 
   ngOnInit(): void {
-    this.isHomeNavigation.set(this.router.url.includes('/home'));
-    if(this.isTablet() && this.router.url === '/home') {
+    this.isHomeNavigation.set(this.router.url.includes('/chat'));
+    if(this.isTablet() && this.router.url === '/chat/') {
+      this.responsiveService.homePanelOpen.set(false);
+    } else {
       this.responsiveService.homePanelOpen.set(true);
     }
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
-        this.isHomeNavigation.set(event.url.includes('/home'));
+        this.isHomeNavigation.set(event.url.includes('/chat'));
       }
     });
   }
