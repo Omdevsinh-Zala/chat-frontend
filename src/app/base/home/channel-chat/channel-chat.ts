@@ -33,7 +33,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
 import { AssetContainer } from '../chat/asset-container/asset-container';
 import { ChannelData } from '../../../models/channel';
-import { MatCardModule } from "@angular/material/card";
+import { MatCardModule } from '@angular/material/card';
 import { ChannelInfo } from '../../../dialogs/channel-info/channel-info';
 
 @Component({
@@ -50,7 +50,7 @@ import { ChannelInfo } from '../../../dialogs/channel-info/channel-info';
     MatProgressSpinner,
     AssetContainer,
     MatCardModule,
-],
+  ],
   templateUrl: './channel-chat.html',
   styleUrl: './channel-chat.css',
 })
@@ -111,114 +111,100 @@ export class ChannelChat {
 
   message = model('');
 
+  private onChannelMessages = (data: { chat: GroupedChat[]; channelData: any }) => {
+    this.currentChatMessages.set(data.chat);
+    this.channelData.set(data.channelData);
+  };
+
+  private onAppendedChannelMessages = (data: { chat: GroupedChat[] }) => {
+    this.currentChatMessages.update((chat) => {
+      const updatedChat = [...chat];
+      data.chat.forEach((newGroup) => {
+        const existingGroupIndex = updatedChat.findIndex((g) => g.monthYear === newGroup.monthYear);
+        if (existingGroupIndex !== -1) {
+          updatedChat[existingGroupIndex] = {
+            ...updatedChat[existingGroupIndex],
+            messages: [...updatedChat[existingGroupIndex].messages, ...newGroup.messages],
+          };
+        } else {
+          updatedChat.push(newGroup);
+        }
+      });
+      return updatedChat;
+    });
+    this.canAppendMessages.set(true);
+  };
+
+  private onReceiveChannelChatMessage = (data: { chat: GroupedChat }) => {
+    const message = data.chat.messages?.[0];
+    if (!message || message.channel_id !== this.chatId()) return;
+
+    const dateKey = data.chat.monthYear;
+
+    this.currentChatMessages.update((chat) => {
+      const updatedChat = [...chat];
+      const gIndex = updatedChat.findIndex((g) => g.monthYear === dateKey);
+      if (gIndex !== -1) {
+        updatedChat[gIndex] = {
+          ...updatedChat[gIndex],
+          messages: [message, ...updatedChat[gIndex].messages],
+        };
+      } else {
+        updatedChat.unshift({ monthYear: dateKey, messages: [message] });
+      }
+      return updatedChat;
+    });
+    this.markRead();
+  };
+
+  private onChannelReadUpdated = (data: {
+    channelId: string;
+    userId: string;
+    lastReadAt: string;
+  }) => {
+    if (data.channelId === this.chatId()) {
+      this.channelData.update((currentData) => {
+        if (!currentData) return currentData;
+        const updatedMembers = currentData.ChannelMembers.map((m) => {
+          if (m.user_id === data.userId) {
+            return { ...m, last_read_at: new Date(data.lastReadAt) };
+          }
+          return m;
+        });
+        return { ...currentData, ChannelMembers: updatedMembers };
+      });
+    }
+  };
+
+  private setupListeners() {
+    this.socketService.socket.on('channelChatMessages', this.onChannelMessages);
+    this.socketService.socket.on('appendedChannelMessages', this.onAppendedChannelMessages);
+    this.socketService.socket.on('receiveChannelChatMessage', this.onReceiveChannelChatMessage);
+    this.socketService.socket.on('channelReadUpdated', this.onChannelReadUpdated);
+  }
+
+  private removeListeners() {
+    this.socketService.socket.off('channelChatMessages', this.onChannelMessages);
+    this.socketService.socket.off('appendedChannelMessages', this.onAppendedChannelMessages);
+    this.socketService.socket.off('receiveChannelChatMessage', this.onReceiveChannelChatMessage);
+    this.socketService.socket.off('channelReadUpdated', this.onChannelReadUpdated);
+  }
+
   ngOnInit(): void {
+    this.setupListeners();
+
     this.router.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params: any) => {
       const previousChatId = this.chatId();
-      if (previousChatId) {
-        this.socketService.socket.off('receiveChannelChatMessage');
-        this.socketService.socket.off('channelChatMessages');
-        this.socketService.socket.off('appendedChannelMessages');
-        this.socketService.socket.off('channelTyping');
-        this.socketService.socket.off('channelUserTyping');
-      }
-
       this.chatId.set(params['id']);
       this.currentChatMessages.set([]);
       this.channelData.set(null);
+      this.markRead();
 
       this.socketService.socket.emit('channelChatChange', { channelId: this.chatId() });
-
-      // this.socketService.socket.on('channelUserTyping', (data: { isTyping: boolean }) => {
-      //   this.channelData.update((user) => {
-      //     if (user) {
-      //       const updatedUser = { ...user };
-      //       updatedUser.is_typing = data.isTyping!;
-      //       return updatedUser;
-      //     }
-      //     return user;
-      //   });
-      // });
-
-      this.socketService.socket.on(
-        'channelChatMessages',
-        (data: { chat: GroupedChat[]; channelData: ChannelData }) => {
-          this.currentChatMessages.set(data.chat);
-          this.channelData.set(data.channelData);
-          this.markRead();
-        }
-      );
-
-      this.socketService.socket.on('appendedChannelMessages', (data: { chat: GroupedChat[] }) => {
-        this.currentChatMessages.update((chat) => {
-          const updatedChat = [...chat];
-          data.chat.forEach((newGroup) => {
-            const existingGroupIndex = updatedChat.findIndex(
-              (g) => g.monthYear === newGroup.monthYear
-            );
-            if (existingGroupIndex !== -1) {
-              updatedChat[existingGroupIndex] = {
-                ...updatedChat[existingGroupIndex],
-                messages: [...updatedChat[existingGroupIndex].messages, ...newGroup.messages],
-              };
-            } else {
-              updatedChat.push(newGroup);
-            }
-          });
-          return updatedChat;
-        });
-        this.canAppendMessages.set(true);
-      });
-
-      this.socketService.socket.on('receiveChannelChatMessage', (data: { chat: GroupedChat }) => {
-        const message = data.chat.messages?.[0];
-        const dateKey = data.chat.monthYear;
-
-        this.currentChatMessages.update((chat) => {
-          const updatedChat = [...chat];
-
-          const gIndex = updatedChat.findIndex((g) => g.monthYear === dateKey);
-          if (gIndex !== -1) {
-            updatedChat[gIndex] = {
-              ...updatedChat[gIndex],
-              messages: [message, ...updatedChat[gIndex].messages],
-            };
-          } else {
-            updatedChat.unshift({ monthYear: dateKey, messages: [message] });
-          }
-          return updatedChat;
-        });
-        this.markRead();
-      });
-
-      this.socketService.socket.on(
-        'channelReadUpdated',
-        (data: { channelId: string; userId: string; lastReadAt: string }) => {
-          if (data.channelId === this.chatId()) {
-            this.channelData.update((currentData) => {
-              if (!currentData) return currentData;
-              const updatedMembers = currentData.ChannelMembers.map((m) => {
-                if (m.user_id === data.userId) {
-                  return { ...m, last_read_at: new Date(data.lastReadAt) };
-                }
-                return m;
-              });
-              return { ...currentData, ChannelMembers: updatedMembers };
-            });
-          }
-        }
-      );
     });
 
     this.destroyRef.onDestroy(() => {
-      const currentId = this.chatId();
-      if (currentId) {
-        this.socketService.socket.off('receiveChannelChatMessage');
-        this.socketService.socket.off('channelChatMessages');
-        this.socketService.socket.off('appendedChannelMessages');
-        this.socketService.socket.off('typing');
-        this.socketService.socket.off('channelUserTyping');
-        this.socketService.socket.off('channelReadUpdated');
-      }
+      this.removeListeners();
       this.observer?.disconnect();
     });
 
@@ -484,7 +470,7 @@ export class ChannelChat {
       panelClass: 'small-corners-dialog',
       data: {
         id: this.channelData()?.id,
-        fromGroup: true
+        fromGroup: true,
       },
     });
   }
