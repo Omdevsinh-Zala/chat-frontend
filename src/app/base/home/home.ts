@@ -54,7 +54,7 @@ export class Home implements OnInit {
   }
 
   showChannel(id: string) {
-    return window.location.href.includes(id);
+    return window.location.pathname.includes(`/channels/${id}`);
   }
 
   user = computed(() => {
