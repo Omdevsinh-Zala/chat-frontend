@@ -1,7 +1,7 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { UserService } from '../../services/user-service';
-import { Field, form, maxLength, minLength, pattern, required } from '@angular/forms/signals';
+import { FormField, form, maxLength, minLength, pattern, required } from '@angular/forms/signals';
 import { CreateChannel } from '../../models/channel';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
@@ -16,7 +16,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   selector: 'app-channel-form',
   imports: [
     MatDialogModule,
-    Field,
+    FormField,
     MatFormFieldModule,
     MatProgressSpinner,
     MatRadioModule,

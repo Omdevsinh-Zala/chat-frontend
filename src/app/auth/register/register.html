@@ -6,7 +6,7 @@
         <input
           class="transition-all duration-200 peer outline-none border focus:border-(--mat-sys-outline) w-full rounded-md p-3 focus:ring-2 focus:ring-(--mat-sys-outline)"
           type="text"
-          [field]="registerForm.firstName"
+          [formField]="registerForm.firstName"
           #firstName
         />
         <label class="label"
@@ -35,7 +35,7 @@
           class="transition-all duration-200 peer outline-none border focus:border-(--mat-sys-outline) w-full rounded-md p-3 focus:ring-2 focus:ring-(--mat-sys-outline)"
           type="text"
           autocomplete="new-password"
-          [field]="registerForm.lastName"
+          [formField]="registerForm.lastName"
           #lastName
         />
         <label class="label"
@@ -64,7 +64,7 @@
           class="transition-all duration-200 peer outline-none border focus:border-(--mat-sys-outline) w-full rounded-md p-3 focus:ring-2 focus:ring-(--mat-sys-outline)"
           type="text"
           autocomplete="new-password"
-          [field]="registerForm.username"
+          [formField]="registerForm.username"
           #username
         />
         @if(registerForm.username().pending()) {
@@ -100,7 +100,7 @@
           class="transition-all duration-200 peer outline-none border focus:border-(--mat-sys-outline) w-full rounded-md p-3 focus:ring-2 focus:ring-(--mat-sys-outline)"
           type="email"
           autocomplete="new-password"
-          [field]="registerForm.email"
+          [formField]="registerForm.email"
           #email
         />
         <label class="label"
@@ -130,7 +130,7 @@
             class="transition-all duration-200 peer outline-none border focus:border-(--mat-sys-outline) w-full rounded-md p-3 focus:ring-2 focus:ring-(--mat-sys-outline)"
             type="password"
             autocomplete="new-password"
-            [field]="registerForm.password"
+            [formField]="registerForm.password"
             #password
           />
         }
@@ -139,7 +139,7 @@
             class="transition-all duration-200 peer outline-none border focus:border-(--mat-sys-outline) w-full rounded-md p-3 focus:ring-2 focus:ring-(--mat-sys-outline)"
             type="text"
             autocomplete="new-password"
-            [field]="registerForm.password"
+            [formField]="registerForm.password"
             #password
           />
         }

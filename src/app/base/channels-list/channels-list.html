@@ -19,7 +19,7 @@
   </div>
   <div class="w-full md:w-4/5">
     <mat-form-field class="w-full" appearance="outline">
-      <input matInput placeholder="Ex. Ghost" [field]="searchForm.search" />
+      <input matInput placeholder="Ex. Ghost" [formField]="searchForm.search" />
     </mat-form-field>
     <table mat-table [dataSource]="channelsData()">
       <ng-container matColumnDef="channels">
