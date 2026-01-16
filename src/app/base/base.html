@@ -1,10 +1,6 @@
 <mat-drawer-container class="h-dvh w-auto">
-  <mat-drawer
-    [mode]="isTablet() ? 'over' : 'side'"
-    [opened]="!isTablet() || isOpen()"
-    (closed)="openForBase(false)"
-    class="w-22! p-4 rounded-none!"
-  >
+  @if(!isTablet()) {
+  <mat-drawer mode="side" [opened]="true" class="w-22! p-4 rounded-none!">
     <div class="flex items-center flex-col h-full base-main-link-wrap">
       <ul class="flex flex-col items-center">
         <li class="mb-6">
@@ -15,9 +11,8 @@
             [routerLink]="['/home', user()?.active_chat_id]"
             routerLinkActive="filled"
             matTooltipPosition="right"
-            (click)="openForBase(false)"
           >
-            <mat-icon class="text-3xl">home</mat-icon>
+            <mat-icon class="text-3xl">chats</mat-icon>
           </a>
         </li>
         <li class="mb-6">
@@ -28,7 +23,6 @@
             routerLink="contacts"
             routerLinkActive="filled"
             matTooltipPosition="right"
-            (click)="openForBase(false)"
           >
             <mat-icon class="text-3xl">contacts</mat-icon>
           </a>
@@ -40,7 +34,6 @@
             aria-label="Channels page link"
             routerLink="channels"
             matTooltipPosition="right"
-            (click)="openForBase(false)"
           >
             <mat-icon class="text-3xl">groups</mat-icon>
           </a>
@@ -53,23 +46,12 @@
             routerLink="files"
             routerLinkActive="filled"
             matTooltipPosition="right"
-            (click)="openForBase(false)"
           >
             <mat-icon class="text-3xl">files</mat-icon>
           </a>
         </li>
-        <!-- <li class="mb-6">
-          <button mat-icon-button matTooltip="Settings" aria-label="Settings page link" >
-            <mat-icon class="text-3xl">settings</mat-icon>
-          </button>
-        </li> -->
       </ul>
       <ul class="mt-auto flex gap-4 flex-col items-center">
-        <!-- <li>
-          <button matIconButton [matMenuTriggerFor]="profile" aria-label="Example icon-button with a menu" matTooltip="Create new" matTooltipPosition="right">
-            <mat-icon>add</mat-icon>
-          </button>
-        </li> -->
         <li>
           @if(user()?.first_name) {
           <div
@@ -96,25 +78,51 @@
       </ul>
     </div>
   </mat-drawer>
-  <mat-drawer-content class="overflow-hidden!">
+  }
+  <mat-drawer-content class="overflow-hidden!" [class.pb-20]="isTablet()">
     <div>
-      @if(isTablet() && !isHomeNavigation()) {
-      <div class="px-2 pt-2">
-        <button
-          mat-icon-button
-          matTooltip="Open side panel"
-          aria-label="Open side panel"
-          matTooltipPosition="right"
-          (click)="openForBase(true)"
-        >
-          <mat-icon class="text-3xl">menu</mat-icon>
-        </button>
-      </div>
-      }
       <router-outlet />
     </div>
   </mat-drawer-content>
 </mat-drawer-container>
+
+@if(isTablet() && isHomeOpen()) {
+<nav class="fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-2">
+  <div
+    class="mx-auto max-w-md premium-glass-nav rounded-full px-6 py-2 flex items-center justify-between"
+  >
+    <a
+      mat-icon-button
+      [routerLink]="['/home', user()?.active_chat_id]"
+      routerLinkActive="active-nav-link"
+      class="nav-link"
+    >
+      <mat-icon>chats</mat-icon>
+    </a>
+    <a mat-icon-button routerLink="contacts" routerLinkActive="active-nav-link" class="nav-link">
+      <mat-icon>contacts</mat-icon>
+    </a>
+    <a mat-icon-button routerLink="channels" routerLinkActive="active-nav-link" class="nav-link">
+      <mat-icon>groups</mat-icon>
+    </a>
+    <a mat-icon-button routerLink="files" routerLinkActive="active-nav-link" class="nav-link">
+      <mat-icon>files</mat-icon>
+    </a>
+    <div [matMenuTriggerFor]="profile" class="hover:cursor-pointer relative h-10 w-10 shrink-0">
+      <img
+        [src]="imagePath + 'profileImages/' + user()?.avatar_url"
+        alt="User Avatar"
+        class="h-10 w-10 rounded-full border border-(--mat-sys-outline-variant)"
+      />
+      <span
+        class="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2"
+        [class.active]="user()?.is_active"
+        [class.away]="!user()?.is_active"
+      ></span>
+    </div>
+  </div>
+</nav>
+}
 
 <mat-menu #profile="matMenu">
   <!-- <button mat-menu-item>

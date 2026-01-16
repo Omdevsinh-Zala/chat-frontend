@@ -22,7 +22,9 @@
     <mat-card-title>{{ channelData()?.title }}</mat-card-title>
   </mat-card-header>
 </mat-card>
-<div class="h-[calc(100dvh-64px)] w-full relative px-4 bg-(--mat-sys-surface) flex flex-col">
+<div
+  class="h-[calc(100dvh-64px)] w-full relative px-4 bg-(--mat-sys-surface) flex flex-col chat-container"
+>
   @if (unreadCount() > 2 && canAppendMessages()) {
   <div class="absolute top-4 left-1/2 -translate-x-1/2 z-10">
     <button
@@ -39,105 +41,126 @@
     <ul
       class="flex flex-col-reverse h-full items-end-safe gap-6 pr-4 overflow-y-auto custom-scroll-bar"
     >
-      <!-- @if (isTyping()) {
-      <li [style.align-self]="'start'" animate.enter="enter-animation">
-        <div class="flex items-center gap-4 flex-row">
-          <div class="w-12 h-12">
+      @for (group of currentChatMessages(); track $index) { @for (mes of group.messages; track
+      mes.id; let i = $index) { @if(mes.message_type !== 'system') { @let isSameUserBelow =
+      group.messages[i - 1]?.sender_id === mes.sender_id && group.messages[i - 1]?.message_type !==
+      'system'; @let isFirstInGroup = group.messages[i + 1]?.sender_id !== mes.sender_id ||
+      group.messages[i + 1]?.message_type === 'system'; @if(mes.sender_id === userData.user()?.id) {
+      <!-- My sent messages -->
+      <li
+        #messageItem
+        class="wrap-break-word w-full flex flex-col items-end gap-1 mb-1"
+        [class.mt-4]="isFirstInGroup"
+        [attr.data-id]="mes.id"
+      >
+        <div class="flex items-end gap-2 pr-2 max-w-full">
+          <div class="flex flex-col items-end min-w-0">
+            <div
+              class="message-bubble sent-bubble shadow-sm"
+              [class.rounded-br-2xl]="!isSameUserBelow"
+              [class.rounded-br-sm]="isSameUserBelow"
+              [class.rounded-tr-sm]="!isFirstInGroup"
+            >
+              <p
+                class="text-md sm:text-lg leading-relaxed wrap-break-word"
+                [innerHTML]="mes.content | modify"
+              ></p>
+
+              @if (mes.attachments && mes.attachments.length) {
+              <div class="mt-2 text-start">
+                <app-asset-container
+                  [attachments]="mes.attachments"
+                  [isTablet]="isTablet()"
+                ></app-asset-container>
+              </div>
+              }
+
+              <div class="flex justify-end mt-1 opacity-70">
+                <span class="text-[10px]">{{ mes.created_at | date : 'shortTime' }}</span>
+              </div>
+            </div>
+          </div>
+
+          @if(!isSameUserBelow) {
+          <div
+            class="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-(--mat-sys-outline-variant) shadow-sm"
+          >
             <img
-              [src]="imagePath + 'profileImages/' + receiverUser()?.avatar_url"
+              class="w-full h-full object-cover"
+              [src]="imagePath + 'profileImages/' + userData.user()?.avatar_url"
               alt="User avatar"
             />
           </div>
-          <div class="flex items-center gap-1">
-            <div class="w-1 h-1 rounded-full bg-(--mat-sys-inverse-surface) animate-bounce"></div>
+          } @else {
+          <div class="w-8 shrink-0"></div>
+          }
+        </div>
+      </li>
+      } @else {
+      <!-- Received messages -->
+      <li
+        #messageItem
+        class="wrap-break-word w-full flex flex-col items-start gap-1 mb-1"
+        [class.mt-4]="isFirstInGroup"
+        [attr.data-id]="mes.id"
+      >
+        <div class="flex items-end gap-2 pl-2 max-w-full">
+          @if(!isSameUserBelow) {
+          <div
+            class="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-(--mat-sys-outline-variant) shadow-sm"
+          >
+            <img
+              class="w-full h-full object-cover"
+              [src]="imagePath + 'profileImages/' + mes.Sender?.avatar_url"
+              alt="User avatar"
+            />
+          </div>
+          } @else {
+          <div class="w-8 shrink-0"></div>
+          }
+
+          <div class="flex flex-col items-start min-w-0">
+            @if(isFirstInGroup) {
+            <span class="text-[10px] font-semibold mb-1 ml-2 opacity-70">{{
+              mes.Sender?.full_name
+            }}</span>
+            }
+
             <div
-              class="w-1 h-1 rounded-full bg-(--mat-sys-inverse-surface) animate-bounce [animation-delay:200ms]"
-            ></div>
-            <div
-              class="w-1 h-1 rounded-full bg-(--mat-sys-inverse-surface) animate-bounce [animation-delay:400ms]"
-            ></div>
+              class="message-bubble received-bubble shadow-sm"
+              [class.rounded-bl-2xl]="!isSameUserBelow"
+              [class.rounded-bl-sm]="isSameUserBelow"
+              [class.rounded-tl-sm]="!isFirstInGroup"
+            >
+              <p
+                class="text-md sm:text-lg leading-relaxed wrap-break-word"
+                [innerHTML]="mes.content | modify"
+              ></p>
+
+              @if (mes.attachments && mes.attachments.length) {
+              <div class="mt-2">
+                <app-asset-container
+                  [attachments]="mes.attachments"
+                  [isTablet]="isTablet()"
+                ></app-asset-container>
+              </div>
+              }
+
+              <div class="flex justify-start mt-1 opacity-70">
+                <span class="text-[10px]">{{ mes.created_at | date : 'shortTime' }}</span>
+              </div>
+            </div>
           </div>
         </div>
       </li>
-      } -->
-      @for (group of currentChatMessages(); track $index) { @for (mes of group.messages;track
-      $index) {
-        @if(mes.message_type !== 'system') {
-          @if(mes.sender_id === userData.user()?.id) {
-          <!-- My sent messages -->
-          <li #messageItem class="wrap-break-word" [style.align-self]="'end'" [attr.data-id]="mes.id">
-            <div class="flex items-center gap-4 flex-row-reverse">
-              <div class="w-12 h-12 shrink-0">
-                <img
-                  [src]="imagePath + 'profileImages/' + userData.user()?.avatar_url"
-                  alt="User avatar"
-                />
-              </div>
-              <div class="flex flex-col-reverse items-end-safe">
-                <div class="flex flex-col items-end gap-1">
-                  <p
-                    class="text-lg text-end w-[calc(100dvw-470px)]"
-                    [class.text-xs!]="isTablet()"
-                    [class.w-[calc(98dvw-110px)]!]="isTablet()"
-                    [innerHTML]="mes.content | modify"
-                  ></p>
-                </div>
-                @if (mes.attachments && mes.attachments.length) {
-                <app-asset-container
-                  [attachments]="mes.attachments"
-                  [isTablet]="isTablet()"
-                ></app-asset-container>
-                }
-              </div>
-            </div>
-          </li>
-          } @else {
-          <!-- Received messages -->
-          <li #messageItem class="wrap-break-word" [style.align-self]="'start'" [attr.data-id]="mes.id">
-            <div class="flex items-center gap-4 flex-row">
-              <div class="w-12 h-12 shrink-0" [class.w-8!]="isTablet()" [class.h-8!]="isTablet()">
-                <img [src]="imagePath + 'profileImages/' + mes.Sender?.avatar_url" alt="User avatar" />
-              </div>
-              <div class="flex flex-col-reverse items-start">
-                <div class="flex flex-col items-start gap-1">
-                  <div class="flex items-center justify-start-safe gap-2">
-                    <span class="text-xs font-bold">{{ mes.Sender?.full_name }}</span>
-                    <p class="text-xs text-gray-500">{{ mes.created_at | date : 'shortTime' }}</p>
-                  </div>
-                  <p
-                    class="text-lg text-start w-[calc(100dvw-470px)]"
-                    [class.text-xs!]="isTablet()"
-                    [class.w-[calc(98dvw-110px)]!]="isTablet()"
-                    [innerHTML]="mes.content | modify"
-                  ></p>
-                </div>
-                @if (mes.attachments && mes.attachments.length) {
-                <app-asset-container
-                  [attachments]="mes.attachments"
-                  [isTablet]="isTablet()"
-                ></app-asset-container>
-                }
-              </div>
-            </div>
-          </li>
-          }
-        } @else {
-          <li #messageItem class="wrap-break-word" [style.align-self]="'center'" [attr.data-id]="mes.id">
-            <div class="flex items-center gap-4 flex-row">
-              <div class="flex flex-col-reverse items-start">
-                <div class="flex flex-col items-start gap-1">
-                  <p
-                    class="text-sm text-center w-[calc(100dvw-470px)]"
-                    [class.text-xs!]="isTablet()"
-                    [class.w-[calc(98dvw-110px)]!]="isTablet()"
-                    [innerHTML]="mes.content | modify"
-                  ></p>
-                </div>
-              </div>
-            </div>
-          </li>
-        }
-      }
+      } } @else {
+      <!-- System Messages -->
+      <li #messageItem class="w-full flex justify-center my-2" [attr.data-id]="mes.id">
+        <div class="system-message-container shadow-sm">
+          {{ mes.content }}
+        </div>
+      </li>
+      } }
       <li class="relative w-full flex justify-center my-4 mb-2">
         <mat-divider class="w-full"></mat-divider>
         <span
@@ -147,10 +170,14 @@
         </span>
       </li>
       } @empty {
-      <li class="flex items-center justify-center h-full w-full">
-        <div>
-          <p class="text-xl">Start a conversation now</p>
-        </div>
+      <li
+        class="flex flex-col items-center justify-center h-full w-full opacity-50 px-8 text-center"
+      >
+        <mat-icon class="text-6xl! w-auto! h-auto! mb-4">forum</mat-icon>
+        <p class="text-xl font-medium">No messages yet</p>
+        <p class="text-sm mt-1">
+          Be the first to start the conversation in {{ channelData()?.title }}
+        </p>
       </li>
       } @if(!canAppendMessages()) {
       <div class="w-full h-20 py-6 flex justify-center items-center">
