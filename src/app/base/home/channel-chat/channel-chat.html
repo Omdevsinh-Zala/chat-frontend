@@ -23,9 +23,13 @@
   </mat-card-header>
 </mat-card>
 <div
-  class="h-[calc(100dvh-64px)] w-full relative px-4 bg-(--mat-sys-surface) flex flex-col chat-container"
+  class="h-[calc(100dvh-64px)] w-full relative px-4 bg-(--mat-sys-surface) flex flex-col"
 >
-  @if (unreadCount() > 2 && canAppendMessages()) {
+  @if(loadingChat()) {
+  <div class="flex-1 overflow-hidden h-auto pb-4 flex justify-center items-center">
+    <mat-progress-spinner mode="indeterminate" diameter="30"></mat-progress-spinner>
+  </div>
+  } @else { @if (unreadCount() > 2 && canAppendMessages()) {
   <div class="absolute top-4 left-1/2 -translate-x-1/2 z-10">
     <button
       mat-raised-button
@@ -37,7 +41,7 @@
     </button>
   </div>
   }
-  <div class="flex-1 overflow-hidden h-auto pb-4">
+  <div class="flex-1 overflow-hidden h-auto">
     <ul
       class="flex flex-col-reverse h-full items-end-safe gap-6 pr-4 overflow-y-auto custom-scroll-bar"
     >
@@ -186,102 +190,105 @@
       }
     </ul>
   </div>
-  <div class="w-full flex-none py-4 flex gap-2 items-end">
-    <div class="w-full">
-      @if(isAssetsEntered()) {
-      <ul
-        class="h-24 flex items-center gap-4"
-        animate.enter="enter-animation"
-        animate.leave="leave-animation"
+  }
+  <div class="w-full py-4 flex flex-col gap-2 items-end">
+    @if(isAssetsEntered()) {
+    <ul
+      class="h-24 w-full flex items-center gap-4 overflow-x-scroll overflow-y-visible custom-scrollbar"
+      animate.enter="enter-animation"
+      animate.leave="leave-animation"
+    >
+      @for (asset of base64AssetsData(); track $index) {
+      <li
+        class="relative w-20 h-20 flex-none border flex items-center justify-center border-gray-300 rounded-md hover:cursor-pointer"
       >
-        @for (asset of base64AssetsData(); track $index) {
-        <li
-          class="relative w-20 h-20 border flex items-center justify-center border-gray-300 rounded-md hover:cursor-pointer"
+        <div
+          class="w-8 h-8 z-10 rounded-full bg-(--mat-sys-surface) absolute top-0 translate-x-1/2 -translate-y-1/2 right-0 flex items-center justify-center"
         >
           <div
-            class="w-8 h-8 z-10 rounded-full bg-(--mat-sys-surface) absolute top-0 translate-x-1/2 -translate-y-1/2 right-0 flex items-center justify-center"
+            class="group hover:bg-(--mat-sys-error-container) rounded-full w-6 h-6 flex items-center justify-center transition-all"
+            (click)="removeImage($index)"
           >
-            <div
-              class="group hover:bg-(--mat-sys-error-container) rounded-full w-6 h-6 flex items-center justify-center transition-all"
-              (click)="removeImage($index)"
-            >
-              <mat-icon
-                class="text-(--mat-sys-error)! group-hover:text-(--mat-sys-on-error-container)! text-sm! w-auto! h-auto!"
-                >close</mat-icon
-              >
-            </div>
-          </div>
-          @if(asset) { @if(asset.file_type === 'pdf') {
-          <a
-            [href]="asset.file_url"
-            target="_blank"
-            class="w-full h-full flex items-center justify-center"
-          >
-            <mat-icon class="text-(--mat-sys-primary)!">picture_as_pdf</mat-icon>
-          </a>
-          } @else {
-          <div class="relative w-full pb-20" (click)="viewAssets(base64AssetsData(), $index)">
-            @if(asset.file_type === 'image') {
-            <img
-              [src]="asset.file_url"
-              class="absolute inset-0 w-full h-full object-contain"
-              alt="Asset"
-            />
-            } @else {
-            <video
-              [src]="asset.file_url"
-              class="absolute inset-0 w-full h-full object-contain"
-            ></video>
-            }
-          </div>
-          } } @else {
-          <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
-          }
-        </li>
-        }
-        <li class="w-20 h-20 relative">
-          <div class="flex items-center justify-center w-full h-full">
             <mat-icon
-              class="mb-1 p-0! my-1! hover:cursor-pointer text-(--mat-sys-primary)!"
-              (click)="fileInput.click(); $event.stopPropagation()"
-              >add</mat-icon
+              class="text-(--mat-sys-error)! group-hover:text-(--mat-sys-on-error-container)! text-sm! w-auto! h-auto!"
+              >close</mat-icon
             >
           </div>
-        </li>
-      </ul>
-      }
-      <mat-form-field class="w-full custom-input" appearance="outline">
-        @if(base64AssetsData().length === 0) {
-        <mat-icon
-          animate.enter="enter-animation"
-          animate.leave="leave-animation"
-          matPrefix
-          class="mb-1 p-0! my-1! hover:cursor-pointer"
-          (click)="fileInput.click(); $event.stopPropagation()"
+        </div>
+        @if(asset) { @if(asset.file_type === 'pdf') {
+        <a
+          [href]="asset.file_url"
+          target="_blank"
+          class="w-full h-full flex items-center justify-center"
         >
-          attach_file
-        </mat-icon>
+          <mat-icon class="text-(--mat-sys-primary)!">picture_as_pdf</mat-icon>
+        </a>
+        } @else {
+        <div class="relative w-full pb-20" (click)="viewAssets(base64AssetsData(), $index)">
+          @if(asset.file_type === 'image') {
+          <img
+            [src]="asset.file_url"
+            class="absolute inset-0 w-full h-full object-contain"
+            alt="Asset"
+          />
+          } @else {
+          <video
+            [src]="asset.file_url"
+            class="absolute inset-0 w-full h-full object-contain"
+          ></video>
+          }
+        </div>
+        } } @else {
+        <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
         }
-        <textarea
-          #messageInput
-          matInput
-          [(ngModel)]="message"
-          (keydown.enter)="sendMessage($event)"
-          (input)="adjustTextareaHeight(messageInput)"
-          rows="1"
-        ></textarea>
-      </mat-form-field>
-      <input
-        type="file"
-        #fileInput
-        accept="image/jpeg, image/png, image/jpg, image/webp, image/gif, video/mp4, video/quicktime, video/x-msvideo, video/x-ms-wmv, video/ogg, video/webm, application/pdf"
-        hidden
-        multiple
-        (change)="onFileSelected($event)"
-      />
-    </div>
-    <button matMiniFab (click)="sendMessage($event)" [attr.aria-label]="'Send message'">
-      <mat-icon>send</mat-icon>
-    </button>
+      </li>
+      }
+      <li class="w-20 h-20 relative">
+        <div class="flex items-center justify-center w-full h-full">
+          <mat-icon
+            class="mb-1 p-0! my-1! hover:cursor-pointer text-(--mat-sys-primary)!"
+            (click)="fileInput.click(); $event.stopPropagation()"
+            >add</mat-icon
+          >
+        </div>
+      </li>
+    </ul>
+    }
+    <div class="w-full p-0 flex gap-2 items-end">
+      <div class="w-full">
+        <mat-form-field class="w-full custom-input" appearance="outline">
+          @if(base64AssetsData().length === 0) {
+          <mat-icon
+            animate.enter="enter-animation"
+            animate.leave="leave-animation"
+            matPrefix
+            class="mb-1 p-0! my-1! hover:cursor-pointer"
+            (click)="fileInput.click(); $event.stopPropagation()"
+          >
+            attach_file
+          </mat-icon>
+          }
+          <textarea
+            #messageInput
+            matInput
+            [(ngModel)]="message"
+            (keydown.enter)="sendMessage($event)"
+            (input)="adjustTextareaHeight(messageInput)"
+            rows="1"
+          ></textarea>
+        </mat-form-field>
+        <input
+          type="file"
+          #fileInput
+          accept="image/jpeg, image/png, image/jpg, image/webp, image/gif, video/mp4, video/quicktime, video/x-msvideo, video/x-ms-wmv, video/ogg, video/webm, application/pdf"
+          hidden
+          multiple
+          (change)="onFileSelected($event)"
+        />
+      </div>
+      <button matMiniFab (click)="sendMessage($event)" [attr.aria-label]="'Send message'">
+        <mat-icon>send</mat-icon>
+      </button>
+      </div>
   </div>
 </div>

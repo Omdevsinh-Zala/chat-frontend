@@ -63,6 +63,8 @@ export class ChannelChat {
   private injector = inject(Injector);
   private dialog = inject(MatDialog);
   private responsiveService = inject(Responsive);
+  loadingChat = signal(true);
+
   // isTyping = computed(() => {
   //   return (
   //     (this.channelData()?.is_typing ||
@@ -114,6 +116,7 @@ export class ChannelChat {
   private onChannelMessages = (data: { chat: GroupedChat[]; channelData: any }) => {
     this.currentChatMessages.set(data.chat);
     this.channelData.set(data.channelData);
+    this.loadingChat.set(false);
   };
 
   private onAppendedChannelMessages = (data: { chat: GroupedChat[] }) => {
