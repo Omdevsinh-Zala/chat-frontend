@@ -23,7 +23,7 @@
   </mat-card-header>
 </mat-card>
 <div
-  class="h-[calc(100dvh-64px)] w-full relative px-4 bg-(--mat-sys-surface) flex flex-col chat-container"
+  class="h-[calc(100dvh-64px)] w-full relative px-4 bg-(--mat-sys-surface) flex flex-col"
 >
   @if(loadingChat()) {
   <div class="flex-1 overflow-hidden h-auto pb-4 flex justify-center items-center">
@@ -41,7 +41,7 @@
     </button>
   </div>
   }
-  <div class="flex-1 overflow-hidden h-auto pb-4">
+  <div class="flex-1 overflow-hidden h-auto">
     <ul
       class="flex flex-col-reverse h-full items-end-safe gap-6 pr-4 overflow-y-auto custom-scroll-bar"
     >
@@ -254,7 +254,7 @@
       </li>
     </ul>
     }
-    <div class="w-full flex gap-2 items-end">
+    <div class="w-full p-0 flex gap-2 items-end">
       <div class="w-full">
         <mat-form-field class="w-full custom-input" appearance="outline">
           @if(base64AssetsData().length === 0) {
