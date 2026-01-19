@@ -16,10 +16,10 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([requestInterceptor, errorInterceptor, responseInterceptor])
+      withInterceptors([requestInterceptor, errorInterceptor, responseInterceptor]),
     ),
     provideServiceWorker('ngsw-worker.js', {
-      enabled: !isDevMode(),
+      enabled: true,
       registrationStrategy: 'registerWhenStable:30000',
     }),
   ],

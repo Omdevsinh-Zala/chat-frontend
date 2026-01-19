@@ -12,7 +12,7 @@ export interface Message {
   deleted_at: string | null;
   edited_at: null;
   id: string;
-  message_type: 'image' | 'video' | 'file' | 'audio' | 'pdf' | 'system' | null;
+  message_type: 'text' | 'system' | 'file' | 'mixed' | null;
   reactions: null;
   receiver_id: string;
   reply_to: string | null;
