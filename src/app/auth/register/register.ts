@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   debounce,
   email,
-  Field,
+  FormField,
   form,
   maxLength,
   minLength,
@@ -21,7 +21,7 @@ import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-register',
-  imports: [MatProgressSpinnerModule, Field, MatIcon, MatTooltipModule, RouterLink],
+  imports: [MatProgressSpinnerModule, FormField, MatIcon, MatTooltipModule, RouterLink],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })

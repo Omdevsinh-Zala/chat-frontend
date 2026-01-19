@@ -7,7 +7,7 @@
           class="transition-all duration-200 peer outline-none border focus:border-(--mat-sys-outline) w-full rounded-md p-3 focus:ring-2 focus:ring-(--mat-sys-outline)"
           type="email"
           autocomplete="new-password"
-          [field]="loginForm.email"
+          [formField]="loginForm.email"
           #email
         />
         <label class="label"
@@ -31,7 +31,7 @@
             class="transition-all duration-200 peer outline-none border focus:border-(--mat-sys-outline) w-full rounded-md p-3 focus:ring-2 focus:ring-(--mat-sys-outline)"
             type="password"
             autocomplete="new-password"
-            [field]="loginForm.password"
+            [formField]="loginForm.password"
             #password
           />
         }
@@ -40,7 +40,7 @@
             class="transition-all duration-200 peer outline-none border focus:border-(--mat-sys-outline) w-full rounded-md p-3 focus:ring-2 focus:ring-(--mat-sys-outline)"
             type="text"
             autocomplete="new-password"
-            [field]="loginForm.password"
+            [formField]="loginForm.password"
             #password
           />
         }

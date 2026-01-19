@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+<mat-dialog-content>
+  <p class="text-(--mat-sys-on-surface-variant) app-confirmation-message">{{ data.message }}</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button
+    mat-button
+    [class.text-(--mat-sys-error)!]="data.isCritical"
+    [class.bg-(--mat-sys-error-container)!]="data.isCritical"
+    (click)="onYesClick()"
+    cdkFocusInitial
+  >
+    {{ data.confirmJson || 'Confirm' }}
+  </button>
+</mat-dialog-actions>

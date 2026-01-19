@@ -76,18 +76,17 @@ export class Home implements OnInit {
       const currentUrl = window.location.href;
 
       if (!isMyMessage && message.status !== 'read') {
-        // Play sound for all incoming messages
         this.notificationService.playSound();
 
-        // Show notification only if tab is hidden OR user is not in the specific chat
-        if (document.visibilityState === 'hidden' || !currentUrl.includes(message.sender_id)) {
+        if (document.visibilityState === 'visible' && !currentUrl.includes(message.sender_id)) {
           const sender = this.combinedChats().find((u) => u?.id === message.sender_id);
           const senderName = sender ? `${sender.first_name} ${sender.last_name}` : 'New message';
 
           this.notificationService.showNotification(
             senderName,
-            message.content,
-            sender?.avatar_url
+            message.message_type === "text" ? message.content : "Sent a file",
+            sender?.avatar_url,
+            message.id,
           );
         }
       }
@@ -110,13 +109,14 @@ export class Home implements OnInit {
           });
         }
 
-        if (document.visibilityState === 'hidden' || !currentUrl) {
+        if (document.visibilityState === 'visible' && !currentUrl) {
           this.notificationService.playSound();
           const channel = this.userChannels().find((c) => c.id === message.channel_id);
           this.notificationService.showNotification(
             channel?.title || 'New message',
-            message.content,
-            channel?.avatar_url
+            message.message_type === "text" ? message.content : "Sent a file",
+            channel?.avatar_url,
+            message.id,
           );
         }
       }

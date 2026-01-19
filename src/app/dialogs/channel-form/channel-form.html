@@ -5,7 +5,7 @@
   <form class="flex flex-col gap-2 py-4">
     <mat-form-field appearance="outline">
       <mat-label>Title</mat-label>
-      <input [field]="channelForm.title" matInput />
+      <input [formField]="channelForm.title" matInput />
       @if(channelForm.title().invalid() && channelForm.title().touched() ||
       backendFormValidationErrors()?.title) { @if(channelForm.title().invalid() &&
       channelForm.title().touched()) { @for(error of channelForm.title().errors(); track $index) {
@@ -22,7 +22,7 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Topic</mat-label>
-      <input [field]="channelForm.topic" matInput />
+      <input [formField]="channelForm.topic" matInput />
       @if(channelForm.topic().invalid() && channelForm.topic().touched() ||
       backendFormValidationErrors()?.topic) { @if(channelForm.topic().invalid() &&
       channelForm.topic().touched()) { @for(error of channelForm.topic().errors(); track $index) {
@@ -39,7 +39,7 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Description</mat-label>
-      <textarea class="resize-none" [field]="channelForm.description" matInput rows="5" ></textarea>
+      <textarea class="resize-none" [formField]="channelForm.description" matInput rows="5" ></textarea>
       @if(channelForm.description().invalid() && channelForm.description().touched() ||
       backendFormValidationErrors()?.description) { @if(channelForm.description().invalid() &&
       channelForm.description().touched()) { @for(error of channelForm.description().errors();
@@ -52,7 +52,7 @@
 
     <mat-checkbox
       [checked]="channelForm.isPrivate()"
-      [field]="channelForm.isPrivate"
+      [formField]="channelForm.isPrivate"
       class="text-(--mat-sys-on-surface)! font-(--mat-sys-body-large)! leading-(--mat-sys-body-large-tracking)!"
       >Private</mat-checkbox
     >

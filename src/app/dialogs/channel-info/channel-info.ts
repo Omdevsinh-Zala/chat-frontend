@@ -1,5 +1,11 @@
 import { Component, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+  MatDialogModule,
+  MatDialog,
+} from '@angular/material/dialog';
+import { Confirmation } from '../confirmation/confirmation';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatIcon } from '@angular/material/icon';
@@ -33,6 +39,7 @@ import { MessageSnackBar } from '../../helpers/message-snack-bar/message-snack-b
 })
 export class ChannelInfo implements OnInit, OnDestroy {
   private dialogRef = inject(MatDialogRef<ChannelInfo>);
+  private dialog = inject(MatDialog);
   userService = inject(UserService);
   private socketService = inject(SocketConnection);
   readonly imagePath = environment.imageUrl;
@@ -82,6 +89,31 @@ export class ChannelInfo implements OnInit, OnDestroy {
         data: data.error,
       });
     });
+
+    this.socketService.socket.on('memberRoleUpdated', () => {
+      this.getChannelData();
+    });
+
+    this.socketService.socket.on('channelDeleted', (data) => {
+      this._snackbar.openFromComponent(MessageSnackBar, {
+        panelClass: 'error-panel',
+        duration: 4000,
+        data: 'This channel has been deleted',
+      });
+      this.redirect();
+    });
+
+    this.socketService.socket.on('updateRoleError', (data) => {
+      this._snackbar.openFromComponent(MessageSnackBar, {
+        panelClass: 'error-panel',
+        duration: 4000,
+        data: data.error,
+      });
+    });
+
+    this.socketService.socket.on('userRemoved', () => {
+      this.getChannelData();
+    });
   }
 
   getChannelData() {
@@ -110,6 +142,38 @@ export class ChannelInfo implements OnInit, OnDestroy {
         channelId: this.data.id,
         userId: member.id,
       });
+    } else if (action === 'Promote as Admin') {
+      this.socketService.socket.emit('updateMemberRole', {
+        channelId: this.data.id,
+        userId: member.id,
+        role: 'admin',
+      });
+    } else if (action === 'Promote as Owner') {
+      // Confirm ownership transfer
+      const dialogRef = this.dialog.open(Confirmation, {
+        data: {
+          title: 'Transfer Ownership',
+          message: `Are you sure you want to transfer ownership to ${member.full_name}? You will become an admin.`,
+          confirmJson: 'Transfer',
+          isCritical: true, // It's a significant action
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this.socketService.socket.emit('updateMemberRole', {
+            channelId: this.data.id,
+            userId: member.id,
+            role: 'owner',
+          });
+        }
+      });
+    } else if (action === 'Demote as Member') {
+      this.socketService.socket.emit('updateMemberRole', {
+        channelId: this.data.id,
+        userId: member.id,
+        role: 'member',
+      });
     }
   }
 
@@ -127,10 +191,33 @@ export class ChannelInfo implements OnInit, OnDestroy {
     this.dialogRef.close();
   }
 
+  deleteChannel() {
+    const dialogRef = this.dialog.open(Confirmation, {
+      data: {
+        title: 'Delete Channel',
+        message: 'Are you sure you want to delete this channel? This action cannot be undone.',
+        confirmJson: 'Delete',
+        isCritical: true,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.socketService.socket.emit('deleteChannel', {
+          channelId: this.data.id,
+        });
+      }
+    });
+  }
+
   ngOnDestroy(): void {
     this.socketService.socket.off('redirectToChannel');
     this.socketService.socket.off('joinChannelErrorMessage');
     this.socketService.socket.off('leaveChannelErrorMessage');
     this.socketService.socket.off('removeUserErrorMessage');
+    this.socketService.socket.off('memberRoleUpdated');
+    this.socketService.socket.off('channelDeleted');
+    this.socketService.socket.off('updateRoleError');
+    this.socketService.socket.off('userRemoved');
   }
 }

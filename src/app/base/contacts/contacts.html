@@ -1,6 +1,6 @@
 <div class="p-8 h-dvh bg-(--mat-sys-surface)" [class.h-[calc(100dvh-82px)]!]="responsive.isTabletForBase()">
   <mat-form-field class="w-full" appearance="outline">
-    <input matInput placeholder="Ex. Ghost" [field]="searchForm.search" />
+    <input matInput placeholder="Ex. Ghost" [formField]="searchForm.search" />
   </mat-form-field>
   <table mat-table [dataSource]="usersData()">
     <ng-container matColumnDef="user">

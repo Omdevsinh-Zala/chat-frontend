@@ -11,7 +11,7 @@ import {
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { debounce, form, required, validateHttp, Field } from '@angular/forms/signals';
+import { debounce, form, required, validateHttp, FormField } from '@angular/forms/signals';
 import { MatRippleModule } from '@angular/material/core';
 import { RouterLink } from '@angular/router';
 import { UserService } from '../../services/user-service';
@@ -31,7 +31,7 @@ import { Responsive } from '../../services/responsive';
     RouterLink,
     MatFormFieldModule,
     MatInput,
-    Field,
+    FormField,
   ],
   templateUrl: './contacts.html',
   styleUrl: './contacts.css',

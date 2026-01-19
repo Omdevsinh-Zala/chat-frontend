@@ -1,0 +1,11 @@
+::ng-deep .mat-mdc-dialog-surface:has(app-confirmation) {
+  @media (max-width: 1200px) {
+    border-radius: 0 !important;
+    width: auto;
+    height: auto;
+  }
+}
+
+::ng-deep mat-dialog-content:has(.app-confirmation-message) {
+  padding: 6px 24px !important;
+}
