@@ -8,6 +8,7 @@ export const environment = {
   apiUrl: '${process.env.API_URL}',
   socketUrl: '${process.env.SOCKET_URL}',
   imageUrl: '${process.env.IMAGE_URL}',
+  VAPID_PUBLIC_KEY: '${process.env.VAPID_PUBLIC_KEY}',
 };
 `
 );
