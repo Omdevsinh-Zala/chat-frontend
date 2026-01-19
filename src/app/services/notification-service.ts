@@ -3,6 +3,7 @@ import { SwPush } from '@angular/service-worker';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { firstValueFrom } from 'rxjs';
+import { GlobalResponse } from '../models/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -33,9 +34,6 @@ export class NotificationService {
   readonly VAPID_PUBLIC_KEY = environment.VAPID_PUBLIC_KEY;
 
   constructor() {
-    this.audio.src = this.soundPath;
-    this.audio.load();
-
     this.loadUserSettings();
 
     if (this.permissionStatus() === 'granted') {
@@ -104,10 +102,12 @@ export class NotificationService {
   async loadUserSettings() {
     try {
       const response = await firstValueFrom(
-        this.http.get<any>(`${environment.apiUrl}/users/settings`),
+        this.http.get<GlobalResponse<any>>(`${environment.apiUrl}/users/settings`),
       );
       if (response.success) {
         this.userSettings.set(response.data);
+        this.audio.src = this.soundMap[this.userSettings()?.notification_sound || 'default'];
+        this.audio.load();
       }
     } catch (err) {
       console.error('Failed to load user settings:', err);
@@ -117,7 +117,7 @@ export class NotificationService {
   async saveUserSettings(settings: any) {
     try {
       const response = await firstValueFrom(
-        this.http.put<any>(`${environment.apiUrl}/users/settings`, settings),
+        this.http.put<GlobalResponse<any>>(`${environment.apiUrl}/users/settings`, settings),
       );
       if (response.success) {
         this.userSettings.set(response.data);

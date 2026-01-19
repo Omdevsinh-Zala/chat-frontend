@@ -201,6 +201,10 @@ export class Settings implements AfterViewInit, OnInit {
 
     bodyElement.classList.add(theme.class);
     localStorage.setItem('matTheme', theme.class);
+
+    this.notificationService.saveUserSettings({
+      mat_theme: theme.class,
+    });
   }
 
   toggleGlass() {
@@ -254,6 +258,10 @@ export class Settings implements AfterViewInit, OnInit {
       bodyElement.classList.add(theme.class);
       localStorage.setItem('systemTheme', theme.class);
     }
+
+    this.notificationService.saveUserSettings({
+      theme: theme.name.toLowerCase(),
+    });
   }
 
   selectSystemTheme() {

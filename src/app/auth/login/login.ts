@@ -6,12 +6,12 @@ import { AuthService } from '../../services/auth-service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { SocketConnection } from '../../services/socket-connection';
 
 @Component({
   selector: 'app-login',
-  imports: [MatProgressSpinnerModule, FormField, MatIcon, MatTooltipModule],
+  imports: [MatProgressSpinnerModule, FormField, MatIcon, MatTooltipModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
