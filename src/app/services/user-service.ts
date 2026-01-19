@@ -115,4 +115,12 @@ export class UserService {
       return chat;
     });
   }
+
+  getUserSettings() {
+    return this.http.get<GlobalResponse<any>>(`${this.apiUrl}/users/settings`);
+  }
+
+  updateUserSettings(settings: any) {
+    return this.http.put<GlobalResponse<any>>(`${this.apiUrl}/users/settings`, settings);
+  }
 }

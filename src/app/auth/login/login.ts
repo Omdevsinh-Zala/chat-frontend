@@ -1,6 +1,6 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { form, Field, required, email, minLength, maxLength } from '@angular/forms/signals';
+import { form, FormField, required, email, minLength, maxLength } from '@angular/forms/signals';
 import { LoginModel } from '../../models/auth';
 import { AuthService } from '../../services/auth-service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -11,7 +11,7 @@ import { SocketConnection } from '../../services/socket-connection';
 
 @Component({
   selector: 'app-login',
-  imports: [MatProgressSpinnerModule, Field, MatIcon, MatTooltipModule, RouterLink],
+  imports: [MatProgressSpinnerModule, FormField, MatIcon, MatTooltipModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

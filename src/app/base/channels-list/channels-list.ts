@@ -16,7 +16,7 @@ import { environment } from '../../../environments/environment';
 import { ChannelList } from '../../models/chat';
 import { Responsive } from '../../services/responsive';
 import { UserService } from '../../services/user-service';
-import { debounce, Field, form, required, validateHttp } from '@angular/forms/signals';
+import { debounce, FormField, form, required, validateHttp } from '@angular/forms/signals';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { GlobalResponse } from '../../models/auth';
@@ -34,7 +34,7 @@ import { ChannelInfo } from '../../dialogs/channel-info/channel-info';
     MatPaginator,
     MatFormFieldModule,
     MatInput,
-    Field,
+    FormField,
     MatRipple,
   ],
   templateUrl: './channels-list.html',

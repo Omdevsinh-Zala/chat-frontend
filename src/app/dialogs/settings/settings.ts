@@ -19,6 +19,10 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { PanelGroup } from '../../models/preferences';
 import { NgTemplateOutlet } from '@angular/common';
 import { Responsive } from '../../services/responsive';
+import { NotificationService } from '../../services/notification-service';
+import { MatSelectModule } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-settings',
@@ -29,21 +33,25 @@ import { Responsive } from '../../services/responsive';
     MatMenuModule,
     MatDialogModule,
     NgTemplateOutlet,
+    MatSelectModule,
+    FormsModule,
   ],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
 })
-export class Settings implements AfterViewInit {
+export class Settings implements AfterViewInit, OnInit {
   readonly dialogRef = inject(MatDialogRef<Settings>);
   readonly responsive = inject(Responsive);
+  readonly notificationService = inject(NotificationService);
+  readonly snackBar = inject(MatSnackBar);
 
   constructor() {
     effect(() => {
       this.visiblePanelFragment = this.panelGroup().find(
-        (panelGroup) => panelGroup.isOpen
+        (panelGroup) => panelGroup.isOpen,
       )?.fragments;
       this.isDynamicContentChange = this.panelGroup().find(
-        (panelGroup) => panelGroup.isOpen
+        (panelGroup) => panelGroup.isOpen,
       )?.isDynamic;
     });
   }
@@ -59,21 +67,11 @@ export class Settings implements AfterViewInit {
       class: 'red-theme',
       isActive: false,
     },
-    // {
-    //   name: 'Green',
-    //   class: 'green-theme',
-    //   isActive: false,
-    // },
     {
       name: 'Blue',
       class: 'blue-theme',
       isActive: false,
     },
-    // {
-    //   name: 'Yellow',
-    //   class: 'yellow-theme',
-    //   isActive: false,
-    // },
     {
       name: 'Cyan',
       class: 'cyan-theme',
@@ -84,21 +82,6 @@ export class Settings implements AfterViewInit {
       class: 'magenta-theme',
       isActive: false,
     },
-    // {
-    //   name: 'Orange',
-    //   class: 'orange-theme',
-    //   isActive: false,
-    // },
-    // {
-    //   name: 'Chartreuse',
-    //   class: 'chartreuse-theme',
-    //   isActive: false,
-    // },
-    // {
-    //   name: 'Spring green',
-    //   class: 'spring-green-theme',
-    //   isActive: false,
-    // },
     {
       name: 'violet',
       class: 'violet-theme',
@@ -119,11 +102,6 @@ export class Settings implements AfterViewInit {
       class: 'sunset-theme',
       isActive: false,
     },
-    // {
-    //   name: 'forest',
-    //   class: 'forest-theme',
-    //   isActive: false,
-    // },
     {
       name: 'lavender',
       class: 'lavender-theme',
@@ -139,11 +117,6 @@ export class Settings implements AfterViewInit {
       class: 'solar-citrus-theme',
       isActive: false,
     },
-    // {
-    //   name: 'Neon Mint',
-    //   class: 'neon-mint-theme',
-    //   isActive: false,
-    // },
     {
       name: 'Berry Blast',
       class: 'berry-blast-theme',
@@ -217,7 +190,7 @@ export class Settings implements AfterViewInit {
 
   matThemeChange(theme: any) {
     this.matThemes.update((themes) =>
-      themes.map((t) => ({ ...t, isActive: t.name === theme.name }))
+      themes.map((t) => ({ ...t, isActive: t.name === theme.name })),
     );
 
     const bodyElement = window.document.getElementsByTagName('html')[0];
@@ -228,6 +201,10 @@ export class Settings implements AfterViewInit {
 
     bodyElement.classList.add(theme.class);
     localStorage.setItem('matTheme', theme.class);
+
+    this.notificationService.saveUserSettings({
+      mat_theme: theme.class,
+    });
   }
 
   toggleGlass() {
@@ -267,7 +244,7 @@ export class Settings implements AfterViewInit {
 
   systemThemeChange(theme: any) {
     this.systemThemes.update((themes) =>
-      themes.map((t) => ({ ...t, isActive: t.name === theme.name }))
+      themes.map((t) => ({ ...t, isActive: t.name === theme.name })),
     );
 
     const bodyElement = window.document.getElementsByTagName('html')[0];
@@ -281,21 +258,25 @@ export class Settings implements AfterViewInit {
       bodyElement.classList.add(theme.class);
       localStorage.setItem('systemTheme', theme.class);
     }
+
+    this.notificationService.saveUserSettings({
+      theme: theme.name.toLowerCase(),
+    });
   }
 
   selectSystemTheme() {
     const bodyElement = window.document.getElementsByTagName('html')[0];
     if (bodyElement.classList.contains('light-theme')) {
       this.systemThemes.update((themes) =>
-        themes.map((t) => ({ ...t, isActive: t.name === 'Light' }))
+        themes.map((t) => ({ ...t, isActive: t.name === 'Light' })),
       );
     } else if (bodyElement.classList.contains('dark-theme')) {
       this.systemThemes.update((themes) =>
-        themes.map((t) => ({ ...t, isActive: t.name === 'Dark' }))
+        themes.map((t) => ({ ...t, isActive: t.name === 'Dark' })),
       );
     } else {
       this.systemThemes.update((themes) =>
-        themes.map((t) => ({ ...t, isActive: t.name === 'System' }))
+        themes.map((t) => ({ ...t, isActive: t.name === 'System' })),
       );
     }
   }
@@ -313,14 +294,14 @@ export class Settings implements AfterViewInit {
         fragments: this.settingFragment()!,
         isDynamic: true,
       },
-      // {
-      //   index: 1,
-      //   name: 'Notifications',
-      //   icon: 'notifications',
-      //   isOpen: false,
-      //   fragments: this.notificationFragment()!,
-      //   isDynamic: true,
-      // },
+      {
+        index: 1,
+        name: 'Notifications',
+        icon: 'notifications',
+        isOpen: false,
+        fragments: this.notificationFragment()!,
+        isDynamic: false,
+      },
     ]);
 
     const bodyElement = document.body;
@@ -354,5 +335,38 @@ export class Settings implements AfterViewInit {
 
   close() {
     this.dialogRef.close();
+  }
+
+  soundOptions = [
+    { value: 'default', label: 'Default (Bubble)' },
+    { value: 'chime', label: 'Chime' },
+    { value: 'ding', label: 'Ding' },
+    { value: 'sciClick', label: 'Sci Click' },
+    { value: 'beep', label: 'Beep' },
+    { value: 'none', label: 'None (Silent)' },
+  ];
+
+  selectedSound = 'default';
+
+  ngOnInit() {
+    const settings = this.notificationService.userSettings();
+    if (settings) {
+      this.selectedSound = settings.notification_sound || 'default';
+    }
+  }
+
+  previewSound(soundKey: string) {
+    this.notificationService.previewSound(soundKey);
+  }
+
+  async saveNotificationSettings() {
+    try {
+      await this.notificationService.saveUserSettings({
+        notification_sound: this.selectedSound,
+      });
+      this.snackBar.open('Settings saved successfully', 'Close', { duration: 3000 });
+    } catch (err) {
+      this.snackBar.open('Failed to save settings', 'Close', { duration: 3000 });
+    }
   }
 }
