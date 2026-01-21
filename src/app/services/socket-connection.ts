@@ -47,6 +47,23 @@ export class SocketConnection {
       this.userService.updateUserStatus(userId, isOnline);
     });
 
+    this.socket.on('profileDataChanges', (data) => {
+      this.userService.user.update((user) => {
+        return { ...user, ...data };
+      });
+    });
+
+    this.socket.on('userImageChanged', ({ userId, avatar_url }) => {
+      this.userService.recentlyMessagesUsers.update((users) => {
+        return users.map((u) => {
+          if (u.id === userId) {
+            return { ...u, avatar_url };
+          }
+          return u;
+        });
+      });
+    });
+
     this.socket.on('disconnect', (reason) => {
       this.isConnected.set(false);
     });

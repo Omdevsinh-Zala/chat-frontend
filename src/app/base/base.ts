@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTooltip } from '@angular/material/tooltip';
 import {
@@ -113,5 +112,9 @@ export class Base implements OnInit {
       width: '70%',
       height: '70%',
     });
+  }
+
+  redirectToProfile() {
+    this.router.navigate(['/profile']);
   }
 }

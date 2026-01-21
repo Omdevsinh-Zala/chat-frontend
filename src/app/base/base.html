@@ -92,6 +92,10 @@
                 <div ngMenu #formatMenu="ngMenu">
                   <ng-template ngMenuContent>
                     <div class="group">
+                      <div ngMenuItem value="Profile" (click)="redirectToProfile()">
+                        <mat-icon translate="no" aria-hidden="true">account_circle</mat-icon>
+                        <span class="label">Profile</span>
+                      </div>
                       <div ngMenuItem value="Settings" (click)="openSettings()">
                         <mat-icon translate="no" aria-hidden="true">settings</mat-icon>
                         <span class="label">Settings</span>
@@ -174,6 +178,10 @@
         <div ngMenu #formatMenu="ngMenu">
           <ng-template ngMenuContent>
             <div class="group">
+              <div ngMenuItem value="Profile" (click)="redirectToProfile()">
+                <mat-icon translate="no" aria-hidden="true">account_circle</mat-icon>
+                <span class="label">Profile</span>
+              </div>
               <div ngMenuItem value="Settings" (click)="openSettings()">
                 <mat-icon translate="no" aria-hidden="true">settings</mat-icon>
                 <span class="label">Settings</span>

@@ -114,6 +114,10 @@
 [ngMenuTrigger][aria-expanded='true'] {
   background: color-mix(in srgb, var(--mat-sys-primary) 2%, transparent);
 }
+[ngMenuItem][data-active='false'] {
+  color: var(--mat-sys-on-surface);
+  background: color-mix(in srgb, var(--mat-sys-surface) 5%, transparent);
+}
 [ngMenuItem][data-active='true'] {
   color: color-mix(in srgb, var(--mat-sys-primary) 80%, var(--mat-sys-on-primary));
   background: color-mix(in srgb, var(--mat-sys-primary) 5%, transparent);
