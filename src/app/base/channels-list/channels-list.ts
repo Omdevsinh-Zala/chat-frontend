@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   inject,
@@ -39,6 +40,7 @@ import { ChannelInfo } from '../../dialogs/channel-info/channel-info';
   ],
   templateUrl: './channels-list.html',
   styleUrl: './channels-list.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChannelsList {
   private destroyRef = inject(DestroyRef);
@@ -66,7 +68,7 @@ export class ChannelsList {
         this.searchForm.search().value(),
         this.sort(),
         this.paginator()?.pageSize || defaultPageSize,
-        (this.paginator()?.pageIndex || 0) + 1
+        (this.paginator()?.pageIndex || 0) + 1,
       )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -83,7 +85,7 @@ export class ChannelsList {
         this.searchForm.search().value(),
         value,
         this.paginator()?.pageSize || 10,
-        (this.paginator()?.pageIndex || 0) + 1
+        (this.paginator()?.pageIndex || 0) + 1,
       )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -110,7 +112,7 @@ export class ChannelsList {
         if (this.paginator()?.pageSize !== undefined)
           params.append(
             'limit',
-            this.paginator()?.pageSize ? this.paginator()?.pageSize.toString()! : '15'
+            this.paginator()?.pageSize ? this.paginator()?.pageSize.toString()! : '15',
           );
         if (this.paginator()?.pageIndex !== undefined)
           params.append('page', (this.paginator()?.pageIndex! + 1).toString());
@@ -147,7 +149,7 @@ export class ChannelsList {
               this.searchForm.search().value(),
               this.sort(),
               event.pageSize,
-              event.pageIndex + 1
+              event.pageIndex + 1,
             )
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({

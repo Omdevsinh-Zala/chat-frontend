@@ -1,62 +1,64 @@
 @if (mediaAttachments().length > 0) {
-<ul class="grid grid-cols-2 mb-2 w-full xs:w-auto max-w-xs">
-  @for (att of mediaAttachments(); track $index) {
-  <!-- Show only first 4 items -->
-  @if ($index < 4) {
-  <li class="relative aspect-square w-auto h-auto lg:w-36 lg:h-36">
-    @if (isImage(att)) {
-    <div class="w-full h-full">
-      <img
-        [src]="imagePath + att.file_url"
-        alt="Image attachment"
-        class="w-full h-full object-cover cursor-pointer border border-gray-200"
-        (click)="viewAssets(mediaAttachments(), $index)"
-      />
-    </div>
-    } @else if (isVideo(att)) {
-    <div class="w-full h-full relative">
-      <video
-        [src]="imagePath + att.file_url"
-        class="w-full h-full object-cover border border-gray-200"
-      ></video>
-      <!-- Helper overlay for video to indicate playability via click -->
-      <div
-        class="absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer"
-        (click)="viewAssets(mediaAttachments(), $index)"
-      >
-        <mat-icon class="text-white!">play_circle_outline</mat-icon>
-      </div>
-    </div>
-    }
+  <ul class="grid grid-cols-2 mb-2 w-full xs:w-auto max-w-xs">
+    @for (att of mediaAttachments(); track $index) {
+      <!-- Show only first 4 items -->
+      @if ($index < 4) {
+        <li class="relative aspect-square w-auto h-auto lg:w-36 lg:h-36">
+          @if (isImage(att)) {
+            <div class="w-full h-full">
+              <img
+                [src]="imagePath + (att.thumbnail_url || att.file_url)"
+                alt="Image attachment"
+                class="w-full h-full object-cover cursor-pointer border border-gray-200"
+                (click)="viewAssets(mediaAttachments(), $index)"
+                loading="lazy"
+              />
+            </div>
+          } @else if (isVideo(att)) {
+            <div class="w-full h-full relative">
+              <img
+                [src]="imagePath + (att.thumbnail_url || att.file_url)"
+                class="w-full h-full object-cover border border-gray-200"
+              />
+              <!-- Helper overlay for video to indicate playability via click -->
+              <div
+                class="absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer"
+                (click)="viewAssets(mediaAttachments(), $index)"
+              >
+                <mat-icon class="text-white!">play_circle_outline</mat-icon>
+              </div>
+            </div>
+          }
 
-    <!-- Overflow Counter Overlay -->
-    @if ($index === 3 && mediaAttachments().length > 4) {
-    <div
-      class="absolute inset-0 bg-black/60 flex items-center justify-center cursor-pointer"
-      (click)="viewAssets(mediaAttachments(), 3)"
-    >
-      <span class="text-white text-xl font-bold">+{{ mediaAttachments().length - 4 }}</span>
-    </div>
+          <!-- Overflow Counter Overlay -->
+          @if ($index === 3 && mediaAttachments().length > 4) {
+            <div
+              class="absolute inset-0 bg-black/60 flex items-center justify-center cursor-pointer"
+              (click)="viewAssets(mediaAttachments(), 3)"
+            >
+              <span class="text-white text-xl font-bold">+{{ mediaAttachments().length - 4 }}</span>
+            </div>
+          }
+        </li>
+      }
     }
-  </li>
-  } }
-</ul>
+  </ul>
 }
 
 <!-- PDF List -->
 @if (pdfAttachments().length > 0) {
-<ul class="flex flex-col gap-2">
-  @for (att of pdfAttachments(); track $index) {
-  <li class="text-start p-2 bg-gray-50 rounded-lg border border-gray-200">
-    <a
-      [href]="imagePath + att.file_url"
-      target="_blank"
-      class="flex items-center gap-3 text-gray-700 hover:text-blue-600 no-underline"
-    >
-      <mat-icon class="text-red-500">picture_as_pdf</mat-icon>
-      <span class="truncate max-w-[200px] text-sm font-medium">{{ att.file_name }}</span>
-    </a>
-  </li>
-  }
-</ul>
+  <ul class="flex flex-col gap-2">
+    @for (att of pdfAttachments(); track $index) {
+      <li class="text-start p-2 bg-gray-50 rounded-lg border border-gray-200">
+        <a
+          [href]="imagePath + att.file_url"
+          target="_blank"
+          class="flex items-center gap-3 text-gray-700 hover:text-blue-600 no-underline"
+        >
+          <mat-icon class="text-red-500">picture_as_pdf</mat-icon>
+          <span class="truncate max-w-[200px] text-sm font-medium">{{ att.file_name }}</span>
+        </a>
+      </li>
+    }
+  </ul>
 }
