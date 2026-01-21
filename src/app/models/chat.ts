@@ -37,6 +37,7 @@ export interface AttachmentsType {
   receiver_id?: string;
   file_type: string | null;
   file_url: string;
+  thumbnail_url?: string;
   file_name: string;
   file_size: number;
   mime_type: string;

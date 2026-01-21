@@ -132,9 +132,7 @@ export class Chat implements OnInit, AfterViewInit {
       this.socketService.socket.on('userTyping', (data: { isTyping: boolean }) => {
         this.receiverUser.update((user) => {
           if (user) {
-            const updatedUser = { ...user };
-            updatedUser.is_typing = data.isTyping!;
-            return updatedUser;
+            return { ...user, is_typing: data.isTyping! };
           }
           return user;
         });
@@ -146,7 +144,7 @@ export class Chat implements OnInit, AfterViewInit {
           this.currentChatMessages.set(data.chat);
           this.receiverUser.set(data.receiverData);
           this.loadingChat.set(false);
-        }
+        },
       );
 
       this.socketService.socket.on('appendedMessages', (data: { chat: GroupedChat[] }) => {
@@ -154,7 +152,7 @@ export class Chat implements OnInit, AfterViewInit {
           const updatedChat = [...chat];
           data.chat.forEach((newGroup) => {
             const existingGroupIndex = updatedChat.findIndex(
-              (g) => g.monthYear === newGroup.monthYear
+              (g) => g.monthYear === newGroup.monthYear,
             );
             if (existingGroupIndex !== -1) {
               updatedChat[existingGroupIndex] = {
@@ -221,18 +219,29 @@ export class Chat implements OnInit, AfterViewInit {
     });
 
     this.destroyRef.onDestroy(() => {
-      const currentId = this.chatId();
-      if (currentId) {
-        this.socketService.socket.off('receiveChatMessage');
-        this.socketService.socket.off('chatMessages');
-        this.socketService.socket.off('appendedMessages');
-        this.socketService.socket.off('typing');
-        this.socketService.socket.off('userTyping');
-      }
+      this.cleanupSockets();
+      this.cleanupPreviewUrls();
       this.observer?.disconnect();
     });
 
     this.setupObserver();
+  }
+
+  private cleanupSockets() {
+    const socket = this.socketService.socket;
+    socket.off('receiveChatMessage');
+    socket.off('chatMessages');
+    socket.off('appendedMessages');
+    socket.off('typing');
+    socket.off('userTyping');
+  }
+
+  private cleanupPreviewUrls() {
+    this.base64AssetsData().forEach((asset) => {
+      if (asset.file_url?.startsWith('blob:')) {
+        URL.revokeObjectURL(asset.file_url);
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -245,7 +254,7 @@ export class Chat implements OnInit, AfterViewInit {
           this.observer?.observe(item.nativeElement);
         });
       },
-      { injector: this.injector }
+      { injector: this.injector },
     );
   }
 
@@ -297,7 +306,7 @@ export class Chat implements OnInit, AfterViewInit {
         root: null,
         threshold: 0.1,
         rootMargin: '0px 0px 50px 0px',
-      }
+      },
     );
   }
 
@@ -416,7 +425,7 @@ export class Chat implements OnInit, AfterViewInit {
     const targetId = flatMessages[flatMessages.length - 1].id;
 
     const element = this.messageItems().find(
-      (item) => item.nativeElement.getAttribute('data-id') === targetId
+      (item) => item.nativeElement.getAttribute('data-id') === targetId,
     );
 
     element?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -432,8 +441,8 @@ export class Chat implements OnInit, AfterViewInit {
       const fileType = file.type.includes('image')
         ? 'image'
         : file.type.includes('video')
-        ? 'video'
-        : 'pdf';
+          ? 'video'
+          : 'pdf';
       this.base64AssetsData.update((data) => {
         const newData = [...data];
         newData[index] = {
@@ -449,6 +458,11 @@ export class Chat implements OnInit, AfterViewInit {
   }
 
   removeImage(index: number) {
+    const assetToRemove = this.base64AssetsData()[index];
+    if (assetToRemove?.file_url?.startsWith('blob:')) {
+      URL.revokeObjectURL(assetToRemove.file_url);
+    }
+
     this.assetsData.update((data) => {
       const newData = [...data];
       newData.splice(index, 1);

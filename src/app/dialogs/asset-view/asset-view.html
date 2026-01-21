@@ -37,60 +37,74 @@
       </button>
     </div>
   </div>
-  @if(data.attachments.length > 1) {
-  <swiper-container init="false" #assetSwiper class="w-full h-full">
-    @for (attach of data.attachments; track $index) { @if(attach.file_type === "image") {
-    <swiper-slide class="w-full h-full flex items-center justify-center">
+  @if (data.attachments.length > 1) {
+    <swiper-container init="false" #assetSwiper class="w-full h-full">
+      @for (attach of data.attachments; track $index) {
+        @if (attach.file_type === 'image') {
+          <swiper-slide class="w-full h-full flex items-center justify-center">
+            <img
+              class="w-full h-full object-contain"
+              [src]="
+                data.isObjectUrl
+                  ? data.attachments[$index].file_url
+                  : imagePath + data.attachments[$index].file_url
+              "
+              [alt]="attach.file_name"
+            />
+          </swiper-slide>
+        } @else if (attach.file_type === 'video') {
+          <swiper-slide class="w-full h-full flex items-center justify-center">
+            <video
+              class="w-full h-full object-contain"
+              [poster]="
+                data.isObjectUrl
+                  ? data.attachments[$index].thumbnail_url
+                  : imagePath + data.attachments[$index].thumbnail_url
+              "
+              [src]="
+                data.isObjectUrl
+                  ? data.attachments[$index].file_url
+                  : imagePath + data.attachments[$index].file_url
+              "
+              controls
+            ></video>
+          </swiper-slide>
+        }
+      }
+    </swiper-container>
+
+    <button
+      class="absolute top-1/2 left-4 -translate-y-1/2 z-50 swiper-button-prev rounded-full bg-black/20 text-white p-2 hover:bg-black/40 hover:cursor-pointer flex justify-center items-center backdrop-blur-sm transition-colors"
+    >
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button
+      class="absolute top-1/2 right-4 -translate-y-1/2 z-50 swiper-button-next rounded-full bg-black/20 text-white p-2 hover:bg-black/40 hover:cursor-pointer flex justify-center items-center backdrop-blur-sm transition-colors"
+    >
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  } @else {
+    @if (data.attachments[0].file_type === 'image') {
       <img
         class="w-full h-full object-contain"
         [src]="
-          data.isObjectUrl
-            ? data.attachments[$index].file_url
-            : imagePath + data.attachments[$index].file_url
+          data.isObjectUrl ? data.attachments[0].file_url : imagePath + data.attachments[0].file_url
         "
-        [alt]="attach.file_name"
+        [alt]="data.attachments[0].file_name"
       />
-    </swiper-slide>
-    } @else if(attach.file_type === "video") {
-    <swiper-slide class="w-full h-full flex items-center justify-center">
+    } @else {
       <video
         class="w-full h-full object-contain"
-        [src]="
+        [poster]="
           data.isObjectUrl
-            ? data.attachments[$index].file_url
-            : imagePath + data.attachments[$index].file_url
+            ? data.attachments[0].thumbnail_url
+            : imagePath + data.attachments[0].thumbnail_url
+        "
+        [src]="
+          data.isObjectUrl ? data.attachments[0].file_url : imagePath + data.attachments[0].file_url
         "
         controls
       ></video>
-    </swiper-slide>
-    } }
-  </swiper-container>
-
-  <button
-    class="absolute top-1/2 left-4 -translate-y-1/2 z-50 swiper-button-prev rounded-full bg-black/20 text-white p-2 hover:bg-black/40 hover:cursor-pointer flex justify-center items-center backdrop-blur-sm transition-colors"
-  >
-    <mat-icon>chevron_left</mat-icon>
-  </button>
-  <button
-    class="absolute top-1/2 right-4 -translate-y-1/2 z-50 swiper-button-next rounded-full bg-black/20 text-white p-2 hover:bg-black/40 hover:cursor-pointer flex justify-center items-center backdrop-blur-sm transition-colors"
-  >
-    <mat-icon>chevron_right</mat-icon>
-  </button>
-  } @else { @if(data.attachments[0].file_type === "image") {
-  <img
-    class="w-full h-full object-contain"
-    [src]="
-      data.isObjectUrl ? data.attachments[0].file_url : imagePath + data.attachments[0].file_url
-    "
-    [alt]="data.attachments[0].file_name"
-  />
-  } @else {
-  <video
-    class="w-full h-full object-contain"
-    [src]="
-      data.isObjectUrl ? data.attachments[0].file_url : imagePath + data.attachments[0].file_url
-    "
-    controls
-  ></video>
-  } }
+    }
+  }
 </div>

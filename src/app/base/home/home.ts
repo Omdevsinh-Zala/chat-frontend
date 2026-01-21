@@ -1,4 +1,13 @@
-import { Component, computed, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+  WritableSignal,
+  DestroyRef,
+} from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -10,6 +19,7 @@ import { UserService } from '../../services/user-service';
 import { environment } from '../../../environments/environment';
 import { RecentlyMessagedUsers } from '../../models/recently-messaged-users';
 import { SocketConnection } from '../../services/socket-connection';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificationService } from '../../services/notification-service';
 import { GroupedChat } from '../../models/chat';
 import { Responsive } from '../../services/responsive';
@@ -32,6 +42,7 @@ import { MatCardModule } from '@angular/material/card';
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Home implements OnInit {
   private userService = inject(UserService);
@@ -39,6 +50,7 @@ export class Home implements OnInit {
   private notificationService = inject(NotificationService);
   private responsiveService = inject(Responsive);
   private dialog = inject(MatDialog);
+  private destroyRef = inject(DestroyRef);
 
   isTablet = this.responsiveService.isTabletForHome;
   isOpen = this.responsiveService.homePanelOpen;
@@ -84,7 +96,7 @@ export class Home implements OnInit {
 
           this.notificationService.showNotification(
             senderName,
-            message.message_type === "text" ? message.content : "Sent a file",
+            message.message_type === 'text' ? message.content : 'Sent a file',
             sender?.avatar_url,
             message.id,
           );
@@ -114,7 +126,7 @@ export class Home implements OnInit {
           const channel = this.userChannels().find((c) => c.id === message.channel_id);
           this.notificationService.showNotification(
             channel?.title || 'New message',
-            message.message_type === "text" ? message.content : "Sent a file",
+            message.message_type === 'text' ? message.content : 'Sent a file',
             channel?.avatar_url,
             message.id,
           );
@@ -142,15 +154,18 @@ export class Home implements OnInit {
       width: '70%',
     });
 
-    dialog.afterClosed().subscribe({
-      next: (result) => {
-        if (result) {
-          this.socketService.socket.emit('channelCreated');
-        }
-      },
-      error: (err) => {
-        console.log(err);
-      },
-    });
+    dialog
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          if (result) {
+            this.socketService.socket.emit('channelCreated');
+          }
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
   }
 }

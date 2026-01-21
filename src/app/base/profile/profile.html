@@ -1,6 +1,231 @@
-<div class="">
-  <div class="">
+<div class="container mx-auto p-4 gap-6 flex flex-col-reverse md:flex-row h-dvh overflow-scroll">
+  <div class="w-full flex flex-col gap-4">
+    <div class="w-full flex items-center">
+      <div class="w-28 lg:w-28 md:w-32">
+        <h2 class="text-lg font-semibold">Basic info</h2>
+      </div>
+      <mat-divider class="w-full"></mat-divider>
+    </div>
+    <div class="w-full flex flex-wrap">
+      <div class="w-full md:w-1/2 px-2">
+        <mat-form-field class="w-full" appearance="outline">
+          <mat-label>First Name</mat-label>
+          <input matInput [formField]="userDataForm.first_name" />
+          @if (
+            (userDataForm.first_name().touched() && userDataForm.first_name().invalid()) ||
+            backendValidationErrors()?.first_name
+          ) {
+            <ul class="error-list">
+              @if (userDataForm.first_name().touched() && userDataForm.first_name().invalid()) {
+                @for (error of userDataForm.first_name().errors(); track $index) {
+                  @if ($first) {
+                    <li class="form-error-msg">{{ error.message }}</li>
+                  }
+                }
+              } @else if (backendValidationErrors()?.first_name) {
+                <li class="form-error-msg">{{ backendValidationErrors()?.first_name }}</li>
+              }
+            </ul>
+          }
+        </mat-form-field>
+      </div>
+      <div class="w-full md:w-1/2 px-2">
+        <mat-form-field class="w-full" appearance="outline">
+          <mat-label>Last Name</mat-label>
+          <input matInput [formField]="userDataForm.last_name" />
+          @if (
+            (userDataForm.last_name().touched() && userDataForm.last_name().invalid()) ||
+            backendValidationErrors()?.last_name
+          ) {
+            <ul class="error-list">
+              @if (userDataForm.last_name().touched() && userDataForm.last_name().invalid()) {
+                @for (error of userDataForm.last_name().errors(); track $index) {
+                  @if ($first) {
+                    <li class="form-error-msg">{{ error.message }}</li>
+                  }
+                }
+              } @else if (backendValidationErrors()?.last_name) {
+                <li class="form-error-msg">{{ backendValidationErrors()?.last_name }}</li>
+              }
+            </ul>
+          }
+        </mat-form-field>
+      </div>
+      <div class="w-full md:w-1/2 px-2">
+        <mat-form-field class="w-full" appearance="outline">
+          <mat-label>Username</mat-label>
+          <input matInput [formField]="userDataForm.username" />
+          @if (userDataForm.username().pending()) {
+            <div class="transition-all duration-200 absolute right-1 top-1/2 -translate-1/2">
+              <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+            </div>
+          }
+          @if (
+            (userDataForm.username().touched() && userDataForm.username().invalid()) ||
+            backendValidationErrors()?.username
+          ) {
+            <ul class="error-list">
+              @if (userDataForm.username().touched() && userDataForm.username().invalid()) {
+                @for (error of userDataForm.username().errors(); track $index) {
+                  @if ($first) {
+                    <li class="form-error-msg">{{ error.message }}</li>
+                  }
+                }
+              } @else if (backendValidationErrors()?.username) {
+                <li class="form-error-msg">{{ backendValidationErrors()?.username }}</li>
+              }
+            </ul>
+          }
+        </mat-form-field>
+      </div>
+      <div class="w-full md:w-1/2 px-2">
+        <mat-form-field class="w-full" appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput [formField]="userDataForm.email" />
+        </mat-form-field>
+      </div>
+
+      <div class="w-full py-2 flex justify-end">
+        <button
+          class="disabled:cursor-not-allowed!"
+          mat-raised-button
+          color="primary"
+          [disabled]="userDataForm().invalid()"
+        >
+          Update info
+        </button>
+      </div>
+    </div>
+
+    <div class="w-full flex items-center">
+      <div class="w-68 lg:w-52 md:w-68">
+        <h2 class="text-lg font-semibold">Password change</h2>
+      </div>
+      <mat-divider class="w-full"></mat-divider>
+    </div>
+    <div class="w-full flex flex-wrap">
+      <div class="w-full p-2">
+        <mat-form-field class="w-full" appearance="outline">
+          <mat-label>Current Password</mat-label>
+          <input matInput [formField]="passwordForm.currentPass" />
+          @if (
+            (passwordForm.currentPass().touched() && passwordForm.currentPass().invalid()) ||
+            backEndPassValidationErrors()?.currentPass
+          ) {
+            <ul class="error-list">
+              @if (passwordForm.currentPass().touched() && passwordForm.currentPass().invalid()) {
+                @for (error of passwordForm.currentPass().errors(); track $index) {
+                  @if ($first) {
+                    <li class="form-error-msg">{{ error.message }}</li>
+                  }
+                }
+              } @else if (backEndPassValidationErrors()?.currentPass) {
+                <li class="form-error-msg">{{ backEndPassValidationErrors()?.currentPass }}</li>
+              }
+            </ul>
+          }
+        </mat-form-field>
+      </div>
+      <div class="w-full p-2">
+        <mat-form-field class="w-full" appearance="outline">
+          <mat-label>New Password</mat-label>
+          <input matInput [formField]="passwordForm.newPass" />
+          @if (
+            (passwordForm.newPass().touched() && passwordForm.newPass().invalid()) ||
+            backEndPassValidationErrors()?.newPass
+          ) {
+            <ul class="error-list">
+              @if (passwordForm.newPass().touched() && passwordForm.newPass().invalid()) {
+                @for (error of passwordForm.newPass().errors(); track $index) {
+                  @if ($first) {
+                    <li class="form-error-msg">{{ error.message }}</li>
+                  }
+                }
+              } @else if (backEndPassValidationErrors()?.newPass) {
+                <li class="form-error-msg">{{ backEndPassValidationErrors()?.newPass }}</li>
+              }
+            </ul>
+          }
+        </mat-form-field>
+      </div>
+      <div class="w-full p-2">
+        <mat-form-field class="w-full" appearance="outline">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput [formField]="passwordForm.confirmPass" />
+          @if (passwordForm.confirmPass().pending()) {
+            <div class="transition-all duration-200 absolute right-1 top-1/2 -translate-1/2">
+              <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+            </div>
+          }
+          @if (
+            (passwordForm.confirmPass().touched() && passwordForm.confirmPass().invalid()) ||
+            backEndPassValidationErrors()?.confirmPass
+          ) {
+            <ul class="error-list">
+              @if (passwordForm.confirmPass().touched() && passwordForm.confirmPass().invalid()) {
+                @for (error of passwordForm.confirmPass().errors(); track $index) {
+                  @if ($first) {
+                    <li class="form-error-msg">{{ error.message }}</li>
+                  }
+                }
+              } @else if (backEndPassValidationErrors()?.confirmPass) {
+                <li class="form-error-msg">{{ backEndPassValidationErrors()?.confirmPass }}</li>
+              }
+            </ul>
+          }
+        </mat-form-field>
+      </div>
+      <div class="w-full py-2 flex justify-end">
+        <button
+          class="disabled:cursor-not-allowed!"
+          mat-raised-button
+          color="primary"
+          [disabled]="passwordForm().invalid()"
+        >
+          Update Profile
+        </button>
+      </div>
+    </div>
   </div>
-  <div class="">
+  <div class="w-full">
+    <div
+      class="w-30 h-30 relative"
+      ngMenuTrigger
+      #origin
+      #trigger="ngMenuTrigger"
+      [menu]="formatMenu()"
+    >
+      <img
+        class="absolute inset-0 w-full h-full object-cover rounded-full"
+        [src]="imageUrl + 'profileImages/' + userData().avatar_url"
+        alt="User profile"
+      />
+    </div>
   </div>
 </div>
+<ng-template
+  [cdkConnectedOverlayOpen]="trigger.expanded()"
+  [cdkConnectedOverlay]="{ origin, usePopover: 'inline' }"
+  [cdkConnectedOverlayPositions]="[
+    {
+      originX: 'start',
+      originY: 'bottom',
+      overlayX: 'start',
+      overlayY: 'top',
+      offsetY: 4,
+    },
+  ]"
+  cdkAttachPopoverAsChild
+>
+  <div ngMenu #formatMenu="ngMenu">
+    <ng-template ngMenuContent>
+      <div class="group flex flex-wrap">
+      @for(image of profileImages(); track $index) {
+          <div ngMenuItem [value]="image.value" class="w-16 h-16 relative" (click)="changeProfileImage(image.url)" >
+            <img class="absolute inset-0 w-full h-full object-contain"  [src]="imageUrl + 'profileImages/' + image.url" alt="User profile" />
+          </div>
+        }
+      </div>
+    </ng-template>
+  </div>
+</ng-template>

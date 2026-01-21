@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { AttachmentsType } from '../../../../models/chat';
 import { SingleAsset } from './single-asset/single-asset';
 import { MultiAssets } from './multi-assets/multi-assets';
@@ -8,6 +8,7 @@ import { MultiAssets } from './multi-assets/multi-assets';
   imports: [SingleAsset, MultiAssets],
   templateUrl: './asset-container.html',
   styleUrl: './asset-container.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssetContainer {
   attachments = input<AttachmentsType[]>([]);
