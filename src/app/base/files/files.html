@@ -29,6 +29,7 @@
               />
               } @if(element.file_type === "video") {
               <video
+                [poster]="imagePath + element.thumbnail_url"
                 [src]="imagePath + element.file_url"
                 alt="Files"
                 class="absolute rounded-md inset-0 w-full h-full object-contain"

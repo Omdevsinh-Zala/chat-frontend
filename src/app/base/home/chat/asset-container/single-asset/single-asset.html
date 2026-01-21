@@ -1,32 +1,38 @@
 <div class="flex flex-col gap-2 mt-2 items-start mb-2">
-  @for (att of attachments(); track $index) { @if (isImage(att)) {
-  <div class="text-start xs:w-auto max-w-xs">
-    <img
-      [src]="imagePath + att.file_url"
-      alt="Image attachment"
-      class="w-full rounded-lg shadow-md cursor-pointer"
-      (click)="viewAssets(attachments(), $index)"
-    />
-  </div>
-  } @else if (isVideo(att)) {
-  <div class="text-start xs:w-auto max-w-xs">
-    <video
-      (click)="viewAssets(attachments(), $index); $event.preventDefault(); $event.stopPropagation()"
-      [src]="imagePath + att.file_url"
-      controls
-      class="w-full aspect-video rounded-lg shadow-md"
-    ></video>
-  </div>
-  } @else if (isPdf(att)) {
-  <div class="text-start xs:w-auto max-w-xs">
-    <a
-      [href]="imagePath + att.file_url"
-      target="_blank"
-      class="flex items-center gap-2 text-blue-600 hover:underline"
-    >
-      <mat-icon>picture_as_pdf</mat-icon>
-      <span>{{ att.file_name }}</span>
-    </a>
-  </div>
-  } }
+  @for (att of attachments(); track $index) {
+    @if (isImage(att)) {
+      <div class="text-start xs:w-auto max-w-xs">
+        <img
+          [src]="imagePath + (att.thumbnail_url || att.file_url)"
+          alt="Image attachment"
+          class="w-full rounded-lg shadow-md cursor-pointer"
+          (click)="viewAssets(attachments(), $index)"
+          loading="lazy"
+        />
+      </div>
+    } @else if (isVideo(att)) {
+      <div class="text-start xs:w-auto max-w-xs">
+        <video
+          (click)="
+            viewAssets(attachments(), $index); $event.preventDefault(); $event.stopPropagation()
+          "
+          [src]="imagePath + att.file_url"
+          [poster]="att.thumbnail_url ? imagePath + att.thumbnail_url : ''"
+          controls
+          class="w-full aspect-video rounded-lg shadow-md"
+        ></video>
+      </div>
+    } @else if (isPdf(att)) {
+      <div class="text-start xs:w-auto max-w-xs">
+        <a
+          [href]="imagePath + att.file_url"
+          target="_blank"
+          class="flex items-center gap-2 text-blue-600 hover:underline"
+        >
+          <mat-icon>picture_as_pdf</mat-icon>
+          <span>{{ att.file_name }}</span>
+        </a>
+      </div>
+    }
+  }
 </div>
