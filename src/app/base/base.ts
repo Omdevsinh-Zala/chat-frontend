@@ -1,10 +1,26 @@
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTooltip } from '@angular/material/tooltip';
-import { RouterOutlet, RouterLinkWithHref, Router, RouterLinkActive, NavigationStart } from '@angular/router';
+import {
+  RouterOutlet,
+  RouterLinkWithHref,
+  Router,
+  RouterLinkActive,
+  NavigationStart,
+} from '@angular/router';
+import { Menu, MenuContent, MenuItem, MenuTrigger } from '@angular/aria/menu';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth-service';
 import { UserService } from '../services/user-service';
@@ -14,6 +30,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import { Settings } from '../dialogs/settings/settings';
 import { Responsive } from '../services/responsive';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-base',
@@ -23,12 +40,17 @@ import { Responsive } from '../services/responsive';
     MatIcon,
     MatButtonModule,
     MatTooltip,
-    MatMenuModule,
+    Menu,
+    MenuContent,
+    MenuItem,
+    MenuTrigger,
+    OverlayModule,
     RouterLinkWithHref,
     RouterLinkActive,
   ],
   templateUrl: './base.html',
   styleUrl: './base.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Base implements OnInit {
   private userService = inject(UserService);
@@ -43,6 +65,8 @@ export class Base implements OnInit {
   private dialog = inject(MatDialog);
   private responsiveService = inject(Responsive);
 
+  formatMenu = viewChild<Menu<string>>('formatMenu');
+
   isTablet = this.responsiveService.isTabletForBase;
   isOpen = this.responsiveService.basePanelOpen;
   isHomeOpen = this.responsiveService.homePanelOpen;
@@ -51,7 +75,7 @@ export class Base implements OnInit {
 
   ngOnInit(): void {
     this.isHomeNavigation.set(this.router.url.includes('/chat'));
-    if(this.isTablet() && this.router.url === '/chat/') {
+    if (this.isTablet() && this.router.url === '/chat/') {
       this.responsiveService.homePanelOpen.set(false);
     } else {
       this.responsiveService.homePanelOpen.set(true);
@@ -77,7 +101,7 @@ export class Base implements OnInit {
             this.socketConnection.disconnectSocket();
           }
         }),
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe();
   }

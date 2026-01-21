@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   inject,
@@ -35,6 +36,7 @@ import { Responsive } from '../../services/responsive';
   ],
   templateUrl: './contacts.html',
   styleUrl: './contacts.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Contacts implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
@@ -66,7 +68,7 @@ export class Contacts implements OnInit, AfterViewInit {
         if (this.paginator()?.pageSize !== undefined)
           params.append(
             'limit',
-            this.paginator()?.pageSize ? this.paginator()?.pageSize.toString()! : '15'
+            this.paginator()?.pageSize ? this.paginator()?.pageSize.toString()! : '15',
           );
         if (this.paginator()?.pageIndex !== undefined)
           params.append('page', (this.paginator()?.pageIndex! + 1).toString());

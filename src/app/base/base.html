@@ -1,83 +1,114 @@
 <mat-drawer-container class="h-dvh w-auto">
-  @if(!isTablet()) {
-  <mat-drawer mode="side" [opened]="true" class="w-22! p-4 rounded-none!">
-    <div class="flex items-center flex-col h-full base-main-link-wrap">
-      <ul class="flex flex-col items-center">
-        <li class="mb-6">
-          <a
-            mat-icon-button
-            matTooltip="Chats"
-            aria-label="Chats page link"
-            [routerLink]="['/chat', user()?.active_chat_id]"
-            routerLinkActive="filled"
-            matTooltipPosition="right"
-          >
-            <mat-icon class="text-3xl">chats</mat-icon>
-          </a>
-        </li>
-        <li class="mb-6">
-          <a
-            mat-icon-button
-            matTooltip="Contacts"
-            aria-label="Contacts page link"
-            routerLink="contacts"
-            routerLinkActive="filled"
-            matTooltipPosition="right"
-          >
-            <mat-icon class="text-3xl">contacts</mat-icon>
-          </a>
-        </li>
-        <li class="mb-6">
-          <a
-            mat-icon-button
-            matTooltip="Channels"
-            aria-label="Channels page link"
-            routerLink="channels"
-            matTooltipPosition="right"
-          >
-            <mat-icon class="text-3xl">groups</mat-icon>
-          </a>
-        </li>
-        <li class="mb-6">
-          <a
-            mat-icon-button
-            matTooltip="Files"
-            aria-label="Files page link"
-            routerLink="files"
-            routerLinkActive="filled"
-            matTooltipPosition="right"
-          >
-            <mat-icon class="text-3xl">files</mat-icon>
-          </a>
-        </li>
-      </ul>
-      <ul class="mt-auto flex gap-4 flex-col items-center">
-        <li>
-          @if(user()?.first_name) {
-          <div
-            matIconButton
-            [matMenuTriggerFor]="profile"
-            aria-label="Profile image with menu"
-            class="hover:cursor-pointer relative h-12 w-12"
-            [matTooltip]="user()?.first_name"
-            matTooltipPosition="right"
-          >
-            <img
-              [src]="imagePath + 'profileImages/' + user()?.avatar_url"
-              alt="User Avatar"
-              class="h-12 w-12 rounded-full"
-            />
-            <span
-              class="absolute bottom-0 right-0 h-4 w-4 rounded-full border-2"
-              [class.active]="user()?.is_active"
-              [class.away]="!user()?.is_active"
-            ></span>
-          </div>
-          }
-        </li>
-      </ul>
-    </div>
-  </mat-drawer>
+  @if (!isTablet()) {
+    <mat-drawer mode="side" [opened]="true" class="w-22! p-4 rounded-none!">
+      <div class="flex items-center flex-col h-full base-main-link-wrap">
+        <ul class="flex flex-col items-center">
+          <li class="mb-6">
+            <a
+              mat-icon-button
+              matTooltip="Chats"
+              aria-label="Chats page link"
+              [routerLink]="['/chat', user()?.active_chat_id]"
+              routerLinkActive="filled"
+              matTooltipPosition="right"
+            >
+              <mat-icon class="text-3xl">chats</mat-icon>
+            </a>
+          </li>
+          <li class="mb-6">
+            <a
+              mat-icon-button
+              matTooltip="Contacts"
+              aria-label="Contacts page link"
+              routerLink="contacts"
+              routerLinkActive="filled"
+              matTooltipPosition="right"
+            >
+              <mat-icon class="text-3xl">contacts</mat-icon>
+            </a>
+          </li>
+          <li class="mb-6">
+            <a
+              mat-icon-button
+              matTooltip="Channels"
+              aria-label="Channels page link"
+              routerLink="channels"
+              matTooltipPosition="right"
+            >
+              <mat-icon class="text-3xl">groups</mat-icon>
+            </a>
+          </li>
+          <li class="mb-6">
+            <a
+              mat-icon-button
+              matTooltip="Files"
+              aria-label="Files page link"
+              routerLink="files"
+              routerLinkActive="filled"
+              matTooltipPosition="right"
+            >
+              <mat-icon class="text-3xl">files</mat-icon>
+            </a>
+          </li>
+        </ul>
+        <ul class="mt-auto flex gap-4 flex-col items-center">
+          <li>
+            @if (user()?.first_name) {
+              <div
+                ngMenuTrigger
+                #origin
+                #trigger="ngMenuTrigger"
+                [menu]="formatMenu()"
+                aria-label="Profile image with menu"
+                class="hover:cursor-pointer relative h-12 w-12"
+                [matTooltip]="user()?.first_name"
+                matTooltipPosition="right"
+              >
+                <img
+                  [src]="imagePath + 'profileImages/' + user()?.avatar_url"
+                  alt="User Avatar"
+                  class="h-12 w-12 rounded-full"
+                />
+                <span
+                  class="absolute bottom-0 right-0 h-4 w-4 rounded-full border-2"
+                  [class.active]="user()?.is_active"
+                  [class.away]="!user()?.is_active"
+                ></span>
+              </div>
+              <ng-template
+                [cdkConnectedOverlayOpen]="trigger.expanded()"
+                [cdkConnectedOverlay]="{ origin, usePopover: 'inline' }"
+                [cdkConnectedOverlayPositions]="[
+                  {
+                    originX: 'start',
+                    originY: 'top',
+                    overlayX: 'start',
+                    overlayY: 'bottom',
+                    offsetY: 4,
+                  },
+                ]"
+                cdkAttachPopoverAsChild
+              >
+                <div ngMenu #formatMenu="ngMenu">
+                  <ng-template ngMenuContent>
+                    <div class="group">
+                      <div ngMenuItem value="Settings" (click)="openSettings()">
+                        <mat-icon translate="no" aria-hidden="true">settings</mat-icon>
+                        <span class="label">Settings</span>
+                      </div>
+                      <div ngMenuItem value="Logout" (click)="logout()">
+                        <mat-icon translate="no" aria-hidden="true">logout</mat-icon>
+                        <span class="label">Logout</span>
+                      </div>
+                    </div>
+                  </ng-template>
+                </div>
+              </ng-template>
+            }
+          </li>
+        </ul>
+      </div>
+    </mat-drawer>
   }
   <mat-drawer-content class="overflow-hidden!" [class.pb-20]="isTablet()">
     <div>
@@ -86,63 +117,75 @@
   </mat-drawer-content>
 </mat-drawer-container>
 
-@if(isTablet() && isHomeOpen()) {
-<nav class="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-2">
-  <div
-    class="mx-auto max-w-md premium-glass-nav rounded-full px-6 py-2 flex items-center justify-between"
-  >
-    <a
-      mat-icon-button
-      [routerLink]="['/chat', user()?.active_chat_id]"
-      routerLinkActive="active-nav-link"
-      class="nav-link"
+@if (isTablet() && isHomeOpen()) {
+  <nav class="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-2">
+    <div
+      class="mx-auto max-w-md premium-glass-nav rounded-full px-6 py-2 flex items-center justify-between"
     >
-      <mat-icon>chats</mat-icon>
-    </a>
-    <a mat-icon-button routerLink="contacts" routerLinkActive="active-nav-link" class="nav-link">
-      <mat-icon>contacts</mat-icon>
-    </a>
-    <a mat-icon-button routerLink="channels" routerLinkActive="active-nav-link" class="nav-link">
-      <mat-icon>groups</mat-icon>
-    </a>
-    <a mat-icon-button routerLink="files" routerLinkActive="active-nav-link" class="nav-link">
-      <mat-icon>files</mat-icon>
-    </a>
-    <div [matMenuTriggerFor]="profile" class="hover:cursor-pointer relative h-10 w-10 shrink-0">
-      <img
-        [src]="imagePath + 'profileImages/' + user()?.avatar_url"
-        alt="User Avatar"
-        class="h-10 w-10 rounded-full border border-(--mat-sys-outline-variant)"
-      />
-      <span
-        class="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2"
-        [class.active]="user()?.is_active"
-        [class.away]="!user()?.is_active"
-      ></span>
+      <a
+        mat-icon-button
+        [routerLink]="['/chat', user()?.active_chat_id]"
+        routerLinkActive="active-nav-link"
+        class="nav-link"
+      >
+        <mat-icon>chats</mat-icon>
+      </a>
+      <a mat-icon-button routerLink="contacts" routerLinkActive="active-nav-link" class="nav-link">
+        <mat-icon>contacts</mat-icon>
+      </a>
+      <a mat-icon-button routerLink="channels" routerLinkActive="active-nav-link" class="nav-link">
+        <mat-icon>groups</mat-icon>
+      </a>
+      <a mat-icon-button routerLink="files" routerLinkActive="active-nav-link" class="nav-link">
+        <mat-icon>files</mat-icon>
+      </a>
+      <div
+        ngMenuTrigger
+        #origin
+        #trigger="ngMenuTrigger"
+        [menu]="formatMenu()"
+        class="hover:cursor-pointer relative h-10 w-10 shrink-0"
+      >
+        <img
+          [src]="imagePath + 'profileImages/' + user()?.avatar_url"
+          alt="User Avatar"
+          class="h-10 w-10 rounded-full border border-(--mat-sys-outline-variant)"
+        />
+        <span
+          class="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2"
+          [class.active]="user()?.is_active"
+          [class.away]="!user()?.is_active"
+        ></span>
+      </div>
+      <ng-template
+        [cdkConnectedOverlayOpen]="trigger.expanded()"
+        [cdkConnectedOverlay]="{ origin, usePopover: 'inline' }"
+        [cdkConnectedOverlayPositions]="[
+          {
+            originX: 'end',
+            originY: 'top',
+            overlayX: 'end',
+            overlayY: 'bottom',
+            offsetY: 4,
+          },
+        ]"
+        cdkAttachPopoverAsChild
+      >
+        <div ngMenu #formatMenu="ngMenu">
+          <ng-template ngMenuContent>
+            <div class="group">
+              <div ngMenuItem value="Settings" (click)="openSettings()">
+                <mat-icon translate="no" aria-hidden="true">settings</mat-icon>
+                <span class="label">Settings</span>
+              </div>
+              <div ngMenuItem value="Logout" (click)="logout()">
+                <mat-icon translate="no" aria-hidden="true">logout</mat-icon>
+                <span class="label">Logout</span>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </ng-template>
     </div>
-  </div>
-</nav>
+  </nav>
 }
-
-<mat-menu #profile="matMenu">
-  <!-- <button mat-menu-item>
-    <mat-icon>lock</mat-icon>
-    <span>Security</span>
-  </button>
-  <a mat-menu-item routerLink="/profile/me" aria-label="Profile page link" >
-    <mat-icon>person</mat-icon>
-    <span>Profile</span>
-  </a> -->
-  <button mat-menu-item (click)="openSettings()" aria-label="Settings page link">
-    <mat-icon>settings</mat-icon>
-    <span>Settings</span>
-  </button>
-  <button mat-menu-item (click)="logout()" aria-label="Logout button">
-    <mat-icon>logout</mat-icon>
-    <span>Logout</span>
-  </button>
-  <!-- <button mat-menu-item>
-    <mat-icon>notifications_off</mat-icon>
-    <span>Disable alerts</span>
-  </button> -->
-</mat-menu>
