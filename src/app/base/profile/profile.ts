@@ -27,6 +27,8 @@ import { SocketConnection } from '../../services/socket-connection';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageSnackBar } from '../../helpers/message-snack-bar/message-snack-bar';
 import { MatIcon } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
+import { Cropper } from '../../dialogs/cropper/cropper';
 
 interface ChangePasswordInterface {
   currentPass: string;
@@ -60,6 +62,7 @@ export class Profile {
   private socketService = inject(SocketConnection);
   imageUrl = environment.imageUrl;
   private _snackbar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   showCurrentPass = signal<boolean>(false);
   showNewPass = signal<boolean>(false);
@@ -284,12 +287,53 @@ export class Profile {
           }
         },
         error: (err) => {
-          console.log(err);
           this.backEndPassValidationErrors.set(err.error.data);
           setTimeout(() => {
             this.backEndPassValidationErrors.set(null);
           }, 3000);
         },
       });
+  }
+
+  uploadProfileImage(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const file = target.files![0];
+
+    const dialogRef = this.dialog.open(Cropper, {
+      data: file,
+      maxHeight: '100%',
+      maxWidth: '100%',
+      height: '60%',
+      width: '60%',
+      panelClass: 'small-corners-dialog',
+    });
+
+    dialogRef.afterClosed().subscribe({
+      next: (croppedFile) => {
+        if (croppedFile) {
+          const formData = new FormData();
+          formData.append('file', croppedFile);
+          this.userService.uploadProfileImage(formData).subscribe({
+            next: (res) => {
+              if (res.success) {
+                this.userService.user.set(res.data!);
+                this.socketService.socket.emit('profileImageChange', {
+                  image: res.data?.avatar_url,
+                });
+              }
+            },
+            error: (err) => {
+              this.backendValidationErrors.set(err.error.data);
+              setTimeout(() => {
+                this.backendValidationErrors.set(null);
+              }, 3000);
+            },
+            complete: () => {
+              target.value = '';
+            },
+          });
+        }
+      },
+    });
   }
 }

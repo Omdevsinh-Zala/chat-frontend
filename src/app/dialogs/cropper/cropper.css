@@ -1,0 +1,29 @@
+::ng-deep .mat-mdc-dialog-panel {
+  @media (max-width: 840px) {
+    width: 100dvw !important;
+    max-width: 100dvw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    margin: 0 !important;
+  }
+}
+
+::ng-deep .mat-mdc-dialog-surface {
+  @media (max-width: 840px) {
+    border-radius: 0 !important;
+  }
+}
+
+::ng-deep mat-dialog-content {
+  @media (max-width: 840px) {
+    max-height: unset !important;
+    flex: 1;
+  }
+}
+
+mat-dialog-actions {
+  @media (max-width: 840px) {
+    padding: 16px !important;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+}
