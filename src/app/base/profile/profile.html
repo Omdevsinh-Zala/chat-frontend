@@ -268,7 +268,23 @@
             />
           </div>
         }
+        <div
+          ngMenuItem
+          value="custom"
+          class="w-16 h-16 relative flex justify-center items-center rounded-full"
+          (click)="profileImageInput.click(); $event.stopPropagation()"
+        >
+          <mat-icon>upload</mat-icon>
+        </div>
       </div>
     </ng-template>
   </div>
 </ng-template>
+<input
+  #profileImageInput
+  type="file"
+  hidden
+  accept="image/*"
+  multiple="false"
+  (change)="uploadProfileImage($event)"
+/>

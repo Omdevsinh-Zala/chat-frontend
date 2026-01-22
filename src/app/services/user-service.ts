@@ -56,6 +56,10 @@ export class UserService {
     return this.http.put<GlobalResponse<User>>(`${this.apiUrl}/users/profile`, data);
   }
 
+  uploadProfileImage(file: FormData) {
+    return this.http.post<GlobalResponse<User>>(`${this.apiUrl}/users/profile/avatar`, file);
+  }
+
   searchUser(query?: string, limit?: number, page?: number) {
     const params = new URLSearchParams();
     if (query) params.append('search', query);
