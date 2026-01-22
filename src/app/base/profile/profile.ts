@@ -1,10 +1,4 @@
-import {
-  Component,
-  inject,
-  signal,
-  viewChild,
-  WritableSignal,
-} from '@angular/core';
+import { Component, inject, signal, viewChild, WritableSignal } from '@angular/core';
 import { UserService } from '../../services/user-service';
 import {
   debounce,
@@ -14,6 +8,7 @@ import {
   maxLength,
   minLength,
   pattern,
+  readonly,
   required,
   validate,
   validateHttp,
@@ -29,6 +24,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { Menu, MenuContent, MenuItem, MenuTrigger } from '@angular/aria/menu';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { SocketConnection } from '../../services/socket-connection';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MessageSnackBar } from '../../helpers/message-snack-bar/message-snack-bar';
+import { MatIcon } from '@angular/material/icon';
 
 interface ChangePasswordInterface {
   currentPass: string;
@@ -50,6 +48,7 @@ interface ChangePasswordInterface {
     MenuItem,
     MenuTrigger,
     OverlayModule,
+    MatIcon,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
@@ -60,6 +59,11 @@ export class Profile {
   private apiUrl = environment.apiUrl;
   private socketService = inject(SocketConnection);
   imageUrl = environment.imageUrl;
+  private _snackbar = inject(MatSnackBar);
+
+  showCurrentPass = signal<boolean>(false);
+  showNewPass = signal<boolean>(false);
+  showConfirmPass = signal<boolean>(false);
 
   formatMenu = viewChild<Menu<string>>('formatMenu');
 
@@ -71,7 +75,7 @@ export class Profile {
     required(schemaPath.last_name, { message: 'Last name is required.' });
     required(schemaPath.username, { message: 'Username is required.' });
 
-    disabled(schemaPath.email, 'true');
+    readonly(schemaPath.email);
 
     minLength(schemaPath.first_name, 2, {
       message: 'First name must be at least 2 characters long.',
@@ -208,6 +212,84 @@ export class Profile {
   ]);
 
   changeProfileImage(image: string) {
-    this.socketService.socket.emit('profileImageChange', { image });
+    this.userService.updateUserData({ avatar_url: image }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.userService.user.update((user) => {
+            return { ...user!, avatar_url: image };
+          });
+          this.socketService.socket.emit('profileImageChange', { image });
+        }
+      },
+      error: (err) => {
+        this.backendValidationErrors.set(err.error.data);
+        setTimeout(() => {
+          this.backendValidationErrors.set(null);
+        }, 3000);
+      },
+    });
+  }
+
+  updateProfileInfo() {
+    this.userService
+      .updateUserData({
+        first_name: this.userDataForm.first_name().value(),
+        last_name: this.userDataForm.last_name().value(),
+        username: this.userDataForm.username().value(),
+      })
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.userService.user.set(res.data!);
+            this.socketService.socket.emit('profileInfoChange', {
+              first_name: this.userDataForm.first_name().value(),
+              last_name: this.userDataForm.last_name().value(),
+              username: this.userDataForm.username().value(),
+            });
+            this._snackbar.openFromComponent(MessageSnackBar, {
+              duration: 3000,
+              panelClass: 'success-panel',
+              data: 'Profile info updated successfully',
+            });
+          }
+        },
+        error: (err) => {
+          this.backendValidationErrors.set(err.error.data);
+          setTimeout(() => {
+            this.backendValidationErrors.set(null);
+          }, 3000);
+        },
+      });
+  }
+
+  updatePassword() {
+    this.userService
+      .updateUserData({
+        old_password: this.passwordForm.currentPass().value(),
+        new_password: this.passwordForm.newPass().value(),
+      })
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.passwordForm().reset({
+              confirmPass: '',
+              currentPass: '',
+              newPass: '',
+            });
+            this._snackbar.openFromComponent(MessageSnackBar, {
+              duration: 3000,
+              panelClass: 'success-panel',
+              data: 'Password changed successfully',
+            });
+          }
+        },
+        error: (err) => {
+          console.log(err);
+          this.backEndPassValidationErrors.set(err.error.data);
+          setTimeout(() => {
+            this.backEndPassValidationErrors.set(null);
+          }, 3000);
+        },
+      });
   }
 }
