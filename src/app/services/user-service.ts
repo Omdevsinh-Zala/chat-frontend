@@ -45,6 +45,17 @@ export class UserService {
     return this.http.get<GlobalResponse<User>>(`${this.apiUrl}/users/profile/${id}`);
   }
 
+  updateUserData(data: {
+    old_password?: string;
+    new_password?: string;
+    avatar_url?: string;
+    first_name?: string;
+    last_name?: string;
+    username?: string;
+  }) {
+    return this.http.put<GlobalResponse<User>>(`${this.apiUrl}/users/profile`, data);
+  }
+
   searchUser(query?: string, limit?: number, page?: number) {
     const params = new URLSearchParams();
     if (query) params.append('search', query);
