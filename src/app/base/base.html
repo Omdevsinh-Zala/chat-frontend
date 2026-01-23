@@ -65,7 +65,7 @@
                 matTooltipPosition="right"
               >
                 <img
-                  [src]="imagePath + 'profileImages/' + user()?.avatar_url"
+                  [src]="user()?.avatar_url! | imageUrl: true"
                   alt="User Avatar"
                   class="h-12 w-12 rounded-full"
                 />
@@ -151,7 +151,7 @@
         class="hover:cursor-pointer relative h-10 w-10 shrink-0"
       >
         <img
-          [src]="imagePath + 'profileImages/' + user()?.avatar_url"
+          [src]="user()?.avatar_url! | imageUrl: true"
           alt="User Avatar"
           class="h-10 w-10 rounded-full border border-(--mat-sys-outline-variant)"
         />

@@ -1,21 +1,20 @@
 import { Component, inject, input } from '@angular/core';
 import { AttachmentsType } from '../../../../../models/chat';
-import { environment } from '../../../../../../environments/environment';
 import { MatIcon } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { AssetView } from '../../../../../dialogs/asset-view/asset-view';
 import { UserService } from '../../../../../services/user-service';
+import { ImageUrlPipe } from '../../../../../image-url-pipe';
 
 @Component({
   selector: 'app-single-asset',
-  imports: [MatIcon],
+  imports: [MatIcon, ImageUrlPipe],
   templateUrl: './single-asset.html',
   styleUrl: './single-asset.css',
 })
 export class SingleAsset {
   attachments = input<AttachmentsType[]>([]);
   isTablet = input<boolean>(false);
-  imagePath = environment.imageUrl;
   private dialog = inject(MatDialog);
   private userData = inject(UserService);
 

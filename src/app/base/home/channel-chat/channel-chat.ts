@@ -35,6 +35,7 @@ import { AssetContainer } from '../chat/asset-container/asset-container';
 import { ChannelData } from '../../../models/channel';
 import { MatCardModule } from '@angular/material/card';
 import { ChannelInfo } from '../../../dialogs/channel-info/channel-info';
+import { ImageUrlPipe } from '../../../image-url-pipe';
 
 @Component({
   selector: 'app-channel-chat',
@@ -50,6 +51,7 @@ import { ChannelInfo } from '../../../dialogs/channel-info/channel-info';
     MatProgressSpinner,
     AssetContainer,
     MatCardModule,
+    ImageUrlPipe
   ],
   templateUrl: './channel-chat.html',
   styleUrl: './channel-chat.css',
@@ -86,8 +88,6 @@ export class ChannelChat {
   assetsData: WritableSignal<File[]> = signal([]);
   base64AssetsData: WritableSignal<AttachmentsType[]> = signal([]);
 
-  imagePath = environment.imageUrl;
-
   messageItems = viewChildren<ElementRef>('messageItem');
 
   private observer: IntersectionObserver | null = null;
@@ -113,7 +113,8 @@ export class ChannelChat {
 
   message = model('');
 
-  private onChannelMessages = (data: { chat: GroupedChat[]; channelData: any }) => {
+  private onChannelMessages = (data: { chat: GroupedChat[]; channelData: any, b2AuthToken: string }) => {
+    this.userData.user.update((user) => ({ ...user!, token: data.b2AuthToken }));
     this.currentChatMessages.set(data.chat);
     this.channelData.set(data.channelData);
     this.loadingChat.set(false);
@@ -314,6 +315,10 @@ export class ChannelChat {
     if (assets.length > 0) {
       const formData = new FormData();
       assets.forEach((file) => formData.append('files', file));
+
+      const basePath = `channels/${this.chatId()}`;
+
+      formData.append('chatPath', basePath);
 
       this.userData.uploadFile(formData).subscribe({
         next: (res) => {

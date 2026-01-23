@@ -16,7 +16,7 @@
       mat-card-avatar
       class="bg-cover order-2! ms-2"
       [style.background-image]="
-        'url(' + imagePath + 'profileImages/' + channelData()?.avatar_url + ')'
+        'url(' + (channelData()?.avatar_url! | imageUrl: true) + ')'
       "
     ></div>
     <mat-card-title>{{ channelData()?.title }}</mat-card-title>
@@ -91,7 +91,7 @@
           >
             <img
               class="w-full h-full object-cover"
-              [src]="imagePath + 'profileImages/' + userData.user()?.avatar_url"
+              [src]="userData.user()?.avatar_url! | imageUrl: true"
               alt="User avatar"
             />
           </div>
@@ -115,7 +115,7 @@
           >
             <img
               class="w-full h-full object-cover"
-              [src]="imagePath + 'profileImages/' + mes.Sender?.avatar_url"
+              [src]="mes.Sender?.avatar_url! | imageUrl: true"
               alt="User avatar"
             />
           </div>

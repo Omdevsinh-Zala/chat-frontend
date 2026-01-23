@@ -18,6 +18,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { SocketConnection } from '../../services/socket-connection';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MessageSnackBar } from '../../helpers/message-snack-bar/message-snack-bar';
+import { ImageUrlPipe } from "../../image-url-pipe";
 
 @Component({
   selector: 'app-channel-info',
@@ -33,7 +34,8 @@ import { MessageSnackBar } from '../../helpers/message-snack-bar/message-snack-b
     MenuTrigger,
     OverlayModule,
     MatSnackBarModule,
-  ],
+    ImageUrlPipe
+],
   templateUrl: './channel-info.html',
   styleUrl: './channel-info.css',
 })

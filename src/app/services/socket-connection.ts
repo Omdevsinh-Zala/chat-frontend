@@ -9,6 +9,7 @@ declare global {
     data: {
       statusCode: number;
     };
+    message: string;
   }
 }
 
@@ -76,8 +77,29 @@ export class SocketConnection {
     this.socket.on('connect_error', (error) => {
       this.isConnected.set(false);
       const statusCode = error.data?.statusCode;
-      if (statusCode === 401) {
+      const errorMessage = error.message;
+      const message = 'Invalid refresh token';
+
+      // Uncomment only for production else for development on every nodemon restart
+      // It will keep logging out
+      if (statusCode === 401 && message === errorMessage) {
         this.authService.logoutUser().subscribe();
+      } else {
+        this.authService.refreshToken().subscribe({
+          next: (res) => {
+            this.connectSocket();
+            this.userService.user.update((user) => {
+              return {
+                ...user!,
+                token: res.data!.token,
+                refreshToken: res.data!.refreshToken
+              }
+            })
+          },
+          error: () => {
+            this.authService.logoutUser().subscribe();
+          }
+        });
       }
     });
   }

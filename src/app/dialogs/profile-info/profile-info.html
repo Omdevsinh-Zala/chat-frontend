@@ -7,7 +7,7 @@
   <div class="px-4 pt-6 pb-4 flex flex-col items-center gap-4">
     <img
       class="w-24 h-24 rounded-full"
-      [src]="imagePath + 'profileImages/' + profileData()?.avatar_url"
+      [src]="profileData()?.avatar_url! | imageUrl: true"
       alt="Channel Image"
     />
     <h2 class="text-base sm:text-2xl font-medium">{{ profileData()?.full_name }}<span class="text-xs sm:text-sm">(@{{ profileData()?.username }})</span></h2>

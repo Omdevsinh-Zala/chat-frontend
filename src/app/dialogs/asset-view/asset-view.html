@@ -3,7 +3,7 @@
     <div class="flex items-center gap-4">
       <img
         class="size-12 rounded-full"
-        [src]="imagePath + 'profileImages/' + data.user.avatar_url"
+        [src]="data.user.avatar_url | imageUrl: true"
         [alt]="data.user.first_name"
       />
       <div class="flex flex-col gap-1">
@@ -44,28 +44,16 @@
           <swiper-slide class="w-full h-full flex items-center justify-center">
             <img
               class="w-full h-full object-contain"
-              [src]="
-                data.isObjectUrl
-                  ? data.attachments[$index].file_url
-                  : imagePath + data.attachments[$index].file_url
-              "
-              [alt]="attach.file_name"
+              [src]="data.attachments[$index].file_url | imageUrl"
+              [alt]="data.attachments[$index].file_name"
             />
           </swiper-slide>
         } @else if (attach.file_type === 'video') {
           <swiper-slide class="w-full h-full flex items-center justify-center">
             <video
               class="w-full h-full object-contain"
-              [poster]="
-                data.isObjectUrl
-                  ? data.attachments[$index].thumbnail_url
-                  : imagePath + data.attachments[$index].thumbnail_url
-              "
-              [src]="
-                data.isObjectUrl
-                  ? data.attachments[$index].file_url
-                  : imagePath + data.attachments[$index].file_url
-              "
+              [poster]="data.attachments[$index].thumbnail_url! | imageUrl"
+              [src]="data.attachments[$index].file_url | imageUrl"
               controls
             ></video>
           </swiper-slide>
@@ -87,22 +75,14 @@
     @if (data.attachments[0].file_type === 'image') {
       <img
         class="w-full h-full object-contain"
-        [src]="
-          data.isObjectUrl ? data.attachments[0].file_url : imagePath + data.attachments[0].file_url
-        "
-        [alt]="data.attachments[0].file_name"
+        [src]="data.attachments[0].file_url | imageUrl"
+        [alt]="data.attachments[0].file_name! | imageUrl"
       />
     } @else {
       <video
         class="w-full h-full object-contain"
-        [poster]="
-          data.isObjectUrl
-            ? data.attachments[0].thumbnail_url
-            : imagePath + data.attachments[0].thumbnail_url
-        "
-        [src]="
-          data.isObjectUrl ? data.attachments[0].file_url : imagePath + data.attachments[0].file_url
-        "
+        [poster]="data.attachments[0].thumbnail_url! | imageUrl"
+        [src]="data.attachments[0].file_url | imageUrl"
         controls
       ></video>
     }

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { DestroyRef, inject, Injectable, signal, WritableSignal } from '@angular/core';
+import { computed, DestroyRef, inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { User } from '../models/user';
 import { GlobalResponse } from '../models/auth';
@@ -19,6 +19,8 @@ export class UserService {
   private apiUrl = environment.apiUrl;
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
+  b2AuthToken = computed(() => this.user()?.token);
+  profileToken = computed(() => this.user()?.profileToken);
 
   userChannels: WritableSignal<Channel[]> = signal([]);
   recentlyMessagesUsers: WritableSignal<RecentlyMessagedUsers[]> = signal([]);

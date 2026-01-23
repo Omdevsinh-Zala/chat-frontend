@@ -30,6 +30,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Settings } from '../dialogs/settings/settings';
 import { Responsive } from '../services/responsive';
 import { OverlayModule } from '@angular/cdk/overlay';
+import { ImageUrlPipe } from '../image-url-pipe';
 
 @Component({
   selector: 'app-base',
@@ -46,6 +47,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
     OverlayModule,
     RouterLinkWithHref,
     RouterLinkActive,
+    ImageUrlPipe,
   ],
   templateUrl: './base.html',
   styleUrl: './base.css',
@@ -56,7 +58,6 @@ export class Base implements OnInit {
   user = computed(() => {
     return this.userService.user();
   });
-  imagePath = environment.imageUrl;
   private authService = inject(AuthService);
   private router = inject(Router);
   private socketConnection = inject(SocketConnection);

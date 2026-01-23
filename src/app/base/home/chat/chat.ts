@@ -38,6 +38,7 @@ import { AssetView } from '../../../dialogs/asset-view/asset-view';
 import { Responsive } from '../../../services/responsive';
 import { MatCardModule } from '@angular/material/card';
 import { ProfileInfo } from '../../../dialogs/profile-info/profile-info';
+import { ImageUrlPipe } from '../../../image-url-pipe';
 
 @Component({
   selector: 'app-chat',
@@ -54,6 +55,7 @@ import { ProfileInfo } from '../../../dialogs/profile-info/profile-info';
     AssetContainer,
     MatToolbarModule,
     MatCardModule,
+    ImageUrlPipe
   ],
   templateUrl: './chat.html',
   styleUrl: './chat.css',
@@ -69,6 +71,7 @@ export class Chat implements OnInit, AfterViewInit {
   private dialog = inject(MatDialog);
   private responsiveService = inject(Responsive);
   loadingChat = signal(true);
+  isMessageSending = signal(false);
 
   isTyping = computed(() => {
     return (
@@ -91,7 +94,7 @@ export class Chat implements OnInit, AfterViewInit {
   assetsData: WritableSignal<File[]> = signal([]);
   base64AssetsData: WritableSignal<AttachmentsType[]> = signal([]);
 
-  imagePath = environment.imageUrl;
+  imageUrl = environment.imageBaseUrl
 
   messageItems = viewChildren<ElementRef>('messageItem');
 
@@ -140,7 +143,8 @@ export class Chat implements OnInit, AfterViewInit {
 
       this.socketService.socket.on(
         'chatMessages',
-        (data: { chat: GroupedChat[]; receiverData: ReceiverUser }) => {
+        (data: { chat: GroupedChat[]; receiverData: ReceiverUser, b2AuthToken:string }) => {
+          this.userData.user.update((user) => ({ ...user!, token: data.b2AuthToken }));
           this.currentChatMessages.set(data.chat);
           this.receiverUser.set(data.receiverData);
           this.loadingChat.set(false);
@@ -352,6 +356,7 @@ export class Chat implements OnInit, AfterViewInit {
   }
 
   sendMessage(event?: Event) {
+    this.isMessageSending.set(true);
     if (event) {
       event.preventDefault();
     }
@@ -360,12 +365,18 @@ export class Chat implements OnInit, AfterViewInit {
     const assets = this.assetsData();
 
     if (!messageContent && assets.length === 0) {
+      this.isMessageSending.set(false);
       return;
     }
 
     if (assets.length > 0) {
       const formData = new FormData();
       assets.forEach((file) => formData.append('files', file));
+
+      const sortUser = [this.userData.user()?.id, this.chatId()].sort().join('-');
+      const basePath = `users/${sortUser}`;
+
+      formData.append('chatPath', basePath);
 
       this.userData.uploadFile(formData).subscribe({
         next: (res) => {
@@ -377,10 +388,12 @@ export class Chat implements OnInit, AfterViewInit {
               attachments: res.data.files,
             });
             this.resetUI();
+            this.isMessageSending.set(false);
           }
         },
         error: (err) => {
           console.error('File upload failed', err);
+          this.isMessageSending.set(false);
         },
       });
       return;
@@ -394,6 +407,7 @@ export class Chat implements OnInit, AfterViewInit {
         messageType: 'text',
       });
       this.resetUI();
+      this.isMessageSending.set(false);
     }
   }
 

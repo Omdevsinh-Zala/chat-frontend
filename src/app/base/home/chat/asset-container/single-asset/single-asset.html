@@ -3,7 +3,7 @@
     @if (isImage(att)) {
       <div class="text-start xs:w-auto max-w-xs">
         <img
-          [src]="imagePath + (att.thumbnail_url || att.file_url)"
+          [src]="(att.thumbnail_url || att.file_url) | imageUrl"
           alt="Image attachment"
           class="w-full rounded-lg shadow-md cursor-pointer"
           (click)="viewAssets(attachments(), $index)"
@@ -16,8 +16,8 @@
           (click)="
             viewAssets(attachments(), $index); $event.preventDefault(); $event.stopPropagation()
           "
-          [src]="imagePath + att.file_url"
-          [poster]="att.thumbnail_url ? imagePath + att.thumbnail_url : ''"
+          [src]="att.file_url | imageUrl"
+          [poster]="(att.thumbnail_url ? att.thumbnail_url : '') | imageUrl"
           controls
           class="w-full aspect-video rounded-lg shadow-md"
         ></video>
@@ -25,7 +25,7 @@
     } @else if (isPdf(att)) {
       <div class="text-start xs:w-auto max-w-xs">
         <a
-          [href]="imagePath + att.file_url"
+          [href]="att.file_url | imageUrl"
           target="_blank"
           class="flex items-center gap-2 text-blue-600 hover:underline"
         >
