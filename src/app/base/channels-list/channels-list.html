@@ -32,7 +32,7 @@
               (click)="openChannelDetail(element.id)"
             >
               <img
-                [src]="imagePath + 'profileImages/' + element.avatar_url"
+                [src]="element.avatar_url! | imageUrl: true"
                 class="w-8 h-8 md:w-12 md:h-12 rounded-full"
                 alt="User Image"
               />

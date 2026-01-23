@@ -29,6 +29,7 @@ import { MessageSnackBar } from '../../helpers/message-snack-bar/message-snack-b
 import { MatIcon } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { Cropper } from '../../dialogs/cropper/cropper';
+import { ImageUrlPipe } from "../../image-url-pipe";
 
 interface ChangePasswordInterface {
   currentPass: string;
@@ -51,7 +52,8 @@ interface ChangePasswordInterface {
     MenuTrigger,
     OverlayModule,
     MatIcon,
-  ],
+    ImageUrlPipe
+],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })

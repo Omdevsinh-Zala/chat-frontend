@@ -131,7 +131,7 @@ export class NotificationService {
 
   async showNotification(title: string, body: string, iconUrl?: string, tag?: string) {
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-      const icon = iconUrl ? `${environment.imageUrl}profileImages/${iconUrl}` : undefined;
+      const icon = iconUrl ? `${environment.imageBaseUrl}profileImages/${iconUrl}` : undefined;
       if (this.swPush.isEnabled && 'serviceWorker' in navigator) {
         const registration = await navigator.serviceWorker.ready;
         await registration.showNotification(title, {

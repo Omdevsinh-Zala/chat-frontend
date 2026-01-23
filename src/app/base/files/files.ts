@@ -20,10 +20,11 @@ import { AttachmentsType } from '../../models/chat';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
 import { Responsive } from '../../services/responsive';
+import { ImageUrlPipe } from '../../image-url-pipe';
 
 @Component({
   selector: 'app-files',
-  imports: [MatRadioModule, FormsModule, MatTableModule, MatPaginator, MatIcon],
+  imports: [MatRadioModule, FormsModule, MatTableModule, MatPaginator, MatIcon, ImageUrlPipe],
   templateUrl: './files.html',
   styleUrl: './files.css',
 })
@@ -34,7 +35,6 @@ export class Files implements OnInit, AfterViewInit {
   readonly responsive = inject(Responsive);
 
   readonly apiUrl: string = environment.apiUrl;
-  readonly imagePath: string = environment.imageUrl;
 
   readonly sortOrder = ['ASC', 'DESC'];
 

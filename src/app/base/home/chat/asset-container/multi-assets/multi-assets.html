@@ -7,7 +7,7 @@
           @if (isImage(att)) {
             <div class="w-full h-full">
               <img
-                [src]="imagePath + (att.thumbnail_url || att.file_url)"
+                [src]="(att.thumbnail_url || att.file_url) | imageUrl"
                 alt="Image attachment"
                 class="w-full h-full object-cover cursor-pointer border border-gray-200"
                 (click)="viewAssets(mediaAttachments(), $index)"
@@ -17,7 +17,7 @@
           } @else if (isVideo(att)) {
             <div class="w-full h-full relative">
               <img
-                [src]="imagePath + (att.thumbnail_url || att.file_url)"
+                [src]="(att.thumbnail_url || att.file_url) | imageUrl"
                 class="w-full h-full object-cover border border-gray-200"
               />
               <!-- Helper overlay for video to indicate playability via click -->
@@ -51,7 +51,7 @@
     @for (att of pdfAttachments(); track $index) {
       <li class="text-start p-2 bg-gray-50 rounded-lg border border-gray-200">
         <a
-          [href]="imagePath + att.file_url"
+          [href]="att.file_url | imageUrl"
           target="_blank"
           class="flex items-center gap-3 text-gray-700 hover:text-blue-600 no-underline"
         >

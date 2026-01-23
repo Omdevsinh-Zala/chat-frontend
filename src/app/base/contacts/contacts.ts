@@ -22,6 +22,7 @@ import { environment } from '../../../environments/environment';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { Responsive } from '../../services/responsive';
+import { ImageUrlPipe } from "../../image-url-pipe";
 
 @Component({
   selector: 'app-contacts',
@@ -33,7 +34,8 @@ import { Responsive } from '../../services/responsive';
     MatFormFieldModule,
     MatInput,
     FormField,
-  ],
+    ImageUrlPipe
+],
   templateUrl: './contacts.html',
   styleUrl: './contacts.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,7 +47,6 @@ export class Contacts implements OnInit, AfterViewInit {
   readonly responsive = inject(Responsive);
 
   apiUrl = environment.apiUrl;
-  imagePath = environment.imageUrl;
 
   displayedColumns = ['user'];
 

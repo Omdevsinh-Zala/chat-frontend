@@ -14,10 +14,12 @@ import { environment } from '../../../environments/environment';
 import { AttachmentsType } from '../../models/chat';
 import { User } from '../../models/user';
 import { MatRippleModule } from '@angular/material/core';
+import { ImageUrlPipe } from '../../image-url-pipe';
+import { UserService } from '../../services/user-service';
 
 @Component({
   selector: 'app-asset-view',
-  imports: [MatDialogModule, MatIcon, MatTooltip, MatRippleModule],
+  imports: [MatDialogModule, MatIcon, MatTooltip, MatRippleModule, ImageUrlPipe],
   templateUrl: './asset-view.html',
   styleUrl: './asset-view.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -31,7 +33,9 @@ export class AssetView implements AfterViewInit {
     isObjectUrl: boolean;
   }>(MAT_DIALOG_DATA);
 
-  imagePath = environment.imageUrl;
+  imagePath = environment.imageBaseUrl;
+  private userService = inject(UserService);
+  private b2AuthToken = this.userService.b2AuthToken();
 
   sliderConfig: SwiperOptions = {
     slidesPerView: 1,
@@ -72,9 +76,7 @@ export class AssetView implements AfterViewInit {
     }
 
     if (attachment) {
-      const url = this.data.isObjectUrl
-        ? attachment.file_url
-        : this.imagePath + attachment.file_url;
+      const url = this.imagePath + attachment.file_url + `?Authorization=${this.b2AuthToken}`;
       const fileName = attachment.file_name;
 
       fetch(url)

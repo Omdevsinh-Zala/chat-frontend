@@ -19,7 +19,7 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([requestInterceptor, errorInterceptor, responseInterceptor]),
     ),
     provideServiceWorker('ngsw-worker.js', {
-      enabled: true,
+      enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
     }),
   ],
