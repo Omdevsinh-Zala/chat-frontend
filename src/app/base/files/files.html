@@ -23,14 +23,14 @@
             <div class="w-12 h-12 relative pb-12">
               @if(element.file_type === "image") {
               <img
-                [src]="imagePath + element.file_url"
+                [src]="element.file_url | imageUrl"
                 alt="Files"
                 class="absolute rounded-md inset-0 w-full h-full object-contain"
               />
               } @if(element.file_type === "video") {
               <video
-                [poster]="imagePath + element.thumbnail_url"
-                [src]="imagePath + element.file_url"
+                [poster]="element.thumbnail_url | imageUrl"
+                [src]="element.file_url | imageUrl"
                 alt="Files"
                 class="absolute rounded-md inset-0 w-full h-full object-contain"
               ></video>

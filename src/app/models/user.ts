@@ -9,6 +9,8 @@ export interface User {
   is_active: boolean;
   active_chat_id: string;
   is_last_active_chat_channel: boolean;
+  token: string;
+  profileToken: string;
 }
 
 export interface ReceiverUser {

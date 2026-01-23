@@ -25,6 +25,7 @@ import { PaginatedResponse } from '../../models/search';
 import { MatRipple } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ChannelInfo } from '../../dialogs/channel-info/channel-info';
+import { ImageUrlPipe } from "../../image-url-pipe";
 
 @Component({
   selector: 'app-channels-list',
@@ -37,7 +38,8 @@ import { ChannelInfo } from '../../dialogs/channel-info/channel-info';
     MatInput,
     FormField,
     MatRipple,
-  ],
+    ImageUrlPipe
+],
   templateUrl: './channels-list.html',
   styleUrl: './channels-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,7 +52,6 @@ export class ChannelsList {
   readonly responsive = inject(Responsive);
 
   readonly apiUrl: string = environment.apiUrl;
-  readonly imagePath: string = environment.imageUrl;
 
   readonly sortOrder = ['ASC', 'DESC'];
 

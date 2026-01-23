@@ -26,6 +26,7 @@ import { Responsive } from '../../services/responsive';
 import { MatDialog } from '@angular/material/dialog';
 import { ChannelForm } from '../../dialogs/channel-form/channel-form';
 import { MatCardModule } from '@angular/material/card';
+import { ImageUrlPipe } from '../../image-url-pipe';
 
 @Component({
   selector: 'app-home',
@@ -39,6 +40,7 @@ import { MatCardModule } from '@angular/material/card';
     RouterLink,
     RouterLinkActive,
     MatCardModule,
+    ImageUrlPipe,
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
@@ -72,7 +74,6 @@ export class Home implements OnInit {
   user = computed(() => {
     return this.userService.user();
   });
-  imagePath = environment.imageUrl;
   userChannels: WritableSignal<any[]> = this.userService.userChannels;
   recentlyMessagesUsers: WritableSignal<RecentlyMessagedUsers[]> =
     this.userService.recentlyMessagesUsers;

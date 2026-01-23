@@ -15,9 +15,7 @@
     <div
       mat-card-avatar
       class="bg-cover order-2! ms-2"
-      [style.background-image]="
-        'url(' + imagePath + 'profileImages/' + receiverUser()?.avatar_url + ')'
-      "
+      [style.background-image]="'url(' + (receiverUser()?.avatar_url! | imageUrl: true) + ')'"
     ></div>
     <mat-card-title class="text-lg! md:text-xl!">{{ receiverUser()?.full_name }}</mat-card-title>
   </mat-card-header>
@@ -123,7 +121,7 @@
                     >
                       <img
                         class="w-full h-full object-cover"
-                        [src]="imagePath + 'profileImages/' + userData.user()?.avatar_url"
+                        [src]="userData.user()?.avatar_url! | imageUrl: true"
                         alt="User avatar"
                         loading="lazy"
                       />
@@ -148,7 +146,7 @@
                     >
                       <img
                         class="w-full h-full object-cover"
-                        [src]="imagePath + 'profileImages/' + receiverUser()?.avatar_url"
+                        [src]="receiverUser()?.avatar_url! | imageUrl: true"
                         alt="User avatar"
                         loading="lazy"
                       />
@@ -309,8 +307,12 @@
           (change)="onFileSelected($event)"
         />
       </div>
-      <button matMiniFab (click)="sendMessage($event)" [attr.aria-label]="'Send message'">
-        <mat-icon>send</mat-icon>
+      <button matMiniFab class="flex justify-center items-center" [disabled]="isMessageSending()" (click)="sendMessage($event)" [attr.aria-label]="'Send message'">
+        @if(isMessageSending()) {
+          <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+        } @else {
+          <mat-icon>send</mat-icon>
+        }
       </button>
     </div>
   </div>

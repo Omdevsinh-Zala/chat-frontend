@@ -50,6 +50,6 @@ export class AuthService {
   }
 
   refreshToken() {
-    return this.http.get<GlobalResponse<null>>(`${this.apiUrl}/auth/refresh`);
+    return this.http.get<GlobalResponse<{token: string, refreshToken: string}>>(`${this.apiUrl}/auth/refresh`);
   }
 }

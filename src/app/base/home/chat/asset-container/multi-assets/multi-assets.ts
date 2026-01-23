@@ -1,21 +1,20 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { environment } from '../../../../../../environments/environment';
-import { AssetView } from '../../../../../dialogs/asset-view/asset-view';
+import { MatIcon } from '@angular/material/icon';
 import { AttachmentsType } from '../../../../../models/chat';
 import { UserService } from '../../../../../services/user-service';
-import { MatIcon } from '@angular/material/icon';
+import { AssetView } from '../../../../../dialogs/asset-view/asset-view';
+import { ImageUrlPipe } from '../../../../../image-url-pipe';
 
 @Component({
   selector: 'app-multi-assets',
-  imports: [MatIcon],
+  imports: [MatIcon, ImageUrlPipe],
   templateUrl: './multi-assets.html',
   styleUrl: './multi-assets.css',
 })
 export class MultiAssets {
   attachments = input<AttachmentsType[]>([]);
   isTablet = input<boolean>(false);
-  imagePath = environment.imageUrl;
   private dialog = inject(MatDialog);
   private userData = inject(UserService);
 

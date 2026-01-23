@@ -7,7 +7,7 @@
     <div class="px-4 pt-6 pb-4 flex flex-col items-center gap-4">
       <img
         class="w-24 h-24 rounded-full"
-        [src]="imagePath + 'profileImages/' + channelData().avatar_url"
+        [src]="channelData().avatar_url | imageUrl: true"
         alt="Channel Image"
       />
       <h2 class="text-2xl font-medium">{{ channelData().title }}</h2>
@@ -61,7 +61,7 @@
                       mat-card-avatar
                       class="bg-cover"
                       [style.background-image]="
-                        'url(' + imagePath + 'profileImages/' + member.avatar_url + ')'
+                        'url(' + (member.avatar_url | imageUrl: true) + ')'
                       "
                     ></div>
                     <mat-card-title class="text-lg! text-(--mat-sys-on-surface)"

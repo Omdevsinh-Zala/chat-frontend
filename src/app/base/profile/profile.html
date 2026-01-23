@@ -231,7 +231,7 @@
     >
       <img
         class="absolute inset-0 w-full h-full object-cover rounded-full"
-        [src]="imageUrl + 'profileImages/' + userData().avatar_url"
+        [src]="userData().avatar_url! | imageUrl: true"
         alt="User profile"
       />
     </div>
@@ -263,7 +263,7 @@
           >
             <img
               class="absolute inset-0 w-full h-full object-contain"
-              [src]="imageUrl + 'profileImages/' + image.url"
+              [src]="image.url! | imageUrl: true"
               alt="User profile"
             />
           </div>

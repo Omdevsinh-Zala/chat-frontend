@@ -6,10 +6,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { environment } from '../../../environments/environment';
 import { MatButton } from '@angular/material/button';
+import { ImageUrlPipe } from "../../image-url-pipe";
 
 @Component({
   selector: 'app-profile-info',
-  imports: [MatDialogModule, MatProgressSpinner, MatButton, MatCardModule],
+  imports: [MatDialogModule, MatProgressSpinner, MatButton, MatCardModule, ImageUrlPipe],
   templateUrl: './profile-info.html',
   styleUrl: './profile-info.css',
 })
