@@ -26,7 +26,6 @@ import { FormsModule } from '@angular/forms';
 import { AttachmentsType, GroupedChat } from '../../../models/chat';
 import { UserService } from '../../../services/user-service';
 import { DatePipe } from '@angular/common';
-import { environment } from '../../../../environments/environment';
 import { MatDivider } from '@angular/material/divider';
 import { ReceiverUser } from '../../../models/user';
 import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
@@ -39,6 +38,7 @@ import { Responsive } from '../../../services/responsive';
 import { MatCardModule } from '@angular/material/card';
 import { ProfileInfo } from '../../../dialogs/profile-info/profile-info';
 import { ImageUrlPipe } from '../../../image-url-pipe';
+import { compressImage } from '../../../helpers/compression-helper';
 
 @Component({
   selector: 'app-chat',
@@ -55,7 +55,7 @@ import { ImageUrlPipe } from '../../../image-url-pipe';
     AssetContainer,
     MatToolbarModule,
     MatCardModule,
-    ImageUrlPipe
+    ImageUrlPipe,
   ],
   templateUrl: './chat.html',
   styleUrl: './chat.css',
@@ -93,8 +93,6 @@ export class Chat implements OnInit, AfterViewInit {
   isAssetsEntered = signal(false);
   assetsData: WritableSignal<File[]> = signal([]);
   base64AssetsData: WritableSignal<AttachmentsType[]> = signal([]);
-
-  imageUrl = environment.imageBaseUrl
 
   messageItems = viewChildren<ElementRef>('messageItem');
 
@@ -143,7 +141,7 @@ export class Chat implements OnInit, AfterViewInit {
 
       this.socketService.socket.on(
         'chatMessages',
-        (data: { chat: GroupedChat[]; receiverData: ReceiverUser, b2AuthToken:string }) => {
+        (data: { chat: GroupedChat[]; receiverData: ReceiverUser; b2AuthToken: string }) => {
           this.userData.user.update((user) => ({ ...user!, token: data.b2AuthToken }));
           this.currentChatMessages.set(data.chat);
           this.receiverUser.set(data.receiverData);
@@ -371,31 +369,48 @@ export class Chat implements OnInit, AfterViewInit {
 
     if (assets.length > 0) {
       const formData = new FormData();
-      assets.forEach((file) => formData.append('files', file));
 
-      const sortUser = [this.userData.user()?.id, this.chatId()].sort().join('-');
-      const basePath = `users/${sortUser}`;
+      (async () => {
+        try {
+          const processedFiles = await Promise.all(
+            assets.map(async (file) => {
+              if (file.type.startsWith('image/')) {
+                return await compressImage(file);
+              }
+              return file;
+            }),
+          );
 
-      formData.append('chatPath', basePath);
+          processedFiles.forEach((file) => formData.append('files', file));
 
-      this.userData.uploadFile(formData).subscribe({
-        next: (res) => {
-          if (res.data?.files && res.data.files.length > 0) {
-            this.socketService.socket.emit('chatMessagesSend', {
-              message: messageContent,
-              receiverId: this.chatId(),
-              messageType: 'mixed',
-              attachments: res.data.files,
-            });
-            this.resetUI();
-            this.isMessageSending.set(false);
-          }
-        },
-        error: (err) => {
-          console.error('File upload failed', err);
+          const sortUser = [this.userData.user()?.id, this.chatId()].sort().join('-');
+          const basePath = `users/${sortUser}`;
+
+          formData.append('chatPath', basePath);
+
+          this.userData.uploadFile(formData).subscribe({
+            next: (res) => {
+              if (res.data?.files && res.data.files.length > 0) {
+                this.socketService.socket.emit('chatMessagesSend', {
+                  message: messageContent,
+                  receiverId: this.chatId(),
+                  messageType: 'mixed',
+                  attachments: res.data.files,
+                });
+                this.resetUI();
+                this.isMessageSending.set(false);
+              }
+            },
+            error: (err) => {
+              console.error('File upload failed', err);
+              this.isMessageSending.set(false);
+            },
+          });
+        } catch (error) {
+          console.error('Error processing files', error);
           this.isMessageSending.set(false);
-        },
-      });
+        }
+      })();
       return;
     }
 
