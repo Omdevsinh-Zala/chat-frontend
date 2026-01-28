@@ -15,10 +15,8 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { environment } from '../../../../environments/environment';
 import { AssetView } from '../../../dialogs/asset-view/asset-view';
 import { AttachmentsType, GroupedChat } from '../../../models/chat';
-import { ReceiverUser } from '../../../models/user';
 import { Responsive } from '../../../services/responsive';
 import { SocketConnection } from '../../../services/socket-connection';
 import { UserService } from '../../../services/user-service';
@@ -36,6 +34,7 @@ import { ChannelData } from '../../../models/channel';
 import { MatCardModule } from '@angular/material/card';
 import { ChannelInfo } from '../../../dialogs/channel-info/channel-info';
 import { ImageUrlPipe } from '../../../image-url-pipe';
+import { compressImage } from '../../../helpers/compression-helper';
 
 @Component({
   selector: 'app-channel-chat',
@@ -51,7 +50,7 @@ import { ImageUrlPipe } from '../../../image-url-pipe';
     MatProgressSpinner,
     AssetContainer,
     MatCardModule,
-    ImageUrlPipe
+    ImageUrlPipe,
   ],
   templateUrl: './channel-chat.html',
   styleUrl: './channel-chat.css',
@@ -113,7 +112,11 @@ export class ChannelChat {
 
   message = model('');
 
-  private onChannelMessages = (data: { chat: GroupedChat[]; channelData: any, b2AuthToken: string }) => {
+  private onChannelMessages = (data: {
+    chat: GroupedChat[];
+    channelData: any;
+    b2AuthToken: string;
+  }) => {
     this.userData.user.update((user) => ({ ...user!, token: data.b2AuthToken }));
     this.currentChatMessages.set(data.chat);
     this.channelData.set(data.channelData);
@@ -225,7 +228,7 @@ export class ChannelChat {
           this.observer?.observe(item.nativeElement);
         });
       },
-      { injector: this.injector }
+      { injector: this.injector },
     );
   }
 
@@ -255,7 +258,7 @@ export class ChannelChat {
         root: null,
         threshold: 0.1,
         rootMargin: '0px 0px 50px 0px',
-      }
+      },
     );
   }
 
@@ -314,28 +317,44 @@ export class ChannelChat {
 
     if (assets.length > 0) {
       const formData = new FormData();
-      assets.forEach((file) => formData.append('files', file));
 
-      const basePath = `channels/${this.chatId()}`;
+      (async () => {
+        try {
+          const processedFiles = await Promise.all(
+            assets.map(async (file) => {
+              if (file.type.startsWith('image/')) {
+                return await compressImage(file);
+              }
+              return file;
+            }),
+          );
 
-      formData.append('chatPath', basePath);
+          processedFiles.forEach((file) => formData.append('files', file));
 
-      this.userData.uploadFile(formData).subscribe({
-        next: (res) => {
-          if (res.data?.files && res.data.files.length > 0) {
-            this.socketService.socket.emit('channelChatMessagesSend', {
-              message: messageContent,
-              channelId: this.chatId(),
-              messageType: 'mixed',
-              attachments: res.data.files,
-            });
-            this.resetUI();
-          }
-        },
-        error: (err) => {
-          console.error('File upload failed', err);
-        },
-      });
+          const basePath = `channels/${this.chatId()}`;
+
+          formData.append('chatPath', basePath);
+
+          this.userData.uploadFile(formData).subscribe({
+            next: (res) => {
+              if (res.data?.files && res.data.files.length > 0) {
+                this.socketService.socket.emit('channelChatMessagesSend', {
+                  message: messageContent,
+                  channelId: this.chatId(),
+                  messageType: 'mixed',
+                  attachments: res.data.files,
+                });
+                this.resetUI();
+              }
+            },
+            error: (err) => {
+              console.error('File upload failed', err);
+            },
+          });
+        } catch (error) {
+          console.error('Error processing files', error);
+        }
+      })();
       return;
     }
 
@@ -378,7 +397,7 @@ export class ChannelChat {
     const targetId = flatMessages[flatMessages.length - 1].id;
 
     const element = this.messageItems().find(
-      (item) => item.nativeElement.getAttribute('data-id') === targetId
+      (item) => item.nativeElement.getAttribute('data-id') === targetId,
     );
 
     element?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -394,8 +413,8 @@ export class ChannelChat {
       const fileType = file.type.includes('image')
         ? 'image'
         : file.type.includes('video')
-        ? 'video'
-        : 'pdf';
+          ? 'video'
+          : 'pdf';
       this.base64AssetsData.update((data) => {
         const newData = [...data];
         newData[index] = {

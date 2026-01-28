@@ -1,272 +1,279 @@
 <mat-card class="border-s-0! border-t-0! border-e-0! rounded-none!" appearance="outlined">
   <mat-card-header class="hover:cursor-pointer" (click)="openChannelInfo()">
-    @if(isTablet()) {
-    <button
-      mat-icon-button
-      class="order-1!"
-      matTooltip="Close chat menu"
-      aria-label="Close chat menu"
-      matTooltipPosition="right"
-      (click)="openForHome(); $event.stopPropagation()"
-    >
-      <mat-icon class="text-3xl">arrow_left_alt</mat-icon>
-    </button>
+    @if (isTablet()) {
+      <button
+        mat-icon-button
+        class="order-1!"
+        matTooltip="Close chat menu"
+        aria-label="Close chat menu"
+        matTooltipPosition="right"
+        (click)="openForHome(); $event.stopPropagation()"
+      >
+        <mat-icon class="text-3xl">arrow_left_alt</mat-icon>
+      </button>
     }
     <div
       mat-card-avatar
       class="bg-cover order-2! ms-2"
-      [style.background-image]="
-        'url(' + (channelData()?.avatar_url! | imageUrl: true) + ')'
-      "
+      [style.background-image]="'url(' + (channelData()?.avatar_url! | imageUrl: true) + ')'"
     ></div>
     <mat-card-title>{{ channelData()?.title }}</mat-card-title>
   </mat-card-header>
 </mat-card>
-<div
-  class="h-[calc(100dvh-64px)] w-full relative px-4 bg-(--mat-sys-surface) flex flex-col"
->
-  @if(loadingChat()) {
-  <div class="flex-1 overflow-hidden h-auto pb-4 flex justify-center items-center">
-    <mat-progress-spinner mode="indeterminate" diameter="30"></mat-progress-spinner>
-  </div>
-  } @else { @if (unreadCount() > 2 && canAppendMessages()) {
-  <div class="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-    <button
-      mat-raised-button
-      class="flex! items-center! gap-2! bg-(--mat-sys-primary) text-(--mat-sys-on-primary) rounded-full! px-6! py-6!"
-      (click)="scrollToFirstUnread()"
-    >
-      <mat-icon>arrow_upward</mat-icon>
-      <span class="text-md">{{ unreadCount() }} Unread messages</span>
-    </button>
-  </div>
-  }
-  <div class="flex-1 overflow-hidden h-auto">
-    <ul
-      class="flex flex-col-reverse h-full items-end-safe gap-6 pr-4 overflow-y-auto custom-scroll-bar"
-    >
-      @for (group of currentChatMessages(); track $index) { @for (mes of group.messages; track
-      mes.id; let i = $index) { @if(mes.message_type !== 'system') { @let isSameUserBelow =
-      group.messages[i - 1]?.sender_id === mes.sender_id && group.messages[i - 1]?.message_type !==
-      'system'; @let isFirstInGroup = group.messages[i + 1]?.sender_id !== mes.sender_id ||
-      group.messages[i + 1]?.message_type === 'system'; @if(mes.sender_id === userData.user()?.id) {
-      <!-- My sent messages -->
-      <li
-        #messageItem
-        class="wrap-break-word w-full flex flex-col items-end gap-1 mb-1"
-        [class.mt-4]="isFirstInGroup"
-        [attr.data-id]="mes.id"
-      >
-        <div class="flex items-end gap-2 pr-2 max-w-full">
-          <div class="flex flex-col items-end min-w-0">
-            <div
-              class="message-bubble sent-bubble shadow-sm"
-              [class.rounded-br-2xl]="!isSameUserBelow"
-              [class.rounded-br-sm]="isSameUserBelow"
-              [class.rounded-tr-sm]="!isFirstInGroup"
-            >
-              <p
-                class="text-md sm:text-lg leading-relaxed wrap-break-word"
-                [innerHTML]="mes.content | modify"
-              ></p>
-
-              @if (mes.attachments && mes.attachments.length) {
-              <div class="mt-2 text-start">
-                <app-asset-container
-                  [attachments]="mes.attachments"
-                  [isTablet]="isTablet()"
-                ></app-asset-container>
-              </div>
-              }
-
-              <div class="flex justify-end mt-1 opacity-70">
-                <span class="text-[10px]">{{ mes.created_at | date : 'shortTime' }}</span>
-              </div>
-            </div>
-          </div>
-
-          @if(!isSameUserBelow) {
-          <div
-            class="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-(--mat-sys-outline-variant) shadow-sm"
-          >
-            <img
-              class="w-full h-full object-cover"
-              [src]="userData.user()?.avatar_url! | imageUrl: true"
-              alt="User avatar"
-            />
-          </div>
-          } @else {
-          <div class="w-8 shrink-0"></div>
-          }
-        </div>
-      </li>
-      } @else {
-      <!-- Received messages -->
-      <li
-        #messageItem
-        class="wrap-break-word w-full flex flex-col items-start gap-1 mb-1"
-        [class.mt-4]="isFirstInGroup"
-        [attr.data-id]="mes.id"
-      >
-        <div class="flex items-end gap-2 pl-2 max-w-full">
-          @if(!isSameUserBelow) {
-          <div
-            class="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-(--mat-sys-outline-variant) shadow-sm"
-          >
-            <img
-              class="w-full h-full object-cover"
-              [src]="mes.Sender?.avatar_url! | imageUrl: true"
-              alt="User avatar"
-            />
-          </div>
-          } @else {
-          <div class="w-8 shrink-0"></div>
-          }
-
-          <div class="flex flex-col items-start min-w-0">
-            @if(isFirstInGroup) {
-            <span class="text-[10px] font-semibold mb-1 ml-2 opacity-70">{{
-              mes.Sender?.full_name
-            }}</span>
-            }
-
-            <div
-              class="message-bubble received-bubble shadow-sm"
-              [class.rounded-bl-2xl]="!isSameUserBelow"
-              [class.rounded-bl-sm]="isSameUserBelow"
-              [class.rounded-tl-sm]="!isFirstInGroup"
-            >
-              <p
-                class="text-md sm:text-lg leading-relaxed wrap-break-word"
-                [innerHTML]="mes.content | modify"
-              ></p>
-
-              @if (mes.attachments && mes.attachments.length) {
-              <div class="mt-2">
-                <app-asset-container
-                  [attachments]="mes.attachments"
-                  [isTablet]="isTablet()"
-                ></app-asset-container>
-              </div>
-              }
-
-              <div class="flex justify-start mt-1 opacity-70">
-                <span class="text-[10px]">{{ mes.created_at | date : 'shortTime' }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
-      } } @else {
-      <!-- System Messages -->
-      <li #messageItem class="w-full flex justify-center my-2" [attr.data-id]="mes.id">
-        <div class="system-message-container shadow-sm">
-          {{ mes.content }}
-        </div>
-      </li>
-      } }
-      <li class="relative w-full flex justify-center my-4 mb-2">
-        <mat-divider class="w-full"></mat-divider>
-        <span
-          class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-(--mat-sys-surface) text-(--mat-sys-primary) rounded-(--mat-sys-corner-full) border border-(--mat-sys-outline) px-2 py-1"
+<div class="h-[calc(100dvh-64px)] w-full relative px-4 bg-(--mat-sys-surface) flex flex-col">
+  @if (loadingChat()) {
+    <div class="flex-1 overflow-hidden h-auto pb-4 flex justify-center items-center">
+      <mat-progress-spinner mode="indeterminate" diameter="30"></mat-progress-spinner>
+    </div>
+  } @else {
+    @if (unreadCount() > 2 && canAppendMessages()) {
+      <div class="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+        <button
+          mat-raised-button
+          class="flex! items-center! gap-2! bg-(--mat-sys-primary) text-(--mat-sys-on-primary) rounded-full! px-6! py-6!"
+          (click)="scrollToFirstUnread()"
         >
-          {{ group.monthYear | date : 'EEEE, MMMM d' }}
-        </span>
-      </li>
-      } @empty {
-      <li
-        class="flex flex-col items-center justify-center h-full w-full opacity-50 px-8 text-center"
-      >
-        <mat-icon class="text-6xl! w-auto! h-auto! mb-4">forum</mat-icon>
-        <p class="text-xl font-medium">No messages yet</p>
-        <p class="text-sm mt-1">
-          Be the first to start the conversation in {{ channelData()?.title }}
-        </p>
-      </li>
-      } @if(!canAppendMessages()) {
-      <div class="w-full h-20 py-6 flex justify-center items-center">
-        <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+          <mat-icon>arrow_upward</mat-icon>
+          <span class="text-md">{{ unreadCount() }} Unread messages</span>
+        </button>
       </div>
-      }
-    </ul>
-  </div>
+    }
+    <div class="flex-1 overflow-hidden h-auto">
+      <ul
+        class="flex flex-col-reverse h-full items-end-safe gap-6 pr-4 overflow-y-auto custom-scroll-bar"
+      >
+        @for (group of currentChatMessages(); track $index) {
+          @for (mes of group.messages; track mes.id; let i = $index) {
+            @if (mes.message_type !== 'system') {
+              @let isSameUserBelow =
+                group.messages[i - 1]?.sender_id === mes.sender_id &&
+                group.messages[i - 1]?.message_type !== 'system';
+              @let isFirstInGroup =
+                group.messages[i + 1]?.sender_id !== mes.sender_id ||
+                group.messages[i + 1]?.message_type === 'system';
+              @if (mes.sender_id === userData.user()?.id) {
+                <!-- My sent messages -->
+                <li
+                  #messageItem
+                  class="wrap-break-word w-full flex flex-col items-end gap-1 mb-1"
+                  [class.mt-4]="isFirstInGroup"
+                  [attr.data-id]="mes.id"
+                >
+                  <div class="flex items-end gap-2 pr-2 max-w-full">
+                    <div class="flex flex-col items-end min-w-0">
+                      <div
+                        class="message-bubble sent-bubble shadow-sm"
+                        [class.rounded-br-2xl]="!isSameUserBelow"
+                        [class.rounded-br-sm]="isSameUserBelow"
+                        [class.rounded-tr-sm]="!isFirstInGroup"
+                      >
+                        <p
+                          class="text-md sm:text-lg leading-relaxed wrap-break-word"
+                          [innerHTML]="mes.content | modify"
+                        ></p>
+
+                        @if (mes.attachments && mes.attachments.length) {
+                          <div class="mt-2 text-start">
+                            <app-asset-container
+                              [attachments]="mes.attachments"
+                              [isTablet]="isTablet()"
+                            ></app-asset-container>
+                          </div>
+                        }
+
+                        <div class="flex justify-end mt-1 opacity-70">
+                          <span class="text-[10px]">{{ mes.created_at | date: 'shortTime' }}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    @if (!isSameUserBelow) {
+                      <div
+                        class="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-(--mat-sys-outline-variant) shadow-sm"
+                      >
+                        <img
+                          class="w-full h-full object-cover"
+                          [src]="userData.user()?.avatar_url! | imageUrl: true"
+                          alt="User avatar"
+                        />
+                      </div>
+                    } @else {
+                      <div class="w-8 shrink-0"></div>
+                    }
+                  </div>
+                </li>
+              } @else {
+                <!-- Received messages -->
+                <li
+                  #messageItem
+                  class="wrap-break-word w-full flex flex-col items-start gap-1 mb-1"
+                  [class.mt-4]="isFirstInGroup"
+                  [attr.data-id]="mes.id"
+                >
+                  <div class="flex items-end gap-2 pl-2 max-w-full">
+                    @if (!isSameUserBelow) {
+                      <div
+                        class="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-(--mat-sys-outline-variant) shadow-sm"
+                      >
+                        <img
+                          class="w-full h-full object-cover"
+                          [src]="mes.Sender?.avatar_url! | imageUrl: true"
+                          alt="User avatar"
+                        />
+                      </div>
+                    } @else {
+                      <div class="w-8 shrink-0"></div>
+                    }
+
+                    <div class="flex flex-col items-start min-w-0">
+                      @if (isFirstInGroup) {
+                        <span class="text-[10px] font-semibold mb-1 ml-2 opacity-70">{{
+                          mes.Sender?.full_name
+                        }}</span>
+                      }
+
+                      <div
+                        class="message-bubble received-bubble shadow-sm"
+                        [class.rounded-bl-2xl]="!isSameUserBelow"
+                        [class.rounded-bl-sm]="isSameUserBelow"
+                        [class.rounded-tl-sm]="!isFirstInGroup"
+                      >
+                        <p
+                          class="text-md sm:text-lg leading-relaxed wrap-break-word"
+                          [innerHTML]="mes.content | modify"
+                        ></p>
+
+                        @if (mes.attachments && mes.attachments.length) {
+                          <div class="mt-2">
+                            <app-asset-container
+                              [attachments]="mes.attachments"
+                              [isTablet]="isTablet()"
+                            ></app-asset-container>
+                          </div>
+                        }
+
+                        <div class="flex justify-start mt-1 opacity-70">
+                          <span class="text-[10px]">{{ mes.created_at | date: 'shortTime' }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              }
+            } @else {
+              <!-- System Messages -->
+              <li #messageItem class="w-full flex justify-center my-2" [attr.data-id]="mes.id">
+                <div class="system-message-container shadow-sm">
+                  {{ mes.content }}
+                </div>
+              </li>
+            }
+          }
+          <li class="relative w-full flex justify-center my-4 mb-2">
+            <mat-divider class="w-full"></mat-divider>
+            <span
+              class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-(--mat-sys-surface) text-(--mat-sys-primary) rounded-(--mat-sys-corner-full) border border-(--mat-sys-outline) px-2 py-1"
+            >
+              {{ group.monthYear | date: 'EEEE, MMMM d' }}
+            </span>
+          </li>
+        } @empty {
+          <li
+            class="flex flex-col items-center justify-center h-full w-full opacity-50 px-8 text-center"
+          >
+            <mat-icon class="text-6xl! w-auto! h-auto! mb-4">forum</mat-icon>
+            <p class="text-xl font-medium">No messages yet</p>
+            <p class="text-sm mt-1">
+              Be the first to start the conversation in {{ channelData()?.title }}
+            </p>
+          </li>
+        }
+        @if (!canAppendMessages()) {
+          <div class="w-full h-20 py-6 flex justify-center items-center">
+            <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+          </div>
+        }
+      </ul>
+    </div>
   }
   <div class="w-full py-4 flex flex-col gap-2 items-end">
-    @if(isAssetsEntered()) {
-    <ul
-      class="h-24 w-full flex items-center gap-4 overflow-x-scroll overflow-y-visible custom-scrollbar"
-      animate.enter="enter-animation"
-      animate.leave="leave-animation"
-    >
-      @for (asset of base64AssetsData(); track $index) {
-      <li
-        class="relative w-20 h-20 flex-none border flex items-center justify-center border-gray-300 rounded-md hover:cursor-pointer"
+    @if (isAssetsEntered()) {
+      <ul
+        class="h-24 w-full flex items-center gap-4 overflow-x-scroll overflow-y-visible custom-scrollbar"
+        animate.enter="enter-animation"
+        animate.leave="leave-animation"
       >
-        <div
-          class="w-8 h-8 z-10 rounded-full bg-(--mat-sys-surface) absolute top-0 translate-x-1/2 -translate-y-1/2 right-0 flex items-center justify-center"
-        >
-          <div
-            class="group hover:bg-(--mat-sys-error-container) rounded-full w-6 h-6 flex items-center justify-center transition-all"
-            (click)="removeImage($index)"
+        @for (asset of base64AssetsData(); track $index) {
+          <li
+            class="relative w-20 h-20 flex-none border flex items-center justify-center border-gray-300 rounded-md hover:cursor-pointer"
           >
+            <div
+              class="w-8 h-8 z-10 rounded-full bg-(--mat-sys-surface) absolute top-0 translate-x-1/2 -translate-y-1/2 right-0 flex items-center justify-center"
+            >
+              <div
+                class="group hover:bg-(--mat-sys-error-container) rounded-full w-6 h-6 flex items-center justify-center transition-all"
+                (click)="removeImage($index)"
+              >
+                <mat-icon
+                  class="text-(--mat-sys-error)! group-hover:text-(--mat-sys-on-error-container)! text-sm! w-auto! h-auto!"
+                  >close</mat-icon
+                >
+              </div>
+            </div>
+            @if (asset) {
+              @if (asset.file_type === 'pdf') {
+                <a
+                  [href]="asset.file_url"
+                  target="_blank"
+                  class="w-full h-full flex items-center justify-center"
+                >
+                  <mat-icon class="text-(--mat-sys-primary)!">picture_as_pdf</mat-icon>
+                </a>
+              } @else {
+                <div class="relative w-full pb-20" (click)="viewAssets(base64AssetsData(), $index)">
+                  @if (asset.file_type === 'image') {
+                    <img
+                      [src]="asset.file_url"
+                      class="absolute inset-0 w-full h-full object-contain"
+                      alt="Asset"
+                    />
+                  } @else {
+                    <video
+                      [src]="asset.file_url"
+                      class="absolute inset-0 w-full h-full object-contain"
+                    ></video>
+                  }
+                </div>
+              }
+            } @else {
+              <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+            }
+          </li>
+        }
+        <li class="w-20 h-20 relative">
+          <div class="flex items-center justify-center w-full h-full">
             <mat-icon
-              class="text-(--mat-sys-error)! group-hover:text-(--mat-sys-on-error-container)! text-sm! w-auto! h-auto!"
-              >close</mat-icon
+              class="mb-1 p-0! my-1! hover:cursor-pointer text-(--mat-sys-primary)!"
+              (click)="fileInput.click(); $event.stopPropagation()"
+              >add</mat-icon
             >
           </div>
-        </div>
-        @if(asset) { @if(asset.file_type === 'pdf') {
-        <a
-          [href]="asset.file_url"
-          target="_blank"
-          class="w-full h-full flex items-center justify-center"
-        >
-          <mat-icon class="text-(--mat-sys-primary)!">picture_as_pdf</mat-icon>
-        </a>
-        } @else {
-        <div class="relative w-full pb-20" (click)="viewAssets(base64AssetsData(), $index)">
-          @if(asset.file_type === 'image') {
-          <img
-            [src]="asset.file_url"
-            class="absolute inset-0 w-full h-full object-contain"
-            alt="Asset"
-          />
-          } @else {
-          <video
-            [src]="asset.file_url"
-            class="absolute inset-0 w-full h-full object-contain"
-          ></video>
-          }
-        </div>
-        } } @else {
-        <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
-        }
-      </li>
-      }
-      <li class="w-20 h-20 relative">
-        <div class="flex items-center justify-center w-full h-full">
-          <mat-icon
-            class="mb-1 p-0! my-1! hover:cursor-pointer text-(--mat-sys-primary)!"
-            (click)="fileInput.click(); $event.stopPropagation()"
-            >add</mat-icon
-          >
-        </div>
-      </li>
-    </ul>
+        </li>
+      </ul>
     }
     <div class="w-full p-0 flex gap-2 items-end">
       <div class="w-full">
         <mat-form-field class="w-full custom-input" appearance="outline">
-          @if(base64AssetsData().length === 0) {
-          <mat-icon
-            animate.enter="enter-animation"
-            animate.leave="leave-animation"
-            matPrefix
-            class="mb-1 p-0! my-1! hover:cursor-pointer"
-            (click)="fileInput.click(); $event.stopPropagation()"
-          >
-            attach_file
-          </mat-icon>
+          @if (base64AssetsData().length === 0) {
+            <mat-icon
+              animate.enter="enter-animation"
+              animate.leave="leave-animation"
+              matPrefix
+              class="mb-1 p-0! my-1! hover:cursor-pointer"
+              (click)="fileInput.click(); $event.stopPropagation()"
+            >
+              attach_file
+            </mat-icon>
           }
           <textarea
             #messageInput
@@ -289,6 +296,6 @@
       <button matMiniFab (click)="sendMessage($event)" [attr.aria-label]="'Send message'">
         <mat-icon>send</mat-icon>
       </button>
-      </div>
+    </div>
   </div>
 </div>
