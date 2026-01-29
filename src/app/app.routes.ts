@@ -5,81 +5,88 @@ import { authUserGuard } from './guards/auth-user-guard';
 export const routes: Routes = [
   {
     path: 'login',
-    loadComponent: () => import('./auth/login/login').then(m => m.Login),
+    loadComponent: () => import('./auth/login/login').then((m) => m.Login),
     canActivate: [noAuthUserGuard],
   },
   {
     path: 'register',
-    loadComponent: () => import('./auth/register/register').then(m => m.Register),
+    loadComponent: () => import('./auth/register/register').then((m) => m.Register),
     canActivate: [noAuthUserGuard],
   },
   {
     path: '',
-    loadComponent: () => import('./base/base').then(m => m.Base),
+    loadComponent: () => import('./base/base').then((m) => m.Base),
     canActivate: [authUserGuard],
     children: [
       {
         path: 'chat',
-        loadComponent: () => import('./base/home/home').then(m => m.Home),
+        loadComponent: () => import('./base/home/home').then((m) => m.Home),
         children: [
           {
             path: ':id',
-            loadComponent: () => import('./base/home/chat/chat').then(m => m.Chat),
+            loadComponent: () => import('./base/home/chat/chat').then((m) => m.Chat),
           },
           {
             path: 'channel/:id',
-            loadComponent: () => import('./base/home/channel-chat/channel-chat').then(m => m.ChannelChat),
+            loadComponent: () =>
+              import('./base/home/channel-chat/channel-chat').then((m) => m.ChannelChat),
           },
-        ]
+        ],
+      },
+      {
+        path: 'invite/:token',
+        loadComponent: () =>
+          import('./base/home/invite-handler/invite-handler').then((m) => m.InviteHandler),
       },
       {
         path: 'profile',
         children: [
           {
             path: 'me',
-            loadComponent: () => import('./base/profile/profile').then(m => m.Profile),
+            loadComponent: () => import('./base/profile/profile').then((m) => m.Profile),
           },
           {
             path: 'settings',
-            loadComponent: () => import('./base/profile/settings/settings').then(m => m.Settings),
+            loadComponent: () => import('./base/profile/settings/settings').then((m) => m.Settings),
           },
           {
             path: '',
             pathMatch: 'full',
-            redirectTo: 'me'
+            redirectTo: 'me',
           },
           {
             path: '**',
-            redirectTo: 'me'
-          }
-        ]
+            redirectTo: 'me',
+          },
+        ],
       },
       {
         path: 'contacts',
-        loadComponent: () => import('./base/contacts/contacts').then(m => m.Contacts),
+        loadComponent: () => import('./base/contacts/contacts').then((m) => m.Contacts),
       },
       {
         path: 'files',
-        loadComponent: () => import('./base/files/files').then(m => m.Files),
+        loadComponent: () => import('./base/files/files').then((m) => m.Files),
       },
       {
         path: 'channels',
-        loadComponent: () => import('./base/channels-list/channels-list').then(m => m.ChannelsList),
+        loadComponent: () =>
+          import('./base/channels-list/channels-list').then((m) => m.ChannelsList),
       },
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: "chat"
+        redirectTo: 'chat',
       },
       {
         path: '**',
-        redirectTo: "chat"
-      }
-    ]
+        redirectTo: 'chat',
+      },
+    ],
   },
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: "chat"
-  }
+    redirectTo: 'chat',
+  },
 ];

@@ -1,5 +1,5 @@
-@if(attachments() && attachments().length && attachments().length > 1) {
-    <app-multi-assets [attachments]="attachments()" [isTablet]="isTablet()"></app-multi-assets>
+@if (attachments() && attachments().length && attachments().length > 1) {
+  <app-multi-assets [attachments]="attachments()" [isTablet]="isTablet()"></app-multi-assets>
 } @else {
-    <app-single-asset [attachments]="attachments()" [isTablet]="isTablet()"></app-single-asset>
+  <app-single-asset [attachments]="attachments()" [isTablet]="isTablet()"></app-single-asset>
 }

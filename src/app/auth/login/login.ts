@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth-service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { SocketConnection } from '../../services/socket-connection';
 
 @Component({
@@ -21,6 +21,7 @@ export class Login {
   authService = inject(AuthService);
   destroyRef = inject(DestroyRef);
   private router = inject(Router);
+  route = inject(ActivatedRoute);
   private socketService = inject(SocketConnection);
 
   loginModel = signal<LoginModel>({
@@ -50,7 +51,13 @@ export class Login {
           if (res.success) {
             this.loginProcess.update(() => false);
             this.socketService.connectSocket();
-            if(res?.data?.is_last_active_chat_channel) {
+
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+            if (returnUrl) {
+              return this.router.navigateByUrl(returnUrl);
+            }
+
+            if (res?.data?.is_last_active_chat_channel) {
               return this.router.navigate(['/chat/channel', res?.data?.active_chat_id]);
             } else {
               return this.router.navigate(['/chat', res?.data?.active_chat_id]);

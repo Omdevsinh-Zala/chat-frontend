@@ -289,6 +289,24 @@
               attach_file
             </mat-icon>
           }
+          <mat-icon
+            matPrefix
+            class="mb-1 p-0! my-1! hover:cursor-pointer ms-2"
+            (click)="showEmojiPicker.set(!showEmojiPicker())"
+            cdkOverlayOrigin
+            #emojiButton="cdkOverlayOrigin"
+          >
+            sentiment_satisfied_alt
+          </mat-icon>
+          <ng-template
+            cdkConnectedOverlay
+            [cdkConnectedOverlayOrigin]="emojiButton"
+            [cdkConnectedOverlayOpen]="showEmojiPicker()"
+            (overlayOutsideClick)="showEmojiPicker.set(false)"
+            [cdkConnectedOverlayOffsetY]="-10"
+          >
+            <app-emoji-picker (emojiSelect)="onEmojiSelect($event)"></app-emoji-picker>
+          </ng-template>
           <textarea
             #messageInput
             matInput
@@ -307,8 +325,14 @@
           (change)="onFileSelected($event)"
         />
       </div>
-      <button matMiniFab class="flex justify-center items-center" [disabled]="isMessageSending()" (click)="sendMessage($event)" [attr.aria-label]="'Send message'">
-        @if(isMessageSending()) {
+      <button
+        matMiniFab
+        class="flex justify-center items-center"
+        [disabled]="isMessageSending()"
+        (click)="sendMessage($event)"
+        [attr.aria-label]="'Send message'"
+      >
+        @if (isMessageSending()) {
           <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
         } @else {
           <mat-icon>send</mat-icon>

@@ -1,4 +1,6 @@
-<div class="container mx-auto! px-2 sm:px-0 w-full h-dvh flex flex-col gap-4 items-center justify-center">
+<div
+  class="container mx-auto! px-2 sm:px-0 w-full h-dvh flex flex-col gap-4 items-center justify-center"
+>
   <form class="p-3 w-96 flex gap-4 flex-col" (submit)="login($event)">
     <h1 class="mx-auto text-3xl">Login</h1>
     <div class="flex flex-col gap-7 w-full">
@@ -10,17 +12,22 @@
           [formField]="loginForm.email"
           #email
         />
-        <label class="label"
+        <label
+          class="label"
           [class.float-label]="loginForm.email().value().trim() !== ''"
-          [class.text-(--mat-sys-error)]="loginForm.email().touched() && loginForm.email().invalid()"
-          [class.peer-focus\:text-inherit]="loginForm.email().touched() && loginForm.email().invalid()"
+          [class.text-(--mat-sys-error)]="
+            loginForm.email().touched() && loginForm.email().invalid()
+          "
+          [class.peer-focus\:text-inherit]="
+            loginForm.email().touched() && loginForm.email().invalid()
+          "
         >
           Email<span class="ps-0.5">*</span>
         </label>
         @if (loginForm.email().touched() && loginForm.email().invalid()) {
           <ul class="error-list">
             @for (error of loginForm.email().errors(); track $index) {
-              <li class="form-error-msg" >{{ error.message }}</li>
+              <li class="form-error-msg">{{ error.message }}</li>
             }
           </ul>
         }
@@ -34,8 +41,7 @@
             [formField]="loginForm.password"
             #password
           />
-        }
-        @else {
+        } @else {
           <input
             class="transition-all duration-200 peer outline-none border focus:border-(--mat-sys-outline) w-full rounded-md p-3 focus:ring-2 focus:ring-(--mat-sys-outline)"
             type="text"
@@ -47,8 +53,12 @@
         <label
           class="label"
           [class.float-label]="loginForm.password().value().trim() !== ''"
-          [class.text-(--mat-sys-error)]="loginForm.password().touched() && loginForm.password().invalid()"
-          [class.peer-focus\:text-inherit]="loginForm.password().touched() && loginForm.password().invalid()"
+          [class.text-(--mat-sys-error)]="
+            loginForm.password().touched() && loginForm.password().invalid()
+          "
+          [class.peer-focus\:text-inherit]="
+            loginForm.password().touched() && loginForm.password().invalid()
+          "
         >
           Password<span class="ps-0.5">*</span>
         </label>
@@ -63,7 +73,7 @@
         @if (loginForm.password().touched() && loginForm.password().invalid()) {
           <ul class="error-list">
             @for (error of loginForm.password().errors(); track $index) {
-              <li class="form-error-msg" >{{ error.message }}</li>
+              <li class="form-error-msg">{{ error.message }}</li>
             }
           </ul>
         }
@@ -80,15 +90,18 @@
         [disabled]="loginForm().invalid() || loginProcess()"
         [matTooltip]="loginForm().invalid() ? 'Fill the above fields first' : ''"
       >
-        @if(loginProcess()) {
-        <mat-spinner class="mx-auto h-6! w-6!"></mat-spinner>
-        } @else { Submit }
+        @if (loginProcess()) {
+          <mat-spinner class="mx-auto h-6! w-6!"></mat-spinner>
+        } @else {
+          Submit
+        }
       </button>
     </div>
     <p class="text-center">
       Don't have an account ?&nbsp;<a
         class="transition-colors duration-200 hover:text-(--mat-sys-primary) text-(--mat-sys-primary)/60 underline underline-offset-2"
         routerLink="/register"
+        [queryParams]="{ returnUrl: route.snapshot.queryParams['returnUrl'] }"
         >Register here.</a
       >
     </p>
