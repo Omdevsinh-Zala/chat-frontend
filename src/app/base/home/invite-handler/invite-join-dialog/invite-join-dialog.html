@@ -1,0 +1,16 @@
+<div class="p-6 flex flex-col items-center text-center bg-[#1a1c1e] text-white">
+  <img
+    [src]="data.channel.avatar_url | imageUrl: true"
+    class="w-24 h-24 rounded-full mb-4 object-cover border-4 border-primary/20"
+    alt="Avatar"
+  />
+  <h2 class="text-2xl font-bold mb-1">{{ data.channel.title }}</h2>
+  <p class="text-gray-400 mb-6">{{ data.channel.memberCount }} members</p>
+
+  <div class="flex gap-4 w-full">
+    <button mat-stroked-button class="flex-1 rounded-xl" (click)="cancel()">Cancel</button>
+    <button mat-flat-button color="primary" class="flex-1 rounded-xl" (click)="join()">
+      Join Group
+    </button>
+  </div>
+</div>

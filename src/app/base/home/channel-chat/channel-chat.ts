@@ -13,28 +13,34 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DatePipe } from '@angular/common';
+import { OverlayModule } from '@angular/cdk/overlay';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDivider } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
 import { AssetView } from '../../../dialogs/asset-view/asset-view';
 import { AttachmentsType, GroupedChat } from '../../../models/chat';
 import { Responsive } from '../../../services/responsive';
 import { SocketConnection } from '../../../services/socket-connection';
 import { UserService } from '../../../services/user-service';
-import { MatInputModule } from '@angular/material/input';
-import { DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDivider } from '@angular/material/divider';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIcon } from '@angular/material/icon';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
 import { AssetContainer } from '../chat/asset-container/asset-container';
 import { ChannelData } from '../../../models/channel';
-import { MatCardModule } from '@angular/material/card';
 import { ChannelInfo } from '../../../dialogs/channel-info/channel-info';
 import { ImageUrlPipe } from '../../../image-url-pipe';
 import { compressImage } from '../../../helpers/compression-helper';
+import { EmojiPicker } from '../../../components/emoji-picker/emoji-picker';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MessageSnackBar } from '../../../helpers/message-snack-bar/message-snack-bar';
+import { Confirmation } from '../../../dialogs/confirmation/confirmation';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-channel-chat',
@@ -43,6 +49,7 @@ import { compressImage } from '../../../helpers/compression-helper';
     MatInputModule,
     MatButtonModule,
     MatIcon,
+    MatIconModule,
     FormsModule,
     DatePipe,
     MatDivider,
@@ -51,6 +58,10 @@ import { compressImage } from '../../../helpers/compression-helper';
     AssetContainer,
     MatCardModule,
     ImageUrlPipe,
+    EmojiPicker,
+    OverlayModule,
+    MatSnackBarModule,
+    MatTooltipModule,
   ],
   templateUrl: './channel-chat.html',
   styleUrl: './channel-chat.css',
@@ -63,8 +74,10 @@ export class ChannelChat {
   userData = inject(UserService);
   private injector = inject(Injector);
   private dialog = inject(MatDialog);
+  private _snackbar = inject(MatSnackBar);
   private responsiveService = inject(Responsive);
   loadingChat = signal(true);
+  showEmojiPicker = signal(false);
 
   // isTyping = computed(() => {
   //   return (
@@ -109,6 +122,11 @@ export class ChannelChat {
       });
   });
   canAppendMessages = signal(true);
+  canInvite = computed(() => {
+    const userId = this.userData.user()?.id;
+    const myMember = this.channelData()?.ChannelMembers.find((m) => m.user_id === userId);
+    return myMember?.role === 'owner' || myMember?.role === 'admin';
+  });
 
   message = model('');
 
@@ -188,6 +206,8 @@ export class ChannelChat {
     this.socketService.socket.on('appendedChannelMessages', this.onAppendedChannelMessages);
     this.socketService.socket.on('receiveChannelChatMessage', this.onReceiveChannelChatMessage);
     this.socketService.socket.on('channelReadUpdated', this.onChannelReadUpdated);
+    this.socketService.socket.on('channelInviteCreated', this.onChannelInviteCreated);
+    this.socketService.socket.on('createChannelInviteError', this.onChannelInviteError);
   }
 
   private removeListeners() {
@@ -195,7 +215,40 @@ export class ChannelChat {
     this.socketService.socket.off('appendedChannelMessages', this.onAppendedChannelMessages);
     this.socketService.socket.off('receiveChannelChatMessage', this.onReceiveChannelChatMessage);
     this.socketService.socket.off('channelReadUpdated', this.onChannelReadUpdated);
+    this.socketService.socket.off('channelInviteCreated', this.onChannelInviteCreated);
+    this.socketService.socket.off('createChannelInviteError', this.onChannelInviteError);
   }
+
+  private onChannelInviteCreated = (data: { invite: any }) => {
+    const inviteUrl = `${window.location.origin}/invite/${data.invite.token}`;
+    this.dialog
+      .open(Confirmation, {
+        data: {
+          title: 'Invite Link Generated',
+          message: `Share this link with someone to join the channel: ${inviteUrl}`,
+          confirmJson: 'Copy Link',
+        },
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          navigator.clipboard.writeText(inviteUrl);
+          this._snackbar.openFromComponent(MessageSnackBar, {
+            panelClass: 'success-panel',
+            duration: 4000,
+            data: 'Link copied to clipboard!',
+          });
+        }
+      });
+  };
+
+  private onChannelInviteError = (data: { error: string }) => {
+    this._snackbar.openFromComponent(MessageSnackBar, {
+      panelClass: 'error-panel',
+      duration: 4000,
+      data: data.error,
+    });
+  };
 
   ngOnInit(): void {
     this.setupListeners();
@@ -488,6 +541,11 @@ export class ChannelChat {
     });
   }
 
+  generateInvite(event: Event) {
+    event.stopPropagation();
+    this.socketService.socket.emit('createChannelInvite', { channelId: this.chatId() });
+  }
+
   openChannelInfo() {
     this.dialog.open(ChannelInfo, {
       maxWidth: '100%',
@@ -500,5 +558,25 @@ export class ChannelChat {
         fromGroup: true,
       },
     });
+  }
+
+  onEmojiSelect(emoji: string) {
+    const textarea = this.messageInput()?.nativeElement;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = this.message();
+    const before = text.substring(0, start);
+    const after = text.substring(end);
+
+    this.message.set(before + emoji + after);
+
+    // Reset cursor position after change detection
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + emoji.length, start + emoji.length);
+      this.adjustTextareaHeight(textarea);
+    }, 0);
   }
 }
