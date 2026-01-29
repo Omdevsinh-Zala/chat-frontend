@@ -19,7 +19,7 @@ export class MultiAssets {
   private userData = inject(UserService);
 
   mediaAttachments = computed(() =>
-    this.attachments().filter((att) => att.file_type === 'image' || att.file_type === 'video')
+    this.attachments().filter((att) => att.file_type === 'image' || att.file_type === 'video'),
   );
 
   pdfAttachments = computed(() => this.attachments().filter((att) => att.file_type === 'pdf'));

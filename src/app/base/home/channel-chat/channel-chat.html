@@ -17,7 +17,14 @@
       class="bg-cover order-2! ms-2"
       [style.background-image]="'url(' + (channelData()?.avatar_url! | imageUrl: true) + ')'"
     ></div>
-    <mat-card-title>{{ channelData()?.title }}</mat-card-title>
+    <mat-card-title class="flex items-center gap-2">
+      {{ channelData()?.title }}
+      @if (canInvite()) {
+        <button mat-icon-button (click)="generateInvite($event)" matTooltip="Invite members">
+          <mat-icon>person_add</mat-icon>
+        </button>
+      }
+    </mat-card-title>
   </mat-card-header>
 </mat-card>
 <div class="h-[calc(100dvh-64px)] w-full relative px-4 bg-(--mat-sys-surface) flex flex-col">
@@ -275,6 +282,24 @@
               attach_file
             </mat-icon>
           }
+          <mat-icon
+            matPrefix
+            class="mb-1 p-0! my-1! hover:cursor-pointer ms-2"
+            (click)="showEmojiPicker.set(!showEmojiPicker())"
+            cdkOverlayOrigin
+            #emojiButton="cdkOverlayOrigin"
+          >
+            sentiment_satisfied_alt
+          </mat-icon>
+          <ng-template
+            cdkConnectedOverlay
+            [cdkConnectedOverlayOrigin]="emojiButton"
+            [cdkConnectedOverlayOpen]="showEmojiPicker()"
+            (overlayOutsideClick)="showEmojiPicker.set(false)"
+            [cdkConnectedOverlayOffsetY]="-10"
+          >
+            <app-emoji-picker (emojiSelect)="onEmojiSelect($event)"></app-emoji-picker>
+          </ng-template>
           <textarea
             #messageInput
             matInput

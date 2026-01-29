@@ -16,7 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { GlobalResponse, RegisterModel } from '../../models/auth';
 import { AuthService } from '../../services/auth-service';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -31,6 +31,7 @@ export class Register {
   authService = inject(AuthService);
   destroyRef = inject(DestroyRef);
   router = inject(Router);
+  route = inject(ActivatedRoute);
   apiUrl = environment.apiUrl;
 
   backendValidationErrors = signal<RegisterModel | null>(null);
@@ -116,11 +117,9 @@ export class Register {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
-          if (res.success) {
-            this.registerProcess.update(() => false);
-            return this.router.navigate(['/login']);
-          }
-          return this.registerProcess.update(() => false);
+          this.registerProcess.update(() => false);
+          const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+          return this.router.navigate(['/login'], { queryParams: { returnUrl } });
         },
         error: (err) => {
           if (err.error && err.error.data) {

@@ -15,30 +15,32 @@ import {
   computed,
   ChangeDetectionStrategy,
 } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { OverlayModule } from '@angular/cdk/overlay';
+import { ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { SocketConnection } from '../../../services/socket-connection';
-import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormsModule } from '@angular/forms';
-import { AttachmentsType, GroupedChat } from '../../../models/chat';
-import { UserService } from '../../../services/user-service';
-import { DatePipe } from '@angular/common';
 import { MatDivider } from '@angular/material/divider';
-import { ReceiverUser } from '../../../models/user';
-import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatCardModule } from '@angular/material/card';
+import { SocketConnection } from '../../../services/socket-connection';
+import { AttachmentsType, GroupedChat } from '../../../models/chat';
+import { UserService } from '../../../services/user-service';
+import { ReceiverUser } from '../../../models/user';
+import { ModifyPipe } from '../../../helpers/pipes/modify.pipe';
 import { AssetContainer } from './asset-container/asset-container';
 import { AssetView } from '../../../dialogs/asset-view/asset-view';
 import { Responsive } from '../../../services/responsive';
-import { MatCardModule } from '@angular/material/card';
 import { ProfileInfo } from '../../../dialogs/profile-info/profile-info';
 import { ImageUrlPipe } from '../../../image-url-pipe';
 import { compressImage } from '../../../helpers/compression-helper';
+import { EmojiPicker } from '../../../components/emoji-picker/emoji-picker';
 
 @Component({
   selector: 'app-chat',
@@ -56,6 +58,8 @@ import { compressImage } from '../../../helpers/compression-helper';
     MatToolbarModule,
     MatCardModule,
     ImageUrlPipe,
+    EmojiPicker,
+    OverlayModule,
   ],
   templateUrl: './chat.html',
   styleUrl: './chat.css',
@@ -72,6 +76,7 @@ export class Chat implements OnInit, AfterViewInit {
   private responsiveService = inject(Responsive);
   loadingChat = signal(true);
   isMessageSending = signal(false);
+  showEmojiPicker = signal(false);
 
   isTyping = computed(() => {
     return (
@@ -534,5 +539,25 @@ export class Chat implements OnInit, AfterViewInit {
         id: this.receiverUser()?.id,
       },
     });
+  }
+
+  onEmojiSelect(emoji: string) {
+    const textarea = this.messageInput()?.nativeElement;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = this.message();
+    const before = text.substring(0, start);
+    const after = text.substring(end);
+
+    this.message.set(before + emoji + after);
+
+    // Reset cursor position after change detection
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + emoji.length, start + emoji.length);
+      this.adjustTextareaHeight(textarea);
+    }, 0);
   }
 }
