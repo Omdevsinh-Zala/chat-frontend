@@ -25,6 +25,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { AssetView } from '../../../dialogs/asset-view/asset-view';
 import { AttachmentsType, GroupedChat } from '../../../models/chat';
 import { Responsive } from '../../../services/responsive';
@@ -37,10 +40,9 @@ import { ChannelInfo } from '../../../dialogs/channel-info/channel-info';
 import { ImageUrlPipe } from '../../../image-url-pipe';
 import { compressImage } from '../../../helpers/compression-helper';
 import { EmojiPicker } from '../../../components/emoji-picker/emoji-picker';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MessageSnackBar } from '../../../helpers/message-snack-bar/message-snack-bar';
 import { Confirmation } from '../../../dialogs/confirmation/confirmation';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { EmojiService } from '../../../services/emoji-service';
 
 @Component({
   selector: 'app-channel-chat',
@@ -75,9 +77,12 @@ export class ChannelChat {
   private injector = inject(Injector);
   private dialog = inject(MatDialog);
   private _snackbar = inject(MatSnackBar);
+  private emojiService = inject(EmojiService);
   private responsiveService = inject(Responsive);
   loadingChat = signal(true);
   showEmojiPicker = signal(false);
+
+  isShortEmojiCodeTyped = signal(false);
 
   // isTyping = computed(() => {
   //   return (
@@ -102,9 +107,21 @@ export class ChannelChat {
 
   messageItems = viewChildren<ElementRef>('messageItem');
 
+  emojiSearchResults = signal<any[]>([]);
+  private currentShortcodeStartIndex = -1;
+  private emojiSearchSubject = new Subject<string>();
+
   private observer: IntersectionObserver | null = null;
   private isTypingStatusSend = signal(false);
   private pendingReadMessageIds = new Set<string>();
+  typingUsers = signal<{ userId: string; fullName: string; timeout?: any }[]>([]);
+  typingIndicatorText = computed(() => {
+    const users = this.typingUsers();
+    if (users.length === 0) return '';
+    if (users.length === 1) return `${users[0].fullName} is typing...`;
+    if (users.length === 2) return `${users[0].fullName} and ${users[1].fullName} are typing...`;
+    return `${users[0].fullName}, ${users[1].fullName} and ${users.length - 2} others are typing...`;
+  });
   channelData: WritableSignal<ChannelData | null> = signal(null);
   currentChatMessages: WritableSignal<GroupedChat[]> = signal<GroupedChat[]>([]);
   unreadCount = computed(() => this.unreadMessages().length);
@@ -201,11 +218,56 @@ export class ChannelChat {
     }
   };
 
+  private onChannelMemberTyping = (data: { senderId: string; isTyping: boolean }) => {
+    const userId = this.userData.user()?.id;
+    if (data.senderId === userId) return;
+
+    this.typingUsers.update((users) => {
+      const existingUserIndex = users.findIndex((u) => u.userId === data.senderId);
+
+      if (data.isTyping) {
+        const member = this.channelData()?.ChannelMembers.find((m) => m.user_id === data.senderId);
+        const fullName = member?.User?.full_name || 'Someone';
+
+        const updatedUsers = [...users];
+        if (existingUserIndex !== -1) {
+          clearTimeout(updatedUsers[existingUserIndex].timeout);
+          updatedUsers[existingUserIndex] = {
+            ...updatedUsers[existingUserIndex],
+            timeout: setTimeout(
+              () => this.onChannelMemberTyping({ senderId: data.senderId, isTyping: false }),
+              5000,
+            ),
+          };
+        } else {
+          updatedUsers.push({
+            userId: data.senderId,
+            fullName,
+            timeout: setTimeout(
+              () => this.onChannelMemberTyping({ senderId: data.senderId, isTyping: false }),
+              5000,
+            ),
+          });
+        }
+        return updatedUsers;
+      } else {
+        if (existingUserIndex !== -1) {
+          clearTimeout(users[existingUserIndex].timeout);
+          const updatedUsers = [...users];
+          updatedUsers.splice(existingUserIndex, 1);
+          return updatedUsers;
+        }
+        return users;
+      }
+    });
+  };
+
   private setupListeners() {
     this.socketService.socket.on('channelChatMessages', this.onChannelMessages);
     this.socketService.socket.on('appendedChannelMessages', this.onAppendedChannelMessages);
     this.socketService.socket.on('receiveChannelChatMessage', this.onReceiveChannelChatMessage);
     this.socketService.socket.on('channelReadUpdated', this.onChannelReadUpdated);
+    this.socketService.socket.on('channelMemberTyping', this.onChannelMemberTyping);
     this.socketService.socket.on('channelInviteCreated', this.onChannelInviteCreated);
     this.socketService.socket.on('createChannelInviteError', this.onChannelInviteError);
   }
@@ -215,6 +277,7 @@ export class ChannelChat {
     this.socketService.socket.off('appendedChannelMessages', this.onAppendedChannelMessages);
     this.socketService.socket.off('receiveChannelChatMessage', this.onReceiveChannelChatMessage);
     this.socketService.socket.off('channelReadUpdated', this.onChannelReadUpdated);
+    this.socketService.socket.off('channelMemberTyping', this.onChannelMemberTyping);
     this.socketService.socket.off('channelInviteCreated', this.onChannelInviteCreated);
     this.socketService.socket.off('createChannelInviteError', this.onChannelInviteError);
   }
@@ -258,6 +321,7 @@ export class ChannelChat {
       this.chatId.set(params['id']);
       this.currentChatMessages.set([]);
       this.channelData.set(null);
+      this.typingUsers.set([]);
       this.markRead();
 
       this.socketService.socket.emit('channelChatChange', { channelId: this.chatId() });
@@ -269,6 +333,18 @@ export class ChannelChat {
     });
 
     this.setupObserver();
+
+    this.emojiSearchSubject
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+      .subscribe(async (searchValue) => {
+        this.isShortEmojiCodeTyped.set(true);
+        const result = await this.emojiService.searchedData(searchValue);
+        if (result && result.length > 0) {
+          this.emojiSearchResults.set(result);
+        } else {
+          this.emojiSearchResults.set([]);
+        }
+      });
   }
 
   ngAfterViewInit(): void {
@@ -319,15 +395,37 @@ export class ChannelChat {
 
   adjustTextareaHeight(textarea: HTMLTextAreaElement) {
     const val = textarea.value;
+    const cursorPosition = textarea.selectionStart;
+    const textBeforeCursor = val.substring(0, cursorPosition);
+    const lastColonIndex = textBeforeCursor.lastIndexOf(':');
+
+    let isShortcode = false;
+
+    if (lastColonIndex !== -1) {
+      const potentialShortcode = textBeforeCursor.substring(lastColonIndex + 1);
+      // Check if there are spaces in the potential shortcode
+      // User requirement: :laugh works, : laugh does not.
+      if (!/\s/.test(potentialShortcode) && potentialShortcode.length > 0) {
+        isShortcode = true;
+        this.currentShortcodeStartIndex = lastColonIndex;
+        this.emojiSearchSubject.next(potentialShortcode);
+      }
+    }
+
+    if (!isShortcode) {
+      this.isShortEmojiCodeTyped.set(false);
+      this.currentShortcodeStartIndex = -1;
+    }
+
     if (val && !this.isTypingStatusSend()) {
-      this.socketService.socket.emit('channelTyping', {
-        receiverId: this.chatId(),
+      this.socketService.socket.emit('channelMemberTyping', {
+        channelId: this.chatId(),
         isTyping: true,
       });
       this.isTypingStatusSend.set(true);
     } else if (!val && this.isTypingStatusSend()) {
-      this.socketService.socket.emit('channelTyping', {
-        receiverId: this.chatId(),
+      this.socketService.socket.emit('channelMemberTyping', {
+        channelId: this.chatId(),
         isTyping: false,
       });
       this.isTypingStatusSend.set(false);
@@ -348,8 +446,8 @@ export class ChannelChat {
     }
 
     if (this.isTypingStatusSend()) {
-      this.socketService.socket.emit('channelTyping', {
-        receiverId: this.chatId(),
+      this.socketService.socket.emit('channelMemberTyping', {
+        channelId: this.chatId(),
         isTyping: false,
       });
       this.isTypingStatusSend.set(false);
@@ -431,8 +529,8 @@ export class ChannelChat {
       this.prepareFilesPreview(fileArray);
 
       if (this.isTypingStatusSend()) {
-        this.socketService.socket.emit('channelTyping', {
-          receiverId: this.chatId(),
+        this.socketService.socket.emit('channelMemberTyping', {
+          channelId: this.chatId(),
           isTyping: false,
         });
         this.isTypingStatusSend.set(false);
@@ -576,6 +674,33 @@ export class ChannelChat {
     setTimeout(() => {
       textarea.focus();
       textarea.setSelectionRange(start + emoji.length, start + emoji.length);
+      this.adjustTextareaHeight(textarea);
+    }, 0);
+  }
+
+  onAutocompleteSelect(emoji: string) {
+    const textarea = this.messageInput()?.nativeElement;
+    if (!textarea || this.currentShortcodeStartIndex === -1) return;
+
+    const cursor = textarea.selectionStart;
+    const start = this.currentShortcodeStartIndex;
+
+    // Replace from start (colon) to cursor (end of typed word) with emoji
+    const text = this.message();
+    const before = text.substring(0, start);
+    const after = text.substring(cursor);
+
+    this.message.set(before + emoji + after);
+
+    this.isShortEmojiCodeTyped.set(false);
+    this.emojiSearchResults.set([]);
+    this.currentShortcodeStartIndex = -1;
+
+    // Restore focus and cursor
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + emoji.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
       this.adjustTextareaHeight(textarea);
     }, 0);
   }

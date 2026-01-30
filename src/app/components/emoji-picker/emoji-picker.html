@@ -1,28 +1,7 @@
 <div
   class="emoji-picker-container shadow-2xl rounded-2xl overflow-hidden animate-in fade-in zoom-in duration-300"
 >
-  <div class="glass-effect p-2 h-80 flex flex-col">
-    <mat-tab-group class="h-full emoji-tabs" headerPosition="below">
-      @for (category of categories(); track category.name) {
-        <mat-tab>
-          <ng-template mat-tab-label>
-            <mat-icon>{{ category.icon }}</mat-icon>
-          </ng-template>
-          <div class="emoji-grid p-2 overflow-y-auto max-h-56 custom-scrollbar">
-            <div class="grid grid-cols-8 gap-1">
-              @for (emoji of category.emojis; track $index) {
-                <button
-                  mat-icon-button
-                  class="emoji-btn text-2xl hover:bg-white/20 rounded-lg transition-all active:scale-95"
-                  (click)="selectEmoji(emoji)"
-                >
-                  {{ emoji }}
-                </button>
-              }
-            </div>
-          </div>
-        </mat-tab>
-      }
-    </mat-tab-group>
+  <div class="glass-effect p-2 flex flex-col items-center justify-center">
+    <div #pickerContainer></div>
   </div>
 </div>

@@ -140,3 +140,21 @@
   background-color: var(--mat-sys-surface);
   position: relative;
 }
+
+.emoji-picker-container {
+  width: fit-content;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--mat-sys-surface-container);
+}
+
+.glass-effect {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(var(--mat-sys-surface-container-rgb), 0.7);
+}
+
+/* Override emoji-mart styles to match theme if needed */
+em-emoji-picker {
+  --font-family: inherit;
+  --rgb-background: transparent;
+}
