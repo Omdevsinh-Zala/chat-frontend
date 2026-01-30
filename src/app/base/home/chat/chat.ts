@@ -29,6 +29,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { SocketConnection } from '../../../services/socket-connection';
 import { AttachmentsType, GroupedChat } from '../../../models/chat';
 import { UserService } from '../../../services/user-service';
@@ -41,6 +42,7 @@ import { ProfileInfo } from '../../../dialogs/profile-info/profile-info';
 import { ImageUrlPipe } from '../../../image-url-pipe';
 import { compressImage } from '../../../helpers/compression-helper';
 import { EmojiPicker } from '../../../components/emoji-picker/emoji-picker';
+import { EmojiService } from '../../../services/emoji-service';
 
 @Component({
   selector: 'app-chat',
@@ -74,9 +76,12 @@ export class Chat implements OnInit, AfterViewInit {
   private injector = inject(Injector);
   private dialog = inject(MatDialog);
   private responsiveService = inject(Responsive);
+  private emojiService = inject(EmojiService);
   loadingChat = signal(true);
   isMessageSending = signal(false);
   showEmojiPicker = signal(false);
+
+  isShortEmojiCodeTyped = signal(false);
 
   isTyping = computed(() => {
     return (
@@ -100,6 +105,10 @@ export class Chat implements OnInit, AfterViewInit {
   base64AssetsData: WritableSignal<AttachmentsType[]> = signal([]);
 
   messageItems = viewChildren<ElementRef>('messageItem');
+
+  emojiSearchResults = signal<any[]>([]);
+  private currentShortcodeStartIndex = -1;
+  private emojiSearchSubject = new Subject<string>();
 
   private observer: IntersectionObserver | null = null;
   private isTypingStatusSend = signal(false);
@@ -232,6 +241,18 @@ export class Chat implements OnInit, AfterViewInit {
     });
 
     this.setupObserver();
+
+    this.emojiSearchSubject
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+      .subscribe(async (searchValue) => {
+        this.isShortEmojiCodeTyped.set(true);
+        const result = await this.emojiService.searchedData(searchValue);
+        if (result && result.length > 0) {
+          this.emojiSearchResults.set(result);
+        } else {
+          this.emojiSearchResults.set([]);
+        }
+      });
   }
 
   private cleanupSockets() {
@@ -321,6 +342,28 @@ export class Chat implements OnInit, AfterViewInit {
 
   adjustTextareaHeight(textarea: HTMLTextAreaElement) {
     const val = textarea.value;
+    const cursorPosition = textarea.selectionStart;
+    const textBeforeCursor = val.substring(0, cursorPosition);
+    const lastColonIndex = textBeforeCursor.lastIndexOf(':');
+
+    let isShortcode = false;
+
+    if (lastColonIndex !== -1) {
+      const potentialShortcode = textBeforeCursor.substring(lastColonIndex + 1);
+      // Check if there are spaces in the potential shortcode
+      // User requirement: :laugh works, : laugh does not.
+      if (!/\s/.test(potentialShortcode) && potentialShortcode.length > 0) {
+        isShortcode = true;
+        this.currentShortcodeStartIndex = lastColonIndex;
+        this.emojiSearchSubject.next(potentialShortcode);
+      }
+    }
+
+    if (!isShortcode) {
+      this.isShortEmojiCodeTyped.set(false);
+      this.currentShortcodeStartIndex = -1;
+    }
+
     if (val && !this.isTypingStatusSend()) {
       this.socketService.socket.emit('typing', {
         receiverId: this.chatId(),
@@ -557,6 +600,33 @@ export class Chat implements OnInit, AfterViewInit {
     setTimeout(() => {
       textarea.focus();
       textarea.setSelectionRange(start + emoji.length, start + emoji.length);
+      this.adjustTextareaHeight(textarea);
+    }, 0);
+  }
+
+  onAutocompleteSelect(emoji: string) {
+    const textarea = this.messageInput()?.nativeElement;
+    if (!textarea || this.currentShortcodeStartIndex === -1) return;
+
+    const cursor = textarea.selectionStart;
+    const start = this.currentShortcodeStartIndex;
+
+    // Replace from start (colon) to cursor (end of typed word) with emoji
+    const text = this.message();
+    const before = text.substring(0, start);
+    const after = text.substring(cursor);
+
+    this.message.set(before + emoji + after);
+
+    this.isShortEmojiCodeTyped.set(false);
+    this.emojiSearchResults.set([]);
+    this.currentShortcodeStartIndex = -1;
+
+    // Restore focus and cursor
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + emoji.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
       this.adjustTextareaHeight(textarea);
     }, 0);
   }

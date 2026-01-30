@@ -1,5 +1,5 @@
 .emoji-picker-container {
-  width: 320px;
+  width: fit-content;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: var(--mat-sys-surface-container);
 }
@@ -10,44 +10,8 @@
   background-color: rgba(var(--mat-sys-surface-container-rgb), 0.7);
 }
 
-.emoji-grid {
-  display: grid;
-  overflow-y: auto;
-  overflow-x: hidden;
-  gap: 4px;
-}
-
-.emoji-btn {
-  width: 36px !important;
-  height: 36px !important;
-  line-height: 36px !important;
-  padding: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.emoji-tabs ::ng-deep .mat-mdc-tab-body-wrapper {
-  flex: 1;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-::ng-deep .mat-mdc-tab-header {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+/* Override emoji-mart styles to match theme if needed */
+em-emoji-picker {
+  --font-family: inherit;
+  --rgb-background: transparent;
 }
