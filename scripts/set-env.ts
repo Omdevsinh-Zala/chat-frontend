@@ -13,7 +13,8 @@ writeFileSync(
   'src/environments/environment.prod.ts',
   `
 export const environment = {
-  production: true,
+  isProduction: true,
+  recordingToken: '${process.env.RECORDING_TOKEN}',
   apiUrl: '${process.env.API_URL}',
   socketUrl: '${process.env.SOCKET_URL}',
   imageUrl: '${process.env.IMAGE_URL}',

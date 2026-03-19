@@ -1,6 +1,7 @@
 {
   "name": "chat-frontend",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --port 4100",
@@ -42,6 +43,7 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@alwaysmeticulous/recorder-loader": "^2.264.0",
     "@angular/build": "^21.1.0",
     "@angular/cli": "^21.1.0",
     "@angular/compiler-cli": "^21.1.0",
