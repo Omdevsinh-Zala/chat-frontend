@@ -8,12 +8,14 @@ const __dirname = path.dirname(__filename);
 const envPath = path.join(__dirname + '/../.env')
 dotenv.config({ path: envPath });
 
+const environment = process.env.ENVIRONMENT;
+
 
 writeFileSync(
-  'src/environments/environment.prod.ts',
+  `src/environments/environment.${environment}.ts`,
   `
 export const environment = {
-  isProduction: true,
+  isProduction: ${process.env.IS_PRODUCTION},
   recordingToken: '${process.env.RECORDING_TOKEN}',
   apiUrl: '${process.env.API_URL}',
   socketUrl: '${process.env.SOCKET_URL}',
