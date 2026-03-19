@@ -1,4 +1,6 @@
 export const environment = {
+  isProduction: false,
+  recordingToken: '',
   socketUrl: '',
   apiUrl: '',
   imageUrl: '',
